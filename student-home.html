@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home — V:L</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body style="background:var(--vl-dark);">
+
+  <!-- Topbar -->
+  <div class="home-topbar">
+    <div class="home-topbar-left">
+      <img class="user-avatar" data-user-photo src="assets/default-avatar.png" alt="avatar" />
+      <span class="user-name" data-user-name>Student</span>
+    </div>
+    <div class="home-topbar-right">
+      <div class="online-count">
+        <div class="online-dot"></div>
+        <span id="online-count">0 online</span>
+      </div>
+      <button class="vl-btn-ghost" id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div id="student-home">
+    <div class="home-body">
+
+      <!-- If not in a classroom yet -->
+      <div id="join-section" class="join-card">
+        <h2>Join a Classroom</h2>
+        <p>Enter your class code from your teacher to get started.</p>
+        <div class="join-input-row">
+          <input type="text" id="class-code-input" maxlength="6" placeholder="ABC123" />
+          <button class="vl-btn-primary" id="join-btn">Join</button>
+        </div>
+      </div>
+
+      <!-- If already in classroom -->
+      <div id="classroom-section" class="join-card hidden">
+        <h2 id="classroom-name">Classroom</h2>
+        <p id="classroom-teacher">Teacher: —</p>
+        <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="game-vl.html" class="vl-btn-primary">▶ Play Visual: Learning</a>
+          <button class="vl-btn-ghost" id="leave-btn">Leave Classroom</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { requireAuth, populateUserUI, bindLogout } from './app.js';
+    import { joinClassroom, getStudentClassroom } from './classroom.js';
+    import { collection, onSnapshot } from 'firebase/firestore';
+    import { db } from './firebase.js';
+
+    const user = await requireAuth();
+    populateUserUI(user);
+    bindLogout();
+
+    // Check if already in classroom
+    const existing = await getStudentClassroom();
+    if (existing) showClassroom(existing);
+
+    document.getElementById('join-btn').addEventListener('click', async () => {
+      const code = document.getElementById('class-code-input').value.trim().toUpperCase();
+      if (code.length < 4) return showToast('Enter a valid code', 'error');
+      try {
+        const classroom = await joinClassroom(code);
+        showClassroom(classroom);
+        showToast('Joined!', 'success');
+      } catch(e) {
+        showToast(e.message, 'error');
+      }
+    });
+
+    document.getElementById('leave-btn')?.addEventListener('click', () => {
+      document.getElementById('classroom-section').classList.add('hidden');
+      document.getElementById('join-section').classList.remove('hidden');
+    });
+
+    function showClassroom(c) {
+      document.getElementById('join-section').classList.add('hidden');
+      document.getElementById('classroom-section').classList.remove('hidden');
+      document.getElementById('classroom-name').textContent = `Class: ${c.code}`;
+      document.getElementById('classroom-teacher').textContent = `Teacher: ${c.teacherName}`;
+    }
+
+    function showToast(msg, type='') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+  </script>
+</body>
+</html>
