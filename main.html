@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V:L — Vision: Learning</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background -->
+  <div id="main-bg"></div>
+
+  <!-- Hamburger -->
+  <button id="menu-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Side Menu -->
+  <nav id="side-menu">
+    <a href="login.html" class="menu-item">🔑 Login</a>
+    <div class="menu-divider"></div>
+    <div class="menu-item locked">🎮 Games <span class="lock-icon">🔒</span></div>
+    <div class="menu-item locked">📊 Leaderboard <span class="lock-icon">🔒</span></div>
+    <div class="menu-item locked">⚙️ Settings <span class="lock-icon">🔒</span></div>
+    <div class="menu-item locked">👤 Profile <span class="lock-icon">🔒</span></div>
+  </nav>
+
+  <!-- Main Content -->
+  <div id="main-screen">
+    <div id="main-content">
+      <div class="main-tagline">
+        Learn,<br/>play,<br/><span>be competitive.</span>
+      </div>
+      <div class="main-brand">V:L</div>
+      <div class="main-copyright">
+        © 2025 UU Production. All rights reserved. Vision: Learning is a product of UU Production in association with Anthropic API. Unauthorized reproduction is prohibited.
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { bindMenu } from './app.js';
+    bindMenu();
+  </script>
+</body>
+</html>
