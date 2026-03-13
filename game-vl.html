@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual: Learning — V:L</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="game-screen">
+
+    <!-- HUD -->
+    <div class="game-hud">
+      <div class="hud-points">
+        <span>Points</span>
+        <span id="hud-points">0</span>
+      </div>
+      <div class="rank-badge">
+        <div class="rank-letter" id="rank-letter" style="color:var(--rank-d);">D</div>
+        <div class="rank-name" id="rank-name">Beginner</div>
+      </div>
+      <div class="hud-multiplier">
+        <div class="hud-mult-label">Multiplier</div>
+        <div class="hud-mult-value" id="hud-mult">x1.00</div>
+      </div>
+    </div>
+
+    <!-- Question card -->
+    <div class="question-card" id="question-card">
+      <div class="question-prompt">What does this word mean?</div>
+      <div class="question-word" id="question-word">
+        <div class="loading-spinner"></div>
+      </div>
+      <div class="question-choices" id="question-choices"></div>
+    </div>
+
+    <!-- Back button -->
+    <a href="student-home.html" class="vl-btn-ghost" style="margin-top:8px;">← Back to Home</a>
+
+  </div>
+
+  <!-- Rank popup (Ultrakill style) -->
+  <div class="rank-popup" id="rank-popup">
+    <div class="popup-rank-id" id="popup-rank-id">D</div>
+    <div class="popup-bonuses" id="popup-bonuses"></div>
+    <div class="popup-multiplier">
+      MULTIPLIER <strong id="popup-mult">x1.00</strong>
+    </div>
+  </div>
+
+  <!-- VL Achieved overlay -->
+  <div class="vl-achieved" id="vl-achieved">
+    <div class="vl-achieved-title">VISUAL LEARNER</div>
+    <div class="vl-achieved-sub">Rank Achieved</div>
+    <button class="vl-btn-primary" style="margin-top:24px;" onclick="document.getElementById('vl-achieved').classList.remove('show')">Continue</button>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { requireAuth } from './app.js';
+    import { loadQuestion, submitAnswer, getState, saveScore } from './game.js';
+    import { getStudentClassroom } from './classroom.js';
+    import { startStudentPing } from './viewer.js';
+    import { getRank } from './rank.js';
+
+    const user = await requireAuth();
+    window._vlUser = user;
+
+    const classroom = await getStudentClassroom();
+    if (classroom) startStudentPing(classroom.code, 'Visual: Learning');
+
+    let correctAnswer = '';
+    let popupTimer = null;
+    let vlAchieved = false;
+
+    async function nextQuestion() {
+      document.getElementById('question-word').innerHTML = '<div class="loading-spinner"></div>';
+      document.getElementById('question-choices').innerHTML = '';
+
+      const q = await loadQuestion();
+      correctAnswer = q.correct;
+
+      document.getElementById('question-word').textContent = q.word;
+
+      const choices = document.getElementById('question-choices');
+      q.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => handleAnswer(choice, btn));
+        choices.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(chosen, btn) {
+      const result = submitAnswer(chosen, correctAnswer);
+      const allBtns = document.querySelectorAll('.choice-btn');
+
+      // Disable all
+      allBtns.forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correctAnswer) b.classList.add('correct');
+      });
+      if (!result.correct) btn.classList.add('wrong');
+
+      // Update HUD
+      const state = getState();
+      document.getElementById('hud-points').textContent = state.points;
+      document.getElementById('hud-mult').textContent = `x${state.multiplier.toFixed(2)}`;
+
+      // Rank
+      const rank = getRank(state.points, state.multiplier);
+      const rankLetter = document.getElementById('rank-letter');
+      rankLetter.textContent = rank.label;
+      rankLetter.style.color = rank.color;
+      rankLetter.style.textShadow = `0 0 20px ${rank.color}66`;
+      document.getElementById('rank-name').textContent = rank.id === 'VL' ? 'Visual Learner' : rank.id;
+
+      // Screen shake on correct
+      if (result.correct) {
+        document.body.classList.add('shake');
+        setTimeout(() => document.body.classList.remove('shake'), 150);
+      }
+
+      // Popup
+      showRankPopup(rank, result.bonuses || [], state.multiplier);
+
+      // VL achieved?
+      if (rank.id === 'VL' && !vlAchieved) {
+        vlAchieved = true;
+        setTimeout(() => document.getElementById('vl-achieved').classList.add('show'), 600);
+      }
+
+      // Save score
+      if (classroom) saveScore(user.uid, classroom.code).catch(()=>{});
+
+      // Next question
+      setTimeout(nextQuestion, 1800);
+    }
+
+    function showRankPopup(rank, bonuses, mult) {
+      const popup = document.getElementById('rank-popup');
+      document.getElementById('popup-rank-id').textContent = rank.label;
+      document.getElementById('popup-rank-id').style.color = rank.color;
+      document.getElementById('popup-mult').textContent = `x${mult.toFixed(2)}`;
+
+      const bonusContainer = document.getElementById('popup-bonuses');
+      bonusContainer.innerHTML = '';
+      bonuses.forEach(b => {
+        const el = document.createElement('div');
+        el.className = 'popup-bonus';
+        el.textContent = b;
+        bonusContainer.appendChild(el);
+      });
+
+      popup.classList.add('show');
+      if (popupTimer) clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => popup.classList.remove('show'), 2200);
+    }
+
+    nextQuestion();
+  </script>
+</body>
+</html>
