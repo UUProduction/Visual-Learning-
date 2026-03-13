@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vision: Learning</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="intro-screen" class="full-screen flex-center" style="background:#000;flex-direction:column;">
+    
+    <!-- UUP -->
+    <div id="intro-uup" style="display:none;flex-direction:column;align-items:center;gap:6px;">
+      <div class="uup-logo">UUP</div>
+      <div class="uup-sub">UU Production</div>
+    </div>
+
+    <!-- Presents -->
+    <div id="intro-presents" style="display:none;">
+      and Anthropic's API presents
+    </div>
+
+    <!-- VISION letters -->
+    <div id="intro-vision" style="display:none;flex-direction:row;gap:clamp(4px,1.5vw,16px);"></div>
+
+    <!-- Learning -->
+    <div id="intro-learning" style="display:none;">Learning</div>
+
+  </div>
+
+  <script type="module">
+    import { runIntro } from './intro.js';
+    runIntro();
+  </script>
+</body>
+</html>
