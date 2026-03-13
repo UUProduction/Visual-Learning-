@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Representative — V:L</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body style="background:var(--vl-dark);">
+
+  <!-- Topbar -->
+  <div class="home-topbar">
+    <div class="home-topbar-left">
+      <img class="user-avatar" data-user-photo src="assets/default-avatar.png" alt="avatar"/>
+      <span class="user-name" data-user-name>Representative</span>
+      <span style="font-size:11px;letter-spacing:0.15em;color:var(--vl-cyan);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;">REP</span>
+    </div>
+    <div class="home-topbar-right">
+      <button class="vl-btn-ghost" id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <div class="teacher-grid">
+
+    <!-- Sidebar: classrooms list -->
+    <div class="teacher-sidebar">
+      <div class="sidebar-section-label">My Classrooms</div>
+      <div id="classroom-list"></div>
+      <div style="margin-top:auto;padding-top:16px;">
+        <button class="vl-btn-primary" id="create-classroom-btn" style="width:100%;">+ New Classroom</button>
+      </div>
+    </div>
+
+    <!-- Main panel -->
+    <div class="teacher-main">
+
+      <!-- Default state -->
+      <div id="no-classroom-msg" style="color:var(--vl-gray);padding:60px 0;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:8px;">Select a classroom</div>
+        <div style="font-size:14px;">Or create one to get started.</div>
+      </div>
+
+      <!-- V:Viewer panel (shown when classroom selected) -->
+      <div id="viewer-panel" class="hidden">
+        <div class="viewer-header">
+          <div>
+            <div class="viewer-title">V:Viewer</div>
+            <div class="viewer-subtitle" id="viewer-subtitle">Monitoring classroom —</div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div class="online-count">
+              <div class="online-dot"></div>
+              <span id="viewer-online-count">0 online</span>
+            </div>
+          </div>
+        </div>
+        <div class="viewer-grid" id="viewer-grid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- New classroom modal -->
+  <div id="modal-overlay" class="hidden" style="
+    position:fixed;inset:0;background:rgba(0,0,0,0.7);
+    z-index:600;display:flex;align-items:center;justify-content:center;">
+    <div style="
+      background:var(--vl-dark);border:1px solid rgba(0,229,255,0.2);
+      border-radius:14px;padding:32px;width:340px;display:flex;
+      flex-direction:column;gap:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;">New Classroom</div>
+      <div class="login-field">
+        <label>Your Name</label>
+        <input type="text" id="teacher-name-input" placeholder="Mr. Smith" style="
+          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+          border-radius:8px;padding:10px 14px;color:var(--vl-white);
+          font-size:15px;outline:none;" />
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="vl-btn-primary" id="confirm-create-btn" style="flex:1;">Create</button>
+        <button class="vl-btn-ghost" id="cancel-modal-btn" style="flex:1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { requireAuth, populateUserUI, bindLogout } from './app.js';
+    import { createClassroom, getMyClassrooms, watchStudents } from './classroom.js';
+    import { renderViewerGrid } from './viewer.js';
+
+    const user = await requireAuth('login.html?role=teacher');
+    populateUserUI(user);
+    bindLogout();
+
+    let unsubscribeViewer = null;
+
+    async function loadClassrooms() {
+      const list = await getMyClassrooms();
+      const container = document.getElementById('classroom-list');
+      container.innerHTML = '';
+      if (list.length === 0) {
+        container.innerHTML = '<div style="color:var(--vl-gray);font-size:13px;padding:8px 8px;">No classrooms yet.</div>';
+        return;
+      }
+      list.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'classroom-item';
+        item.innerHTML = `
+          <div>
+            <div class="classroom-code">${c.code}</div>
+            <div class="classroom-meta">${c.teacherName}</div>
+          </div>`;
+        item.addEventListener('click', () => openViewer(c));
+        container.appendChild(item);
+      });
+    }
+
+    function openViewer(classroom) {
+      document.getElementById('no-classroom-msg').classList.add('hidden');
+      document.getElementById('viewer-panel').classList.remove('hidden');
+      document.getElementById('viewer-subtitle').textContent = `Monitoring classroom ${classroom.code}`;
+
+      if (unsubscribeViewer) unsubscribeViewer();
+
+      unsubscribeViewer = watchStudents(classroom.code, students => {
+        const online = students.filter(s => s.online).length;
+        document.getElementById('viewer-online-count').textContent = `${online} online`;
+        renderViewerGrid(students, document.getElementById('viewer-grid'));
+      });
+    }
+
+    document.getElementById('create-classroom-btn').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-modal-btn').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.add('hidden');
+    });
+
+    document.getElementById('confirm-create-btn').addEventListener('click', async () => {
+      const name = document.getElementById('teacher-name-input').value.trim();
+      if (!name) return showToast('Enter your name', 'error');
+      try {
+        const code = await createClassroom(name);
+        document.getElementById('modal-overlay').classList.add('hidden');
+        showToast(`Classroom created! Code: ${code}`, 'success');
+        await loadClassrooms();
+      } catch(e) {
+        showToast(e.message, 'error');
+      }
+    });
+
+    function showToast(msg, type='') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+
+    await loadClassrooms();
+  </script>
+</body>
+</html>
