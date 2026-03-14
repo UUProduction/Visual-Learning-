@@ -383,6 +383,12 @@ body::after {
 
 .login-logo { width:52px; height:52px; border-radius:11px; object-fit:cover; }
 
+.login-oauth-btn img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .login-title {
   font-family:'Bebas Neue',sans-serif;
   font-size:26px; letter-spacing:0.12em; color:var(--vl-white);
