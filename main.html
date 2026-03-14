@@ -8,15 +8,22 @@
 </head>
 <body>
 
-  <!-- Background -->
   <div id="main-bg"></div>
 
-  <!-- Hamburger -->
-  <button id="menu-toggle" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <!-- TOP NAVBAR -->
+  <nav class="main-navbar">
+    <div class="navbar-left">
+      <img class="navbar-logo" src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="V:L" />
+      <span class="navbar-brand">V<span>:</span>L</span>
+    </div>
+    <div class="navbar-right">
+      <button id="menu-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
 
-  <!-- Side Menu -->
+  <!-- SIDE MENU -->
   <nav id="side-menu">
     <a href="login.html" class="menu-item">🔑 Login</a>
     <div class="menu-divider"></div>
@@ -26,13 +33,46 @@
     <div class="menu-item locked">👤 Profile <span class="lock-icon">🔒</span></div>
   </nav>
 
-  <!-- Main Content -->
+  <!-- HERO SECTION -->
   <div id="main-screen">
     <div id="main-content">
-      <div class="main-tagline">
-        Learn,<br/>play,<br/><span>be competitive.</span>
+
+      <!-- Square hero card -->
+      <div class="hero-card">
+        <div class="main-tagline">
+          Learn,<br/>Play,<br/><span>Be Competitive.</span>
+        </div>
+        <a href="login.html" class="hero-login-btn">Login to Play</a>
       </div>
-      <div class="main-brand">V:L</div>
+
+    </div>
+  </div>
+
+  <!-- LOWER SECTION -->
+  <div class="lower-section">
+    <div class="lower-inner">
+      <h2 class="lower-title">Meet <span>Visual: Learning</span></h2>
+      <p class="lower-desc">
+        Visual: Learning is a competitive vocabulary game powered by AI. Answer questions correctly to earn points, build your multiplier, and climb the ranks — all the way from <strong>D</strong> to <strong style="color:var(--vl-purple)">Visual Learner</strong>. Every correct answer comes faster with practice. Join your classroom, compete with classmates, and let your teacher track your progress live with V:Viewer.
+      </p>
+      <div class="lower-features">
+        <div class="lower-feat">
+          <div class="feat-icon">🎮</div>
+          <div class="feat-label">AI-Powered Questions</div>
+        </div>
+        <div class="lower-feat">
+          <div class="feat-icon">🏆</div>
+          <div class="feat-label">Rank System</div>
+        </div>
+        <div class="lower-feat">
+          <div class="feat-icon">👁️</div>
+          <div class="feat-label">V:Viewer Monitoring</div>
+        </div>
+        <div class="lower-feat">
+          <div class="feat-icon">🏫</div>
+          <div class="feat-label">Classroom Integration</div>
+        </div>
+      </div>
       <div class="main-copyright">
         © 2025 UU Production. All rights reserved. Vision: Learning is a product of UU Production in association with Anthropic API. Unauthorized reproduction is prohibited.
       </div>
@@ -41,8 +81,8 @@
 
   <div id="toast-container"></div>
 
-  <script type="module">
-    import { bindMenu } from './app.js';
+  <script src="app.js"></script>
+  <script>
     bindMenu();
   </script>
 </body>
