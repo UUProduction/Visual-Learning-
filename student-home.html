@@ -11,63 +11,54 @@
   <script src="firebase.js"></script>
 </head>
 <body class="dashboard-body">
+<div class="dash-layout">
 
-  <div class="dash-layout">
-
-    <!-- SIDEBAR -->
-    <aside class="dash-sidebar">
-      <div class="dash-sidebar-top">
-        <div class="dash-brand">
-          <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
-          <span>V<span class="c">:</span>L</span>
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-top">
+      <div class="dash-brand">
+        <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
+        <span>V<span class="c">:</span>L</span>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <div class="dash-nav-item active" id="nav-home" onclick="showMain()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Home
+      </div>
+    </nav>
+    <!-- Classroom list -->
+    <div style="padding:8px;flex:1;overflow-y:auto;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.2em;color:var(--vl-gray);padding:4px 6px;text-transform:uppercase;">My Classrooms</div>
+      <div id="sidebar-classrooms"></div>
+    </div>
+    <div class="dash-sidebar-bottom">
+      <div class="dash-user">
+        <img id="s-avatar" src="assets/default-avatar.png" alt="avatar"/>
+        <div class="dash-user-info">
+          <span id="s-name">Loading...</span>
+          <span id="s-email"></span>
         </div>
       </div>
-      <nav class="dash-nav">
-        <div class="dash-nav-item active">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          Home
-        </div>
-        <div class="dash-nav-item" id="nav-game" onclick="window.location.href='game-vl.html'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
-          Play
-        </div>
-      </nav>
-      <div class="dash-sidebar-bottom">
-        <div class="dash-user">
-          <img id="s-avatar" src="assets/default-avatar.png" alt="avatar"/>
-          <div class="dash-user-info">
-            <span id="s-name">Loading...</span>
-            <span id="s-email"></span>
-          </div>
-        </div>
-        <button class="dash-logout" id="logout-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sign Out
-        </button>
-      </div>
-    </aside>
+      <button class="dash-logout" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
 
-    <!-- MAIN -->
-    <main class="dash-main">
+  <!-- MAIN -->
+  <main class="dash-main">
 
-      <!-- Header -->
+    <!-- HOME: join classroom -->
+    <div id="view-home">
       <div class="dash-header">
         <div>
-          <h1 class="dash-title">Welcome back, <span id="h-name">Student</span></h1>
+          <h1 class="dash-title">Welcome, <span id="h-name">Student</span></h1>
           <p class="dash-subtitle">Join a classroom to get started</p>
         </div>
-        <div class="dash-header-right">
-          <div class="online-pill">
-            <div class="online-dot"></div>
-            <span id="online-count">0 online</span>
-          </div>
-        </div>
       </div>
-
-      <!-- Classroom section -->
       <div class="dash-grid">
-
-        <!-- Join card -->
         <div class="dash-card" id="join-card">
           <div class="dash-card-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
@@ -79,86 +70,424 @@
             <button class="dash-btn-primary" id="join-btn">Join</button>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Active classroom card (hidden until joined) -->
-        <div class="dash-card dash-classroom-card hidden" id="classroom-card">
-          <div class="classroom-card-header">
-            <div class="classroom-color-bar"></div>
-            <div class="classroom-card-info">
-              <h3 id="cc-name">Class Name</h3>
-              <p id="cc-teacher">Teacher</p>
+    <!-- CLASSROOM VIEW -->
+    <div id="view-classroom" class="hidden">
+
+      <!-- Classroom banner like Google Classroom -->
+      <div class="classroom-banner" id="classroom-banner">
+        <div class="classroom-banner-info">
+          <div class="classroom-banner-name" id="banner-name">Classroom</div>
+          <div class="classroom-banner-teacher" id="banner-teacher">Teacher</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="classroom-tabs">
+        <button class="cls-tab active" data-tab="stream">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Stream
+        </button>
+        <button class="cls-tab" data-tab="games">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          Games
+        </button>
+        <button class="cls-tab" data-tab="people">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          People
+        </button>
+      </div>
+
+      <!-- STREAM TAB -->
+      <div class="cls-tab-content" id="tab-stream">
+        <div class="stream-wrap">
+          <div class="stream-messages" id="stream-messages">
+            <div class="stream-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <p>No messages yet. Say something!</p>
             </div>
           </div>
-          <div class="classroom-card-footer">
-            <span id="cc-code" class="cc-code-badge"></span>
-            <button class="dash-btn-primary" onclick="window.location.href='game-vl.html'">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Play Now
+          <div class="stream-input-row">
+            <img id="chat-avatar" src="assets/default-avatar.png" alt="me"/>
+            <input type="text" id="chat-input" placeholder="Chat with your class..." maxlength="300"/>
+            <button id="chat-send-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
           </div>
         </div>
-
       </div>
-    </main>
+
+      <!-- GAMES TAB -->
+      <div class="cls-tab-content hidden" id="tab-games">
+        <div class="games-grid">
+
+          <!-- Solo game -->
+          <div class="game-mode-card" id="solo-game-card">
+            <div class="game-mode-icon" style="background:rgba(10,132,255,0.12);border-color:rgba(10,132,255,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            </div>
+            <div class="game-mode-info">
+              <h3>Visual: Learning</h3>
+              <p>Answer vocabulary questions, build your multiplier and climb from D to Visual Learner rank</p>
+            </div>
+            <button class="dash-btn-primary" onclick="window.location.href='game-vl.html'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Play Solo
+            </button>
+          </div>
+
+          <!-- Tournament -->
+          <div class="game-mode-card" id="tournament-card">
+            <div class="game-mode-icon" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-gold)" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+            </div>
+            <div class="game-mode-info">
+              <h3>Tournament</h3>
+              <p>Race against classmates — first to the top wins. Needs at least 2 students. 10 minute time limit.</p>
+            </div>
+            <div id="tournament-status">
+              <button class="dash-btn-primary" id="join-tournament-btn" style="background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:var(--vl-gold);box-shadow:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+                Join Tournament
+              </button>
+            </div>
+          </div>
+
+          <!-- Game hosting — LOCKED for students -->
+          <div class="game-mode-card locked-card">
+            <div class="game-mode-icon" style="background:rgba(136,153,187,0.07);border-color:rgba(136,153,187,0.15);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-gray)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="game-mode-info">
+              <h3 style="color:var(--vl-gray);">Game Hosting</h3>
+              <p>Only Representatives can host games for the class</p>
+            </div>
+            <div class="locked-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Representatives Only
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PEOPLE TAB -->
+      <div class="cls-tab-content hidden" id="tab-people">
+        <div class="people-section">
+          <div class="people-section-title">Teachers</div>
+          <div id="people-teachers" class="people-grid"></div>
+        </div>
+        <div class="people-section" style="margin-top:20px;">
+          <div class="people-section-title">Students</div>
+          <div id="people-students" class="people-grid"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- TOURNAMENT LOBBY -->
+<div class="modal-overlay hidden" id="tournament-modal">
+  <div class="modal-card" style="max-width:420px;">
+    <h2 class="modal-title">Tournament Lobby</h2>
+    <p style="font-size:13px;color:var(--vl-gray);">Waiting for players... Need at least 2 to start.</p>
+    <div id="tournament-players" style="display:flex;flex-direction:column;gap:8px;margin:14px 0;"></div>
+    <div id="tournament-timer-display" class="hidden" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--vl-gold);text-align:center;letter-spacing:0.1em;">10:00</div>
+    <div style="display:flex;gap:10px;">
+      <button class="dash-btn-ghost" id="leave-tournament-btn" style="flex:1;justify-content:center;">Leave</button>
+    </div>
   </div>
+</div>
 
-  <div id="toast-container"></div>
-  <script src="app.js"></script>
-  <script>
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (!user) return window.location.href = 'login.html';
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+var currentUser = null;
+var currentClassroom = null;
+var unsubChat = null;
+var unsubPeople = null;
+var unsubTournament = null;
+var tournamentInterval = null;
+var BAD_WORDS = ['fuck','shit','bitch','ass','damn','hell','crap','piss','dick','cock','pussy','bastard','asshole'];
 
-      document.getElementById('s-name').textContent = user.displayName || 'Student';
-      document.getElementById('h-name').textContent = (user.displayName || 'Student').split(' ')[0];
-      document.getElementById('s-email').textContent = user.email || '';
-      if (user.photoURL) document.getElementById('s-avatar').src = user.photoURL;
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) return window.location.href = 'login.html';
+  currentUser = user;
+  document.getElementById('s-name').textContent = user.displayName || 'Student';
+  document.getElementById('h-name').textContent = (user.displayName||'Student').split(' ')[0];
+  document.getElementById('s-email').textContent = user.email||'';
+  if (user.photoURL) {
+    document.getElementById('s-avatar').src = user.photoURL;
+    document.getElementById('chat-avatar').src = user.photoURL;
+  }
+  loadMyClassrooms();
+});
 
-      // Check existing classroom
-      firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
-        if (doc.exists && doc.data().classroomCode) {
-          var code = doc.data().classroomCode;
-          firebase.firestore().collection('classrooms').doc(code).get().then(function(c) {
-            if (c.exists) showClassroom(c.data());
-          });
-        }
+function loadMyClassrooms() {
+  firebase.firestore().collection('users').doc(currentUser.uid).get().then(function(doc) {
+    if (!doc.exists) return;
+    var codes = doc.data().classroomCodes || [];
+    if (doc.data().classroomCode) codes.push(doc.data().classroomCode);
+    codes = [...new Set(codes)];
+    var sidebar = document.getElementById('sidebar-classrooms');
+    sidebar.innerHTML = '';
+    codes.forEach(function(code) {
+      firebase.firestore().collection('classrooms').doc(code).get().then(function(c) {
+        if (!c.exists) return;
+        var d = c.data();
+        var btn = document.createElement('div');
+        btn.className = 'sidebar-classroom-btn';
+        btn.innerHTML = '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:16px;color:var(--vl-cyan);">' + d.code + '</span><span style="font-size:11px;color:var(--vl-gray);">' + d.name + '</span>';
+        btn.addEventListener('click', function() { openClassroom(d); });
+        sidebar.appendChild(btn);
       });
     });
+  });
+}
 
-    document.getElementById('join-btn').addEventListener('click', function() {
-      var code = document.getElementById('class-code-input').value.trim().toUpperCase();
-      if (code.length < 4) return showToast('Enter a valid code', 'error');
-      var user = firebase.auth().currentUser;
-      firebase.firestore().collection('classrooms').doc(code).get().then(function(snap) {
-        if (!snap.exists) return showToast('Classroom not found', 'error');
-        var data = snap.data();
-        return firebase.firestore().collection('classrooms').doc(code)
-          .collection('students').doc(user.uid).set({
-            uid: user.uid,
-            name: user.displayName,
-            photoURL: user.photoURL,
-            online: true,
-            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true }).then(function() {
-            return firebase.firestore().collection('users').doc(user.uid)
-              .set({ classroomCode: code }, { merge: true });
-          }).then(function() {
-            showClassroom(data);
-            showToast('Joined ' + data.name + '!', 'success');
-          });
-      }).catch(function(e) { showToast(e.message, 'error'); });
+function showMain() {
+  document.getElementById('view-home').classList.remove('hidden');
+  document.getElementById('view-classroom').classList.add('hidden');
+  setActiveNav('nav-home');
+}
+
+function openClassroom(data) {
+  currentClassroom = data;
+  document.getElementById('view-home').classList.add('hidden');
+  document.getElementById('view-classroom').classList.remove('hidden');
+  document.getElementById('banner-name').textContent = data.name;
+  document.getElementById('banner-teacher').textContent = data.teacherName;
+  switchTab('stream');
+  listenToChat();
+  listenToPeople();
+}
+
+// TABS
+document.querySelectorAll('.cls-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    switchTab(tab.getAttribute('data-tab'));
+  });
+});
+
+function switchTab(name) {
+  document.querySelectorAll('.cls-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.cls-tab-content').forEach(function(c){ c.classList.add('hidden'); });
+  document.querySelector('.cls-tab[data-tab="'+name+'"]').classList.add('active');
+  document.getElementById('tab-'+name).classList.remove('hidden');
+}
+
+function setActiveNav(id) {
+  document.querySelectorAll('.dash-nav-item').forEach(function(i){ i.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+// JOIN CLASSROOM
+document.getElementById('join-btn').addEventListener('click', function() {
+  var code = document.getElementById('class-code-input').value.trim().toUpperCase();
+  if (code.length < 4) return showToast('Enter a valid code','error');
+  firebase.firestore().collection('classrooms').doc(code).get().then(function(snap) {
+    if (!snap.exists) return showToast('Classroom not found','error');
+    var data = snap.data();
+    var updates = {};
+    updates['students.' + currentUser.uid] = {
+      uid: currentUser.uid,
+      name: currentUser.displayName,
+      photoURL: currentUser.photoURL,
+      online: true,
+      role: 'student'
+    };
+    return firebase.firestore().collection('classrooms').doc(code).update(updates).then(function() {
+      return firebase.firestore().collection('users').doc(currentUser.uid).set({
+        classroomCodes: firebase.firestore.FieldValue.arrayUnion(code)
+      }, { merge: true });
+    }).then(function() {
+      loadMyClassrooms();
+      openClassroom(data);
+      showToast('Joined ' + data.name + '!', 'success');
     });
+  }).catch(function(e){ showToast(e.message,'error'); });
+});
 
-    function showClassroom(data) {
-      document.getElementById('join-card').classList.add('hidden');
-      document.getElementById('classroom-card').classList.remove('hidden');
-      document.getElementById('cc-name').textContent = data.name || 'Classroom';
-      document.getElementById('cc-teacher').textContent = data.teacherName || 'Teacher';
-      document.getElementById('cc-code').textContent = data.code || '';
+// CHAT
+function listenToChat() {
+  if (unsubChat) unsubChat();
+  var messagesEl = document.getElementById('stream-messages');
+  unsubChat = firebase.firestore()
+    .collection('classrooms').doc(currentClassroom.code)
+    .collection('chat').orderBy('createdAt','asc').limit(100)
+    .onSnapshot(function(snap) {
+      messagesEl.innerHTML = '';
+      if (snap.empty) {
+        messagesEl.innerHTML = '<div class="stream-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>No messages yet. Say something!</p></div>';
+        return;
+      }
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        var isMe = d.uid === currentUser.uid;
+        var div = document.createElement('div');
+        div.className = 'stream-message' + (isMe ? ' mine' : '');
+        div.innerHTML = '<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/><div class="msg-bubble"><div class="msg-name">'+(isMe?'You':d.name)+'</div><div class="msg-text">'+filterBadWords(d.text)+'</div></div>';
+        messagesEl.appendChild(div);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
+}
+
+function filterBadWords(text) {
+  var out = text;
+  BAD_WORDS.forEach(function(w) {
+    var re = new RegExp('\\b'+w+'\\b','gi');
+    out = out.replace(re, function(m){ return '*'.repeat(m.length); });
+  });
+  return out;
+}
+
+document.getElementById('chat-send-btn').addEventListener('click', sendChat);
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') sendChat();
+});
+
+function sendChat() {
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if (!text || !currentClassroom) return;
+  input.value = '';
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .collection('chat').add({
+      uid: currentUser.uid,
+      name: currentUser.displayName || 'Student',
+      photoURL: currentUser.photoURL || null,
+      text: text,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+}
+
+// PEOPLE
+function listenToPeople() {
+  if (unsubPeople) unsubPeople();
+  unsubPeople = firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .onSnapshot(function(snap) {
+      if (!snap.exists) return;
+      var d = snap.data();
+      var students = d.students || {};
+      var teachersEl = document.getElementById('people-teachers');
+      var studentsEl = document.getElementById('people-students');
+      teachersEl.innerHTML = '';
+      studentsEl.innerHTML = '';
+
+      // Teacher
+      var tCard = document.createElement('div');
+      tCard.className = 'people-card';
+      tCard.innerHTML = '<div class="people-avatar-wrap"><img src="assets/default-avatar.png" alt=""/></div><span>'+d.teacherName+'</span>';
+      teachersEl.appendChild(tCard);
+
+      // Students
+      Object.values(students).forEach(function(s) {
+        var c = document.createElement('div');
+        c.className = 'people-card';
+        c.innerHTML = '<div class="people-avatar-wrap"><img src="'+(s.photoURL||'assets/default-avatar.png')+'" alt=""/>'+(s.online?'<div class="people-online-dot"></div>':'')+'</div><span>'+(s.name||'Student')+'</span>';
+        studentsEl.appendChild(c);
+      });
+    });
+}
+
+// TOURNAMENT
+document.getElementById('join-tournament-btn').addEventListener('click', function() {
+  if (!currentClassroom) return;
+  document.getElementById('tournament-modal').classList.remove('hidden');
+  joinTournamentLobby();
+});
+
+document.getElementById('leave-tournament-btn').addEventListener('click', function() {
+  leaveTournament();
+  document.getElementById('tournament-modal').classList.add('hidden');
+});
+
+function joinTournamentLobby() {
+  var ref = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby');
+  ref.set({
+    ['players.' + currentUser.uid]: {
+      uid: currentUser.uid,
+      name: currentUser.displayName,
+      photoURL: currentUser.photoURL,
+      points: 0,
+      ready: true
+    },
+    status: 'waiting',
+    startedAt: null
+  }, { merge: true });
+
+  if (unsubTournament) unsubTournament();
+  unsubTournament = ref.onSnapshot(function(snap) {
+    if (!snap.exists) return;
+    var d = snap.data();
+    var players = Object.values(d.players || {});
+    renderTournamentPlayers(players);
+    if (d.status === 'active' && d.startedAt && !tournamentInterval) {
+      startTournamentTimer(d.startedAt.toDate());
     }
+  });
+}
 
-    document.getElementById('logout-btn').addEventListener('click', function() {
-      firebase.auth().signOut().then(function() { window.location.href = 'main.html'; });
+function renderTournamentPlayers(players) {
+  var el = document.getElementById('tournament-players');
+  el.innerHTML = '';
+  players.forEach(function(p) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:8px;';
+    row.innerHTML = '<img src="'+(p.photoURL||'assets/default-avatar.png')+'" style="width:28px;height:28px;border-radius:50%;"/><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:600;">'+(p.name||'Player')+'</span><span style="margin-left:auto;font-family:\'Bebas Neue\',sans-serif;font-size:18px;color:var(--vl-gold);">'+p.points+'</span>';
+    el.appendChild(row);
+  });
+  if (players.length >= 2) {
+    var ref = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby');
+    ref.get().then(function(s) {
+      if (s.data().status === 'waiting') {
+        ref.update({ status: 'active', startedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      }
     });
-  </script>
+  }
+}
+
+function startTournamentTimer(startDate) {
+  document.getElementById('tournament-timer-display').classList.remove('hidden');
+  var DURATION = 10 * 60 * 1000;
+  tournamentInterval = setInterval(function() {
+    var elapsed = Date.now() - startDate.getTime();
+    var remaining = DURATION - elapsed;
+    if (remaining <= 0) {
+      clearInterval(tournamentInterval);
+      tournamentInterval = null;
+      document.getElementById('tournament-timer-display').textContent = '0:00';
+      endTournament();
+      return;
+    }
+    var mins = Math.floor(remaining / 60000);
+    var secs = Math.floor((remaining % 60000) / 1000);
+    document.getElementById('tournament-timer-display').textContent = mins + ':' + (secs<10?'0':'')+secs;
+  }, 500);
+}
+
+function endTournament() {
+  document.getElementById('tournament-modal').classList.add('hidden');
+  showToast('Tournament ended!', 'success');
+}
+
+function leaveTournament() {
+  if (!currentClassroom) return;
+  if (tournamentInterval) { clearInterval(tournamentInterval); tournamentInterval = null; }
+  if (unsubTournament) { unsubTournament(); unsubTournament = null; }
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .collection('tournament').doc('lobby')
+    .update({ ['players.' + currentUser.uid]: firebase.firestore.FieldValue.delete() });
+}
+
+document.getElementById('logout-btn').addEventListener('click', function() {
+  firebase.auth().signOut().then(function() { window.location.href = 'main.html'; });
+});
+</script>
 </body>
 </html>
