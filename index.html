@@ -7,29 +7,117 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="intro-screen" class="full-screen flex-center" style="background:#000;flex-direction:column;">
-    
+
+  <div id="intro-screen">
+
     <!-- UUP -->
-    <div id="intro-uup" style="display:none;flex-direction:column;align-items:center;gap:6px;">
+    <div id="intro-uup">
       <div class="uup-logo">UUP</div>
       <div class="uup-sub">UU Production</div>
     </div>
 
     <!-- Presents -->
-    <div id="intro-presents" style="display:none;">
-      and Anthropic's API presents
+    <div id="intro-presents">and Anthropic's API presents</div>
+
+    <!-- VISION: -->
+    <div id="intro-vision-wrap">
+      <div id="intro-vision"></div>
+      <div id="intro-learning">Learning</div>
     </div>
-
-    <!-- VISION letters -->
-    <div id="intro-vision" style="display:none;flex-direction:row;gap:clamp(4px,1.5vw,16px);"></div>
-
-    <!-- Learning -->
-    <div id="intro-learning" style="display:none;">Learning</div>
 
   </div>
 
-  <script type="module">
-    import { runIntro } from './intro.js';
+  <script>
+    const LETTERS = ['V','I','S','I','O','N',':'];
+
+    function wait(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function fadeIn(el, ms = 600) {
+      return new Promise(async r => {
+        el.style.opacity = 0;
+        el.style.display = 'flex';
+        el.style.transition = `opacity ${ms}ms ease`;
+        await wait(30);
+        el.style.opacity = 1;
+        await wait(ms);
+        r();
+      });
+    }
+
+    function fadeOut(el, ms = 500) {
+      return new Promise(async r => {
+        el.style.transition = `opacity ${ms}ms ease`;
+        el.style.opacity = 0;
+        await wait(ms);
+        el.style.display = 'none';
+        r();
+      });
+    }
+
+    function shake() {
+      document.body.style.transform =
+        `translate(${(Math.random()-0.5)*18}px, ${(Math.random()-0.5)*18}px)`;
+      setTimeout(() => document.body.style.transform = '', 100);
+    }
+
+    async function runIntro() {
+      const uup        = document.getElementById('intro-uup');
+      const presents   = document.getElementById('intro-presents');
+      const visionWrap = document.getElementById('intro-vision-wrap');
+      const visionEl   = document.getElementById('intro-vision');
+      const learningEl = document.getElementById('intro-learning');
+
+      // UUP
+      await fadeIn(uup, 700);
+      await wait(1400);
+      await fadeOut(uup, 500);
+
+      // Presents
+      presents.style.display = 'block';
+      await fadeIn(presents, 600);
+      await wait(1500);
+      await fadeOut(presents, 500);
+
+      // VISION:
+      visionWrap.style.display = 'flex';
+      visionWrap.style.opacity = 1;
+
+      for (let i = 0; i < LETTERS.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'vision-letter';
+        if (LETTERS[i] === ':') span.classList.add('vision-colon');
+        span.textContent = LETTERS[i];
+        span.style.opacity = 0;
+        span.style.transform = 'scale(2.5) translateY(-30px)';
+        span.style.transition = 'opacity 0.15s, transform 0.22s cubic-bezier(.17,.67,.3,1.5)';
+        visionEl.appendChild(span);
+        await wait(30);
+        span.style.opacity = 1;
+        span.style.transform = 'scale(1) translateY(0)';
+        shake();
+        await wait(200);
+      }
+
+      // Learning fades in below
+      await wait(200);
+      learningEl.style.display = 'block';
+      learningEl.style.opacity = 0;
+      learningEl.style.transition = 'opacity 0.5s ease';
+      await wait(30);
+      learningEl.style.opacity = 1;
+
+      await wait(1400);
+
+      // Fade whole screen then go to main
+      const screen = document.getElementById('intro-screen');
+      screen.style.transition = 'opacity 0.7s ease';
+      screen.style.opacity = 0;
+      await wait(750);
+      window.location.href = 'main.html';
+    }
+
     runIntro();
   </script>
 </body>
