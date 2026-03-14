@@ -1,167 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Representative — V:L</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
 </head>
-<body style="background:var(--vl-dark);">
+<body class="dashboard-body">
 
-  <!-- Topbar -->
-  <div class="home-topbar">
-    <div class="home-topbar-left">
-      <img class="user-avatar" data-user-photo src="assets/default-avatar.png" alt="avatar"/>
-      <span class="user-name" data-user-name>Representative</span>
-      <span style="font-size:11px;letter-spacing:0.15em;color:var(--vl-cyan);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;">REP</span>
-    </div>
-    <div class="home-topbar-right">
-      <button class="vl-btn-ghost" id="logout-btn">Logout</button>
-    </div>
-  </div>
+  <div class="dash-layout">
 
-  <div class="teacher-grid">
-
-    <!-- Sidebar: classrooms list -->
-    <div class="teacher-sidebar">
-      <div class="sidebar-section-label">My Classrooms</div>
-      <div id="classroom-list"></div>
-      <div style="margin-top:auto;padding-top:16px;">
-        <button class="vl-btn-primary" id="create-classroom-btn" style="width:100%;">+ New Classroom</button>
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar">
+      <div class="dash-sidebar-top">
+        <div class="dash-brand">
+          <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
+          <span>V<span class="c">:</span>L</span>
+        </div>
+        <span class="rep-badge">REP</span>
       </div>
-    </div>
-
-    <!-- Main panel -->
-    <div class="teacher-main">
-
-      <!-- Default state -->
-      <div id="no-classroom-msg" style="color:var(--vl-gray);padding:60px 0;text-align:center;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:8px;">Select a classroom</div>
-        <div style="font-size:14px;">Or create one to get started.</div>
-      </div>
-
-      <!-- V:Viewer panel (shown when classroom selected) -->
-      <div id="viewer-panel" class="hidden">
-        <div class="viewer-header">
-          <div>
-            <div class="viewer-title">V:Viewer</div>
-            <div class="viewer-subtitle" id="viewer-subtitle">Monitoring classroom —</div>
-          </div>
-          <div style="display:flex;gap:10px;">
-            <div class="online-count">
-              <div class="online-dot"></div>
-              <span id="viewer-online-count">0 online</span>
-            </div>
+      <nav class="dash-nav">
+        <div class="dash-nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Dashboard
+        </div>
+        <div class="dash-nav-item" id="nav-viewer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          V:Viewer
+        </div>
+      </nav>
+      <div class="dash-sidebar-bottom">
+        <div class="dash-user">
+          <img id="t-avatar" src="assets/default-avatar.png" alt="avatar"/>
+          <div class="dash-user-info">
+            <span id="t-name">Loading...</span>
+            <span id="t-email"></span>
           </div>
         </div>
-        <div class="viewer-grid" id="viewer-grid"></div>
+        <button class="dash-logout" id="logout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dash-main" id="dash-main">
+
+      <!-- DASHBOARD VIEW -->
+      <div id="view-dashboard">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">Your Classrooms</h1>
+            <p class="dash-subtitle">Manage and monitor your classes</p>
+          </div>
+          <button class="dash-btn-primary" id="create-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Classroom
+          </button>
+        </div>
+
+        <!-- Classrooms grid -->
+        <div class="dash-grid" id="classrooms-grid">
+          <div class="dash-empty" id="no-classrooms">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <p>No classrooms yet. Create one to get started!</p>
+          </div>
+        </div>
       </div>
 
-    </div>
+      <!-- VIEWER VIEW (hidden by default) -->
+      <div id="view-viewer" class="hidden">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">V<span style="color:var(--vl-cyan)">:</span>Viewer</h1>
+            <p class="dash-subtitle" id="viewer-class-name">Select a classroom</p>
+          </div>
+          <div class="online-pill">
+            <div class="online-dot"></div>
+            <span id="viewer-online">0 online</span>
+          </div>
+        </div>
+
+        <div class="viewer-class-select" id="viewer-class-select"></div>
+        <div class="viewer-grid" id="viewer-grid">
+          <div class="dash-empty">
+            <p>Select a classroom above to monitor students</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <!-- New classroom modal -->
-  <div id="modal-overlay" class="hidden" style="
-    position:fixed;inset:0;background:rgba(0,0,0,0.7);
-    z-index:600;display:flex;align-items:center;justify-content:center;">
-    <div style="
-      background:var(--vl-dark);border:1px solid rgba(0,229,255,0.2);
-      border-radius:14px;padding:32px;width:340px;display:flex;
-      flex-direction:column;gap:16px;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;">New Classroom</div>
+  <!-- CREATE CLASSROOM MODAL -->
+  <div class="modal-overlay hidden" id="modal">
+    <div class="modal-card">
+      <h2 class="modal-title">New Classroom</h2>
       <div class="login-field">
-        <label>Your Name</label>
-        <input type="text" id="teacher-name-input" placeholder="Mr. Smith" style="
-          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-          border-radius:8px;padding:10px 14px;color:var(--vl-white);
-          font-size:15px;outline:none;" />
+        <label>Classroom Name</label>
+        <input type="text" id="class-name-input" placeholder="e.g. Period 3 English"/>
       </div>
-      <div style="display:flex;gap:10px;">
-        <button class="vl-btn-primary" id="confirm-create-btn" style="flex:1;">Create</button>
-        <button class="vl-btn-ghost" id="cancel-modal-btn" style="flex:1;">Cancel</button>
+      <div class="modal-actions">
+        <button class="dash-btn-primary" id="confirm-create">Create</button>
+        <button class="dash-btn-ghost" id="cancel-modal">Cancel</button>
       </div>
     </div>
   </div>
 
   <div id="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    var currentUser = null;
+    var unsubViewer = null;
 
-  <script type="module">
-    import { requireAuth, populateUserUI, bindLogout } from './app.js';
-    import { createClassroom, getMyClassrooms, watchStudents } from './classroom.js';
-    import { renderViewerGrid } from './viewer.js';
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) return window.location.href = 'login.html?role=teacher';
+      currentUser = user;
+      document.getElementById('t-name').textContent = user.displayName || 'Representative';
+      document.getElementById('t-email').textContent = user.email || '';
+      if (user.photoURL) document.getElementById('t-avatar').src = user.photoURL;
+      loadClassrooms();
+      loadViewerClassrooms();
+    });
 
-    const user = await requireAuth('login.html?role=teacher');
-    populateUserUI(user);
-    bindLogout();
+    // NAV
+    document.getElementById('nav-viewer').addEventListener('click', function() {
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('view-viewer').classList.remove('hidden');
+      document.querySelectorAll('.dash-nav-item').forEach(function(i){i.classList.remove('active');});
+      this.classList.add('active');
+    });
 
-    let unsubscribeViewer = null;
+    document.querySelector('.dash-nav-item').addEventListener('click', function() {
+      document.getElementById('view-viewer').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.remove('hidden');
+      document.querySelectorAll('.dash-nav-item').forEach(function(i){i.classList.remove('active');});
+      this.classList.add('active');
+    });
 
-    async function loadClassrooms() {
-      const list = await getMyClassrooms();
-      const container = document.getElementById('classroom-list');
-      container.innerHTML = '';
-      if (list.length === 0) {
-        container.innerHTML = '<div style="color:var(--vl-gray);font-size:13px;padding:8px 8px;">No classrooms yet.</div>';
+    // LOAD CLASSROOMS
+    function loadClassrooms() {
+      firebase.firestore().collection('classrooms')
+        .where('teacherId', '==', currentUser.uid)
+        .get().then(function(snap) {
+          var grid = document.getElementById('classrooms-grid');
+          var noMsg = document.getElementById('no-classrooms');
+          // Remove old cards but keep the empty msg
+          grid.querySelectorAll('.dash-classroom-card-teacher').forEach(function(el){ el.remove(); });
+          if (snap.empty) {
+            noMsg.classList.remove('hidden');
+            return;
+          }
+          noMsg.classList.add('hidden');
+          snap.forEach(function(doc) {
+            var d = doc.data();
+            var card = document.createElement('div');
+            card.className = 'dash-card dash-classroom-card-teacher';
+            card.innerHTML = `
+              <div class="classroom-card-header">
+                <div class="classroom-color-bar"></div>
+                <div class="classroom-card-info">
+                  <h3>${d.name}</h3>
+                  <p>${d.teacherName}</p>
+                </div>
+              </div>
+              <div class="classroom-students-count" id="count-${d.code}">Loading students...</div>
+              <div class="classroom-card-footer">
+                <div>
+                  <span class="cc-code-badge">${d.code}</span>
+                  <span class="cc-share-hint">Share this code with students</span>
+                </div>
+                <button class="dash-btn-ghost view-class-btn" data-code="${d.code}" data-name="${d.name}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Monitor
+                </button>
+              </div>
+            `;
+            grid.appendChild(card);
+
+            // Get student count
+            firebase.firestore().collection('classrooms').doc(d.code)
+              .collection('students').get().then(function(s) {
+                var el = document.getElementById('count-' + d.code);
+                if (el) el.textContent = s.size + ' student' + (s.size !== 1 ? 's' : '') + ' enrolled';
+              });
+          });
+
+          // Monitor buttons
+          document.querySelectorAll('.view-class-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              openViewer(btn.getAttribute('data-code'), btn.getAttribute('data-name'));
+            });
+          });
+        });
+    }
+
+    // CREATE CLASSROOM
+    document.getElementById('create-btn').addEventListener('click', function() {
+      document.getElementById('modal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-modal').addEventListener('click', function() {
+      document.getElementById('modal').classList.add('hidden');
+    });
+
+    document.getElementById('confirm-create').addEventListener('click', function() {
+      var name = document.getElementById('class-name-input').value.trim();
+      if (!name) return showToast('Enter a classroom name', 'error');
+
+      var code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      firebase.firestore().collection('classrooms').doc(code).set({
+        code: code,
+        name: name,
+        teacherId: currentUser.uid,
+        teacherName: currentUser.displayName || 'Teacher',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        document.getElementById('modal').classList.add('hidden');
+        document.getElementById('class-name-input').value = '';
+        showToast('Classroom "' + name + '" created! Code: ' + code, 'success');
+        loadClassrooms();
+        loadViewerClassrooms();
+      }).catch(function(e) { showToast(e.message, 'error'); });
+    });
+
+    // VIEWER
+    function loadViewerClassrooms() {
+      if (!currentUser) return;
+      firebase.firestore().collection('classrooms')
+        .where('teacherId', '==', currentUser.uid)
+        .get().then(function(snap) {
+          var sel = document.getElementById('viewer-class-select');
+          sel.innerHTML = '';
+          snap.forEach(function(doc) {
+            var d = doc.data();
+            var btn = document.createElement('button');
+            btn.className = 'viewer-class-btn';
+            btn.textContent = d.name + ' (' + d.code + ')';
+            btn.addEventListener('click', function() {
+              document.querySelectorAll('.viewer-class-btn').forEach(function(b){ b.classList.remove('active'); });
+              btn.classList.add('active');
+              openViewer(d.code, d.name);
+            });
+            sel.appendChild(btn);
+          });
+        });
+    }
+
+    function openViewer(code, name) {
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('view-viewer').classList.remove('hidden');
+      document.querySelectorAll('.dash-nav-item').forEach(function(i){i.classList.remove('active');});
+      document.getElementById('nav-viewer').classList.add('active');
+      document.getElementById('viewer-class-name').textContent = name;
+
+      if (unsubViewer) unsubViewer();
+
+      unsubViewer = firebase.firestore()
+        .collection('classrooms').doc(code)
+        .collection('students')
+        .onSnapshot(function(snap) {
+          var students = [];
+          snap.forEach(function(d) { students.push(d.data()); });
+          var online = students.filter(function(s){ return s.online; }).length;
+          document.getElementById('viewer-online').textContent = online + ' online';
+          renderViewer(students);
+        });
+    }
+
+    function renderViewer(students) {
+      var grid = document.getElementById('viewer-grid');
+      grid.innerHTML = '';
+      if (!students.length) {
+        grid.innerHTML = '<div class="dash-empty"><p>No students in this classroom yet</p></div>';
         return;
       }
-      list.forEach(c => {
-        const item = document.createElement('div');
-        item.className = 'classroom-item';
-        item.innerHTML = `
-          <div>
-            <div class="classroom-code">${c.code}</div>
-            <div class="classroom-meta">${c.teacherName}</div>
-          </div>`;
-        item.addEventListener('click', () => openViewer(c));
-        container.appendChild(item);
+      students.forEach(function(s) {
+        var card = document.createElement('div');
+        card.className = 'viewer-card ' + (s.online ? 'online' : 'offline');
+        card.innerHTML = `
+          <div class="viewer-dot ${s.online ? 'dot-green' : 'dot-red'}"></div>
+          <img src="${s.photoURL || 'assets/default-avatar.png'}" alt="${s.name}"/>
+          <div class="viewer-name">${s.name || 'Student'}</div>
+          <div class="viewer-status">${s.online ? (s.currentActivity || 'Active') : 'Offline'}</div>
+        `;
+        grid.appendChild(card);
       });
     }
 
-    function openViewer(classroom) {
-      document.getElementById('no-classroom-msg').classList.add('hidden');
-      document.getElementById('viewer-panel').classList.remove('hidden');
-      document.getElementById('viewer-subtitle').textContent = `Monitoring classroom ${classroom.code}`;
-
-      if (unsubscribeViewer) unsubscribeViewer();
-
-      unsubscribeViewer = watchStudents(classroom.code, students => {
-        const online = students.filter(s => s.online).length;
-        document.getElementById('viewer-online-count').textContent = `${online} online`;
-        renderViewerGrid(students, document.getElementById('viewer-grid'));
-      });
-    }
-
-    document.getElementById('create-classroom-btn').addEventListener('click', () => {
-      document.getElementById('modal-overlay').classList.remove('hidden');
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      firebase.auth().signOut().then(function() { window.location.href = 'main.html'; });
     });
-
-    document.getElementById('cancel-modal-btn').addEventListener('click', () => {
-      document.getElementById('modal-overlay').classList.add('hidden');
-    });
-
-    document.getElementById('confirm-create-btn').addEventListener('click', async () => {
-      const name = document.getElementById('teacher-name-input').value.trim();
-      if (!name) return showToast('Enter your name', 'error');
-      try {
-        const code = await createClassroom(name);
-        document.getElementById('modal-overlay').classList.add('hidden');
-        showToast(`Classroom created! Code: ${code}`, 'success');
-        await loadClassrooms();
-      } catch(e) {
-        showToast(e.message, 'error');
-      }
-    });
-
-    function showToast(msg, type='') {
-      const c = document.getElementById('toast-container');
-      const t = document.createElement('div');
-      t.className = `toast ${type}`;
-      t.textContent = msg;
-      c.appendChild(t);
-      setTimeout(() => t.remove(), 3200);
-    }
-
-    await loadClassrooms();
   </script>
 </body>
 </html>
