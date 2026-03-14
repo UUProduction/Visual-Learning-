@@ -1,103 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Home — V:L</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
 </head>
-<body style="background:var(--vl-dark);">
+<body class="dashboard-body">
 
-  <!-- Topbar -->
-  <div class="home-topbar">
-    <div class="home-topbar-left">
-      <img class="user-avatar" data-user-photo src="assets/default-avatar.png" alt="avatar" />
-      <span class="user-name" data-user-name>Student</span>
-    </div>
-    <div class="home-topbar-right">
-      <div class="online-count">
-        <div class="online-dot"></div>
-        <span id="online-count">0 online</span>
+  <div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar">
+      <div class="dash-sidebar-top">
+        <div class="dash-brand">
+          <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
+          <span>V<span class="c">:</span>L</span>
+        </div>
       </div>
-      <button class="vl-btn-ghost" id="logout-btn">Logout</button>
-    </div>
-  </div>
+      <nav class="dash-nav">
+        <div class="dash-nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </div>
+        <div class="dash-nav-item" id="nav-game" onclick="window.location.href='game-vl.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          Play
+        </div>
+      </nav>
+      <div class="dash-sidebar-bottom">
+        <div class="dash-user">
+          <img id="s-avatar" src="assets/default-avatar.png" alt="avatar"/>
+          <div class="dash-user-info">
+            <span id="s-name">Loading...</span>
+            <span id="s-email"></span>
+          </div>
+        </div>
+        <button class="dash-logout" id="logout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
 
-  <!-- Body -->
-  <div id="student-home">
-    <div class="home-body">
+    <!-- MAIN -->
+    <main class="dash-main">
 
-      <!-- If not in a classroom yet -->
-      <div id="join-section" class="join-card">
-        <h2>Join a Classroom</h2>
-        <p>Enter your class code from your teacher to get started.</p>
-        <div class="join-input-row">
-          <input type="text" id="class-code-input" maxlength="6" placeholder="ABC123" />
-          <button class="vl-btn-primary" id="join-btn">Join</button>
+      <!-- Header -->
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Welcome back, <span id="h-name">Student</span></h1>
+          <p class="dash-subtitle">Join a classroom to get started</p>
+        </div>
+        <div class="dash-header-right">
+          <div class="online-pill">
+            <div class="online-dot"></div>
+            <span id="online-count">0 online</span>
+          </div>
         </div>
       </div>
 
-      <!-- If already in classroom -->
-      <div id="classroom-section" class="join-card hidden">
-        <h2 id="classroom-name">Classroom</h2>
-        <p id="classroom-teacher">Teacher: —</p>
-        <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-          <a href="game-vl.html" class="vl-btn-primary">▶ Play Visual: Learning</a>
-          <button class="vl-btn-ghost" id="leave-btn">Leave Classroom</button>
-        </div>
-      </div>
+      <!-- Classroom section -->
+      <div class="dash-grid">
 
-    </div>
+        <!-- Join card -->
+        <div class="dash-card" id="join-card">
+          <div class="dash-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          </div>
+          <h3>Join a Classroom</h3>
+          <p>Enter the class code your teacher gave you</p>
+          <div class="code-input-row">
+            <input type="text" id="class-code-input" maxlength="6" placeholder="ABC123"/>
+            <button class="dash-btn-primary" id="join-btn">Join</button>
+          </div>
+        </div>
+
+        <!-- Active classroom card (hidden until joined) -->
+        <div class="dash-card dash-classroom-card hidden" id="classroom-card">
+          <div class="classroom-card-header">
+            <div class="classroom-color-bar"></div>
+            <div class="classroom-card-info">
+              <h3 id="cc-name">Class Name</h3>
+              <p id="cc-teacher">Teacher</p>
+            </div>
+          </div>
+          <div class="classroom-card-footer">
+            <span id="cc-code" class="cc-code-badge"></span>
+            <button class="dash-btn-primary" onclick="window.location.href='game-vl.html'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Play Now
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
   </div>
 
   <div id="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) return window.location.href = 'login.html';
 
-  <script type="module">
-    import { requireAuth, populateUserUI, bindLogout } from './app.js';
-    import { joinClassroom, getStudentClassroom } from './classroom.js';
-    import { collection, onSnapshot } from 'firebase/firestore';
-    import { db } from './firebase.js';
+      document.getElementById('s-name').textContent = user.displayName || 'Student';
+      document.getElementById('h-name').textContent = (user.displayName || 'Student').split(' ')[0];
+      document.getElementById('s-email').textContent = user.email || '';
+      if (user.photoURL) document.getElementById('s-avatar').src = user.photoURL;
 
-    const user = await requireAuth();
-    populateUserUI(user);
-    bindLogout();
+      // Check existing classroom
+      firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
+        if (doc.exists && doc.data().classroomCode) {
+          var code = doc.data().classroomCode;
+          firebase.firestore().collection('classrooms').doc(code).get().then(function(c) {
+            if (c.exists) showClassroom(c.data());
+          });
+        }
+      });
+    });
 
-    // Check if already in classroom
-    const existing = await getStudentClassroom();
-    if (existing) showClassroom(existing);
-
-    document.getElementById('join-btn').addEventListener('click', async () => {
-      const code = document.getElementById('class-code-input').value.trim().toUpperCase();
+    document.getElementById('join-btn').addEventListener('click', function() {
+      var code = document.getElementById('class-code-input').value.trim().toUpperCase();
       if (code.length < 4) return showToast('Enter a valid code', 'error');
-      try {
-        const classroom = await joinClassroom(code);
-        showClassroom(classroom);
-        showToast('Joined!', 'success');
-      } catch(e) {
-        showToast(e.message, 'error');
-      }
+      var user = firebase.auth().currentUser;
+      firebase.firestore().collection('classrooms').doc(code).get().then(function(snap) {
+        if (!snap.exists) return showToast('Classroom not found', 'error');
+        var data = snap.data();
+        return firebase.firestore().collection('classrooms').doc(code)
+          .collection('students').doc(user.uid).set({
+            uid: user.uid,
+            name: user.displayName,
+            photoURL: user.photoURL,
+            online: true,
+            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true }).then(function() {
+            return firebase.firestore().collection('users').doc(user.uid)
+              .set({ classroomCode: code }, { merge: true });
+          }).then(function() {
+            showClassroom(data);
+            showToast('Joined ' + data.name + '!', 'success');
+          });
+      }).catch(function(e) { showToast(e.message, 'error'); });
     });
 
-    document.getElementById('leave-btn')?.addEventListener('click', () => {
-      document.getElementById('classroom-section').classList.add('hidden');
-      document.getElementById('join-section').classList.remove('hidden');
+    function showClassroom(data) {
+      document.getElementById('join-card').classList.add('hidden');
+      document.getElementById('classroom-card').classList.remove('hidden');
+      document.getElementById('cc-name').textContent = data.name || 'Classroom';
+      document.getElementById('cc-teacher').textContent = data.teacherName || 'Teacher';
+      document.getElementById('cc-code').textContent = data.code || '';
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      firebase.auth().signOut().then(function() { window.location.href = 'main.html'; });
     });
-
-    function showClassroom(c) {
-      document.getElementById('join-section').classList.add('hidden');
-      document.getElementById('classroom-section').classList.remove('hidden');
-      document.getElementById('classroom-name').textContent = `Class: ${c.code}`;
-      document.getElementById('classroom-teacher').textContent = `Teacher: ${c.teacherName}`;
-    }
-
-    function showToast(msg, type='') {
-      const c = document.getElementById('toast-container');
-      const t = document.createElement('div');
-      t.className = `toast ${type}`;
-      t.textContent = msg;
-      c.appendChild(t);
-      setTimeout(() => t.remove(), 3200);
-    }
   </script>
 </body>
 </html>
