@@ -1,12 +1,4 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyB4teFWq4ZC53Bu2vF7ZFI-xTf1kCweXc0",
   authDomain: "visual-learning-8850d.firebaseapp.com",
   projectId: "visual-learning-8850d",
@@ -16,6 +8,4 @@ const firebaseConfig = {
   measurementId: "G-ZZMYPF7WQ7"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
