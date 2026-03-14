@@ -1,14 +1,12 @@
 function bindMenu() {
-  const toggle = document.getElementById('menu-toggle');
-  const menu = document.getElementById('side-menu');
+  var toggle = document.getElementById('menu-toggle');
+  var menu = document.getElementById('side-menu');
   if (!toggle || !menu) return;
-
   toggle.addEventListener('click', function(e) {
     e.stopPropagation();
     toggle.classList.toggle('open');
     menu.classList.toggle('open');
   });
-
   document.addEventListener('click', function(e) {
     if (!menu.contains(e.target) && e.target !== toggle) {
       toggle.classList.remove('open');
@@ -34,9 +32,6 @@ function populateUserUI(user) {
   });
   document.querySelectorAll('[data-user-photo]').forEach(function(el) {
     el.src = user.photoURL || 'assets/default-avatar.png';
-  });
-  document.querySelectorAll('[data-user-email]').forEach(function(el) {
-    el.textContent = user.email || '';
   });
 }
 
