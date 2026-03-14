@@ -5,55 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login — V:L</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
   <div id="login-screen">
     <div class="login-card">
 
-      <!-- Header -->
       <div class="login-header">
-        <img
-          class="login-logo"
-          src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74"
-          alt="V:L Logo"
-        />
-        <div class="login-title">Vision: Learning</div>
+        <img class="login-logo" src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="V:L" />
+        <div class="login-title" id="login-title">Vision: Learning</div>
       </div>
 
-      <!-- Body -->
       <div class="login-body">
 
-        <!-- OAuth -->
+        <!-- Google -->
         <button class="login-oauth-btn" id="google-btn">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
           Sign in with Google
         </button>
-        <button class="login-oauth-btn" id="office-btn">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Microsoft_Office_2013-2019_logo.png" alt="Office 365" />
-          Sign in with Office 365
-        </button>
+
+        <!-- Clever -->
         <button class="login-oauth-btn" id="clever-btn">
-          <img src="https://assets.clever.com/clever-badges/clever-badge-blue.png" alt="Clever" />
+          <img src="https://support.highlandschools.org/wp-content/uploads/2020/11/clever1.png" alt="Clever" />
           Sign in with Clever
         </button>
 
         <div class="login-divider"><span>or</span></div>
 
-        <!-- Email/pass -->
         <div class="login-field">
           <label>Username / Email</label>
-          <input type="email" id="login-email" placeholder="you@school.edu" autocomplete="email" />
+          <input type="email" id="login-email" placeholder="you@school.edu" />
         </div>
         <div class="login-field">
           <label>Password</label>
-          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+          <input type="password" id="login-password" placeholder="••••••••" />
         </div>
 
         <button class="login-submit" id="login-btn">Sign In</button>
 
         <div class="login-rep-link">
-          A Representative (Teacher)?
-          <a href="login.html?role=teacher">Sign in here</a>
+          A Representative (Teacher)? <a href="login.html?role=teacher">Sign in here</a>
         </div>
 
       </div>
@@ -61,50 +54,51 @@
   </div>
 
   <div id="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    // YOUR FIREBASE CONFIG HERE
+    var firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-  <script type="module">
-    import { loginWithGoogle, auth } from './firebase.js';
-    import { redirectIfAuth } from './app.js';
-    import { signInWithEmailAndPassword } from 'firebase/auth';
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-    redirectIfAuth();
-
-    const params = new URLSearchParams(location.search);
-    const isTeacher = params.get('role') === 'teacher';
+    var params = new URLSearchParams(location.search);
+    var isTeacher = params.get('role') === 'teacher';
     if (isTeacher) {
-      document.querySelector('.login-title').textContent = 'Representative Login';
-      document.querySelector('.login-submit').textContent = 'Sign In as Representative';
+      document.getElementById('login-title').textContent = 'Representative Login';
+      document.getElementById('login-btn').textContent = 'Sign In as Representative';
     }
 
-    document.getElementById('google-btn').addEventListener('click', async () => {
-      try {
-        await loginWithGoogle();
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    document.getElementById('google-btn').addEventListener('click', function() {
+      firebase.auth().signInWithPopup(provider).then(function(result) {
         window.location.href = isTeacher ? 'teacher-home.html' : 'student-home.html';
-      } catch(e) {
+      }).catch(function(e) {
         showToast(e.message, 'error');
-      }
+      });
     });
 
-    document.getElementById('login-btn').addEventListener('click', async () => {
-      const email = document.getElementById('login-email').value.trim();
-      const pass  = document.getElementById('login-password').value;
+    document.getElementById('clever-btn').addEventListener('click', function() {
+      showToast('Clever SSO coming soon', 'error');
+    });
+
+    document.getElementById('login-btn').addEventListener('click', function() {
+      var email = document.getElementById('login-email').value.trim();
+      var pass  = document.getElementById('login-password').value;
       if (!email || !pass) return showToast('Fill in all fields', 'error');
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
+      firebase.auth().signInWithEmailAndPassword(email, pass).then(function() {
         window.location.href = isTeacher ? 'teacher-home.html' : 'student-home.html';
-      } catch(e) {
+      }).catch(function() {
         showToast('Invalid credentials', 'error');
-      }
+      });
     });
-
-    function showToast(msg, type = '') {
-      const c = document.getElementById('toast-container');
-      const t = document.createElement('div');
-      t.className = `toast ${type}`;
-      t.textContent = msg;
-      c.appendChild(t);
-      setTimeout(() => t.remove(), 3200);
-    }
   </script>
 </body>
 </html>
