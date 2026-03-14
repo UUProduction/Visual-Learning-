@@ -11,292 +11,453 @@
   <script src="firebase.js"></script>
 </head>
 <body class="dashboard-body">
+<div class="dash-layout">
 
-  <div class="dash-layout">
-
-    <!-- SIDEBAR -->
-    <aside class="dash-sidebar">
-      <div class="dash-sidebar-top">
-        <div class="dash-brand">
-          <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
-          <span>V<span class="c">:</span>L</span>
-        </div>
-        <span class="rep-badge">REP</span>
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-top">
+      <div class="dash-brand">
+        <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
+        <span>V<span class="c">:</span>L</span>
       </div>
-      <nav class="dash-nav">
-        <div class="dash-nav-item active">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          Dashboard
+      <span class="rep-badge">REP</span>
+    </div>
+    <nav class="dash-nav">
+      <div class="dash-nav-item active" id="nav-home" onclick="showDashboard()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Dashboard
+      </div>
+    </nav>
+    <div style="padding:8px;flex:1;overflow-y:auto;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.2em;color:var(--vl-gray);padding:4px 6px;text-transform:uppercase;">My Classrooms</div>
+      <div id="sidebar-classrooms"></div>
+    </div>
+    <div class="dash-sidebar-bottom">
+      <div class="dash-user">
+        <img id="t-avatar" src="assets/default-avatar.png" alt="avatar"/>
+        <div class="dash-user-info">
+          <span id="t-name">Loading...</span>
+          <span id="t-email"></span>
         </div>
-        <div class="dash-nav-item" id="nav-viewer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          V:Viewer
+      </div>
+      <button class="dash-logout" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+
+    <!-- DASHBOARD -->
+    <div id="view-dashboard">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Your Classrooms</h1>
+          <p class="dash-subtitle">Create and manage your classes</p>
         </div>
-      </nav>
-      <div class="dash-sidebar-bottom">
-        <div class="dash-user">
-          <img id="t-avatar" src="assets/default-avatar.png" alt="avatar"/>
-          <div class="dash-user-info">
-            <span id="t-name">Loading...</span>
-            <span id="t-email"></span>
-          </div>
-        </div>
-        <button class="dash-logout" id="logout-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sign Out
+        <button class="dash-btn-primary" id="create-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Classroom
         </button>
       </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="dash-main" id="dash-main">
-
-      <!-- DASHBOARD VIEW -->
-      <div id="view-dashboard">
-        <div class="dash-header">
-          <div>
-            <h1 class="dash-title">Your Classrooms</h1>
-            <p class="dash-subtitle">Manage and monitor your classes</p>
-          </div>
-          <button class="dash-btn-primary" id="create-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New Classroom
-          </button>
+      <div class="dash-grid" id="classrooms-grid">
+        <div class="dash-empty" id="no-classrooms">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <p>No classrooms yet. Create one!</p>
         </div>
+      </div>
+    </div>
 
-        <!-- Classrooms grid -->
-        <div class="dash-grid" id="classrooms-grid">
-          <div class="dash-empty" id="no-classrooms">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            <p>No classrooms yet. Create one to get started!</p>
+    <!-- CLASSROOM VIEW -->
+    <div id="view-classroom" class="hidden">
+
+      <div class="classroom-banner" id="classroom-banner">
+        <div class="classroom-banner-info">
+          <div class="classroom-banner-name" id="banner-name">Classroom</div>
+          <div class="classroom-banner-teacher" id="banner-teacher">You</div>
+        </div>
+        <div class="classroom-banner-code">
+          <span style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.1em;">CLASS CODE</span>
+          <span id="banner-code" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.2em;color:#fff;"></span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="classroom-tabs">
+        <button class="cls-tab active" data-tab="stream">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Stream
+        </button>
+        <button class="cls-tab" data-tab="games">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          Games
+        </button>
+        <button class="cls-tab" data-tab="people">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          People
+        </button>
+        <button class="cls-tab" data-tab="viewer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          V:Viewer
+        </button>
+      </div>
+
+      <!-- STREAM -->
+      <div class="cls-tab-content" id="tab-stream">
+        <div class="stream-wrap">
+          <div class="stream-messages" id="stream-messages"></div>
+          <div class="stream-input-row">
+            <img id="chat-avatar" src="assets/default-avatar.png" alt="me"/>
+            <input type="text" id="chat-input" placeholder="Chat with your class..." maxlength="300"/>
+            <button id="chat-send-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- VIEWER VIEW (hidden by default) -->
-      <div id="view-viewer" class="hidden">
-        <div class="dash-header">
+      <!-- GAMES (teacher) -->
+      <div class="cls-tab-content hidden" id="tab-games">
+        <div class="games-grid">
+
+          <!-- Game Hosting — UNLOCKED for teacher -->
+          <div class="game-mode-card">
+            <div class="game-mode-icon" style="background:rgba(191,90,242,0.1);border-color:rgba(191,90,242,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-purple)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="game-mode-info">
+              <h3>Game Hosting</h3>
+              <p>Host a live game session for your entire class — coming soon</p>
+            </div>
+            <div class="locked-badge" style="background:rgba(191,90,242,0.1);border-color:rgba(191,90,242,0.3);color:var(--vl-purple);">
+              Coming Soon
+            </div>
+          </div>
+
+          <!-- Solo game -->
+          <div class="game-mode-card">
+            <div class="game-mode-icon" style="background:rgba(10,132,255,0.12);border-color:rgba(10,132,255,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            </div>
+            <div class="game-mode-info">
+              <h3>Visual: Learning</h3>
+              <p>Play the solo vocabulary game yourself</p>
+            </div>
+            <button class="dash-btn-primary" onclick="window.location.href='game-vl.html'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Play Solo
+            </button>
+          </div>
+
+          <!-- Tournament host -->
+          <div class="game-mode-card">
+            <div class="game-mode-icon" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-gold)" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+            </div>
+            <div class="game-mode-info">
+              <h3>Tournament</h3>
+              <p>Start a tournament for your class. Needs 2+ students, 10 minute race.</p>
+            </div>
+            <div id="tournament-status">
+              <button class="dash-btn-primary" id="start-tournament-btn" style="background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:var(--vl-gold);box-shadow:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+                Start Tournament
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PEOPLE -->
+      <div class="cls-tab-content hidden" id="tab-people">
+        <div class="people-section">
+          <div class="people-section-title">Teacher</div>
+          <div id="people-teachers" class="people-grid"></div>
+        </div>
+        <div class="people-section" style="margin-top:20px;">
+          <div class="people-section-title">Students</div>
+          <div id="people-students" class="people-grid"></div>
+        </div>
+      </div>
+
+      <!-- V:VIEWER -->
+      <div class="cls-tab-content hidden" id="tab-viewer">
+        <div class="dash-header" style="margin-bottom:14px;">
           <div>
-            <h1 class="dash-title">V<span style="color:var(--vl-cyan)">:</span>Viewer</h1>
-            <p class="dash-subtitle" id="viewer-class-name">Select a classroom</p>
+            <h2 class="dash-title" style="font-size:22px;">V<span style="color:var(--vl-cyan)">:</span>Viewer</h2>
+            <p class="dash-subtitle">Live student monitor</p>
           </div>
           <div class="online-pill">
             <div class="online-dot"></div>
             <span id="viewer-online">0 online</span>
           </div>
         </div>
-
-        <div class="viewer-class-select" id="viewer-class-select"></div>
         <div class="viewer-grid" id="viewer-grid">
-          <div class="dash-empty">
-            <p>Select a classroom above to monitor students</p>
-          </div>
+          <div class="dash-empty"><p>Students will appear here when online</p></div>
         </div>
       </div>
 
-    </main>
-  </div>
+    </div>
+  </main>
+</div>
 
-  <!-- CREATE CLASSROOM MODAL -->
-  <div class="modal-overlay hidden" id="modal">
-    <div class="modal-card">
-      <h2 class="modal-title">New Classroom</h2>
-      <div class="login-field">
-        <label>Classroom Name</label>
-        <input type="text" id="class-name-input" placeholder="e.g. Period 3 English"/>
-      </div>
-      <div class="modal-actions">
-        <button class="dash-btn-primary" id="confirm-create">Create</button>
-        <button class="dash-btn-ghost" id="cancel-modal">Cancel</button>
-      </div>
+<!-- CREATE MODAL -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal-card">
+    <h2 class="modal-title">New Classroom</h2>
+    <div class="login-field">
+      <label>Classroom Name</label>
+      <input type="text" id="class-name-input" placeholder="e.g. Period 3 English"/>
+    </div>
+    <div class="modal-actions">
+      <button class="dash-btn-primary" id="confirm-create">Create</button>
+      <button class="dash-btn-ghost" id="cancel-modal">Cancel</button>
     </div>
   </div>
+</div>
 
-  <div id="toast-container"></div>
-  <script src="app.js"></script>
-  <script>
-    var currentUser = null;
-    var unsubViewer = null;
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+var currentUser = null;
+var currentClassroom = null;
+var unsubChat = null;
+var unsubPeople = null;
+var unsubViewer = null;
+var BAD_WORDS = ['fuck','shit','bitch','ass','damn','hell','crap','piss','dick','cock','pussy','bastard','asshole'];
 
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (!user) return window.location.href = 'login.html?role=teacher';
-      currentUser = user;
-      document.getElementById('t-name').textContent = user.displayName || 'Representative';
-      document.getElementById('t-email').textContent = user.email || '';
-      if (user.photoURL) document.getElementById('t-avatar').src = user.photoURL;
-      loadClassrooms();
-      loadViewerClassrooms();
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) return window.location.href = 'login.html?role=teacher';
+  currentUser = user;
+  document.getElementById('t-name').textContent = user.displayName||'Representative';
+  document.getElementById('t-email').textContent = user.email||'';
+  if (user.photoURL) {
+    document.getElementById('t-avatar').src = user.photoURL;
+    document.getElementById('chat-avatar').src = user.photoURL;
+  }
+  loadClassrooms();
+});
+
+function showDashboard() {
+  document.getElementById('view-dashboard').classList.remove('hidden');
+  document.getElementById('view-classroom').classList.add('hidden');
+  setActiveNav('nav-home');
+  loadClassrooms();
+}
+
+function setActiveNav(id) {
+  document.querySelectorAll('.dash-nav-item').forEach(function(i){ i.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function loadClassrooms() {
+  firebase.firestore().collection('classrooms')
+    .where('teacherId','==',currentUser.uid).get().then(function(snap) {
+      var grid = document.getElementById('classrooms-grid');
+      var noMsg = document.getElementById('no-classrooms');
+      grid.querySelectorAll('.dash-card').forEach(function(c){ c.remove(); });
+      var sidebar = document.getElementById('sidebar-classrooms');
+      sidebar.innerHTML = '';
+
+      if (snap.empty) { noMsg.classList.remove('hidden'); return; }
+      noMsg.classList.add('hidden');
+
+      snap.forEach(function(doc) {
+        var d = doc.data();
+
+        // Sidebar btn
+        var sbtn = document.createElement('div');
+        sbtn.className = 'sidebar-classroom-btn';
+        sbtn.innerHTML = '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:16px;color:var(--vl-cyan);">'+d.code+'</span><span style="font-size:11px;color:var(--vl-gray);">'+d.name+'</span>';
+        sbtn.addEventListener('click', function(){ openClassroom(d); });
+        sidebar.appendChild(sbtn);
+
+        // Grid card
+        var card = document.createElement('div');
+        card.className = 'dash-card';
+        card.innerHTML = `
+          <div class="classroom-card-header">
+            <div class="classroom-color-bar"></div>
+            <div class="classroom-card-info">
+              <h3>${d.name}</h3>
+              <p>${d.teacherName}</p>
+            </div>
+          </div>
+          <div class="classroom-card-footer">
+            <div>
+              <span class="cc-code-badge">${d.code}</span>
+              <span class="cc-share-hint">Share with students</span>
+            </div>
+            <button class="dash-btn-primary enter-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Enter Classroom
+            </button>
+          </div>
+        `;
+        card.querySelector('.enter-btn').addEventListener('click', function(){ openClassroom(d); });
+        grid.appendChild(card);
+      });
     });
+}
 
-    // NAV
-    document.getElementById('nav-viewer').addEventListener('click', function() {
-      document.getElementById('view-dashboard').classList.add('hidden');
-      document.getElementById('view-viewer').classList.remove('hidden');
-      document.querySelectorAll('.dash-nav-item').forEach(function(i){i.classList.remove('active');});
-      this.classList.add('active');
+function openClassroom(data) {
+  currentClassroom = data;
+  document.getElementById('view-dashboard').classList.add('hidden');
+  document.getElementById('view-classroom').classList.remove('hidden');
+  document.getElementById('banner-name').textContent = data.name;
+  document.getElementById('banner-teacher').textContent = data.teacherName;
+  document.getElementById('banner-code').textContent = data.code;
+  switchTab('stream');
+  listenToChat();
+  listenToPeople();
+  listenToViewer();
+}
+
+// TABS
+document.querySelectorAll('.cls-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() { switchTab(tab.getAttribute('data-tab')); });
+});
+
+function switchTab(name) {
+  document.querySelectorAll('.cls-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.cls-tab-content').forEach(function(c){ c.classList.add('hidden'); });
+  document.querySelector('.cls-tab[data-tab="'+name+'"]').classList.add('active');
+  document.getElementById('tab-'+name).classList.remove('hidden');
+}
+
+// CHAT
+function listenToChat() {
+  if (unsubChat) unsubChat();
+  var messagesEl = document.getElementById('stream-messages');
+  unsubChat = firebase.firestore()
+    .collection('classrooms').doc(currentClassroom.code)
+    .collection('chat').orderBy('createdAt','asc').limit(100)
+    .onSnapshot(function(snap) {
+      messagesEl.innerHTML = '';
+      if (snap.empty) {
+        messagesEl.innerHTML = '<div class="stream-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>No messages yet</p></div>';
+        return;
+      }
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        var isMe = d.uid === currentUser.uid;
+        var div = document.createElement('div');
+        div.className = 'stream-message'+(isMe?' mine':'');
+        div.innerHTML = '<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/><div class="msg-bubble"><div class="msg-name">'+(isMe?'You':d.name)+'</div><div class="msg-text">'+filterBadWords(d.text)+'</div></div>';
+        messagesEl.appendChild(div);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
     });
+}
 
-    document.querySelector('.dash-nav-item').addEventListener('click', function() {
-      document.getElementById('view-viewer').classList.add('hidden');
-      document.getElementById('view-dashboard').classList.remove('hidden');
-      document.querySelectorAll('.dash-nav-item').forEach(function(i){i.classList.remove('active');});
-      this.classList.add('active');
+function filterBadWords(text) {
+  var out = text;
+  BAD_WORDS.forEach(function(w) {
+    var re = new RegExp('\\b'+w+'\\b','gi');
+    out = out.replace(re, function(m){ return '*'.repeat(m.length); });
+  });
+  return out;
+}
+
+document.getElementById('chat-send-btn').addEventListener('click', sendChat);
+document.getElementById('chat-input').addEventListener('keydown', function(e){ if(e.key==='Enter') sendChat(); });
+
+function sendChat() {
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if (!text||!currentClassroom) return;
+  input.value = '';
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .collection('chat').add({
+      uid: currentUser.uid,
+      name: currentUser.displayName||'Teacher',
+      photoURL: currentUser.photoURL||null,
+      text: text,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+}
 
-    // LOAD CLASSROOMS
-    function loadClassrooms() {
-      firebase.firestore().collection('classrooms')
-        .where('teacherId', '==', currentUser.uid)
-        .get().then(function(snap) {
-          var grid = document.getElementById('classrooms-grid');
-          var noMsg = document.getElementById('no-classrooms');
-          // Remove old cards but keep the empty msg
-          grid.querySelectorAll('.dash-classroom-card-teacher').forEach(function(el){ el.remove(); });
-          if (snap.empty) {
-            noMsg.classList.remove('hidden');
-            return;
-          }
-          noMsg.classList.add('hidden');
-          snap.forEach(function(doc) {
-            var d = doc.data();
-            var card = document.createElement('div');
-            card.className = 'dash-card dash-classroom-card-teacher';
-            card.innerHTML = `
-              <div class="classroom-card-header">
-                <div class="classroom-color-bar"></div>
-                <div class="classroom-card-info">
-                  <h3>${d.name}</h3>
-                  <p>${d.teacherName}</p>
-                </div>
-              </div>
-              <div class="classroom-students-count" id="count-${d.code}">Loading students...</div>
-              <div class="classroom-card-footer">
-                <div>
-                  <span class="cc-code-badge">${d.code}</span>
-                  <span class="cc-share-hint">Share this code with students</span>
-                </div>
-                <button class="dash-btn-ghost view-class-btn" data-code="${d.code}" data-name="${d.name}">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  Monitor
-                </button>
-              </div>
-            `;
-            grid.appendChild(card);
-
-            // Get student count
-            firebase.firestore().collection('classrooms').doc(d.code)
-              .collection('students').get().then(function(s) {
-                var el = document.getElementById('count-' + d.code);
-                if (el) el.textContent = s.size + ' student' + (s.size !== 1 ? 's' : '') + ' enrolled';
-              });
-          });
-
-          // Monitor buttons
-          document.querySelectorAll('.view-class-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-              openViewer(btn.getAttribute('data-code'), btn.getAttribute('data-name'));
-            });
-          });
-        });
-    }
-
-    // CREATE CLASSROOM
-    document.getElementById('create-btn').addEventListener('click', function() {
-      document.getElementById('modal').classList.remove('hidden');
+// PEOPLE
+function listenToPeople() {
+  if (unsubPeople) unsubPeople();
+  unsubPeople = firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .onSnapshot(function(snap) {
+      if (!snap.exists) return;
+      var d = snap.data();
+      var students = d.students||{};
+      var tEl = document.getElementById('people-teachers');
+      var sEl = document.getElementById('people-students');
+      tEl.innerHTML = '';
+      sEl.innerHTML = '';
+      var tCard = document.createElement('div');
+      tCard.className = 'people-card';
+      tCard.innerHTML = '<div class="people-avatar-wrap"><img src="'+(currentUser.photoURL||'assets/default-avatar.png')+'" alt=""/></div><span>'+(currentUser.displayName||'Teacher')+'</span>';
+      tEl.appendChild(tCard);
+      Object.values(students).forEach(function(s) {
+        var c = document.createElement('div');
+        c.className = 'people-card';
+        c.innerHTML = '<div class="people-avatar-wrap"><img src="'+(s.photoURL||'assets/default-avatar.png')+'" alt=""/>'+(s.online?'<div class="people-online-dot"></div>':'')+'</div><span>'+(s.name||'Student')+'</span>';
+        sEl.appendChild(c);
+      });
     });
+}
 
-    document.getElementById('cancel-modal').addEventListener('click', function() {
-      document.getElementById('modal').classList.add('hidden');
-    });
-
-    document.getElementById('confirm-create').addEventListener('click', function() {
-      var name = document.getElementById('class-name-input').value.trim();
-      if (!name) return showToast('Enter a classroom name', 'error');
-
-      var code = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-      firebase.firestore().collection('classrooms').doc(code).set({
-        code: code,
-        name: name,
-        teacherId: currentUser.uid,
-        teacherName: currentUser.displayName || 'Teacher',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function() {
-        document.getElementById('modal').classList.add('hidden');
-        document.getElementById('class-name-input').value = '';
-        showToast('Classroom "' + name + '" created! Code: ' + code, 'success');
-        loadClassrooms();
-        loadViewerClassrooms();
-      }).catch(function(e) { showToast(e.message, 'error'); });
-    });
-
-    // VIEWER
-    function loadViewerClassrooms() {
-      if (!currentUser) return;
-      firebase.firestore().collection('classrooms')
-        .where('teacherId', '==', currentUser.uid)
-        .get().then(function(snap) {
-          var sel = document.getElementById('viewer-class-select');
-          sel.innerHTML = '';
-          snap.forEach(function(doc) {
-            var d = doc.data();
-            var btn = document.createElement('button');
-            btn.className = 'viewer-class-btn';
-            btn.textContent = d.name + ' (' + d.code + ')';
-            btn.addEventListener('click', function() {
-              document.querySelectorAll('.viewer-class-btn').forEach(function(b){ b.classList.remove('active'); });
-              btn.classList.add('active');
-              openViewer(d.code, d.name);
-            });
-            sel.appendChild(btn);
-          });
-        });
-    }
-
-    function openViewer(code, name) {
-      document.getElementById('view-dashboard').classList.add('hidden');
-      document.getElementById('view-viewer').classList.remove('hidden');
-      document.querySelectorAll('.dash-nav-item').forEach(function(i){i.classList.remove('active');});
-      document.getElementById('nav-viewer').classList.add('active');
-      document.getElementById('viewer-class-name').textContent = name;
-
-      if (unsubViewer) unsubViewer();
-
-      unsubViewer = firebase.firestore()
-        .collection('classrooms').doc(code)
-        .collection('students')
-        .onSnapshot(function(snap) {
-          var students = [];
-          snap.forEach(function(d) { students.push(d.data()); });
-          var online = students.filter(function(s){ return s.online; }).length;
-          document.getElementById('viewer-online').textContent = online + ' online';
-          renderViewer(students);
-        });
-    }
-
-    function renderViewer(students) {
+// V:VIEWER
+function listenToViewer() {
+  if (unsubViewer) unsubViewer();
+  unsubViewer = firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .onSnapshot(function(snap) {
+      if (!snap.exists) return;
+      var students = Object.values(snap.data().students||{});
+      var online = students.filter(function(s){ return s.online; }).length;
+      document.getElementById('viewer-online').textContent = online+' online';
       var grid = document.getElementById('viewer-grid');
       grid.innerHTML = '';
       if (!students.length) {
-        grid.innerHTML = '<div class="dash-empty"><p>No students in this classroom yet</p></div>';
+        grid.innerHTML = '<div class="dash-empty"><p>No students yet</p></div>';
         return;
       }
       students.forEach(function(s) {
-        var card = document.createElement('div');
-        card.className = 'viewer-card ' + (s.online ? 'online' : 'offline');
-        card.innerHTML = `
-          <div class="viewer-dot ${s.online ? 'dot-green' : 'dot-red'}"></div>
-          <img src="${s.photoURL || 'assets/default-avatar.png'}" alt="${s.name}"/>
-          <div class="viewer-name">${s.name || 'Student'}</div>
-          <div class="viewer-status">${s.online ? (s.currentActivity || 'Active') : 'Offline'}</div>
-        `;
-        grid.appendChild(card);
+        var c = document.createElement('div');
+        c.className = 'viewer-card '+(s.online?'online':'offline');
+        c.innerHTML = '<div class="viewer-dot '+(s.online?'dot-green':'dot-red')+'"></div><img src="'+(s.photoURL||'assets/default-avatar.png')+'" alt=""/><div class="viewer-name">'+(s.name||'Student')+'</div><div class="viewer-status">'+(s.online?(s.currentActivity||'Active'):'Offline')+'</div>';
+        grid.appendChild(c);
       });
-    }
-
-    document.getElementById('logout-btn').addEventListener('click', function() {
-      firebase.auth().signOut().then(function() { window.location.href = 'main.html'; });
     });
-  </script>
+}
+
+// CREATE CLASSROOM
+document.getElementById('create-btn').addEventListener('click', function(){
+  document.getElementById('modal').classList.remove('hidden');
+});
+document.getElementById('cancel-modal').addEventListener('click', function(){
+  document.getElementById('modal').classList.add('hidden');
+});
+document.getElementById('confirm-create').addEventListener('click', function(){
+  var name = document.getElementById('class-name-input').value.trim();
+  if (!name) return showToast('Enter a classroom name','error');
+  var code = Math.random().toString(36).substring(2,8).toUpperCase();
+  firebase.firestore().collection('classrooms').doc(code).set({
+    code: code, name: name,
+    teacherId: currentUser.uid,
+    teacherName: currentUser.displayName||'Teacher',
+    students: {},
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    document.getElementById('modal').classList.add('hidden');
+    document.getElementById('class-name-input').value = '';
+    showToast('Classroom "'+name+'" created! Code: '+code,'success');
+    loadClassrooms();
+  }).catch(function(e){ showToast(e.message,'error'); });
+});
+
+document.getElementById('logout-btn').addEventListener('click', function(){
+  firebase.auth().signOut().then(function(){ window.location.href = 'main.html'; });
+});
+</script>
 </body>
 </html>
