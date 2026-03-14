@@ -1,58 +1,65 @@
-import { auth, onAuth, logout } from './firebase.js';
+function bindMenu() {
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('side-menu');
+  if (!toggle || !menu) return;
 
-// Auth state guard — call on protected pages
-export function requireAuth(redirectTo = 'login.html') {
-  return new Promise((resolve) => {
-    onAuth(user => {
-      if (!user) {
-        window.location.href = redirectTo;
-      } else {
-        resolve(user);
-      }
-    });
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+    menu.classList.toggle('open');
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!menu.contains(e.target) && e.target !== toggle) {
+      toggle.classList.remove('open');
+      menu.classList.remove('open');
+    }
   });
 }
 
-// Redirect if already logged in
-export function redirectIfAuth(to = 'student-home.html') {
-  onAuth(user => {
-    if (user) window.location.href = to;
-  });
+function showToast(msg, type) {
+  type = type || '';
+  var c = document.getElementById('toast-container');
+  if (!c) return;
+  var t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function() { t.remove(); }, 3200);
 }
 
-// Populate user info into elements with data-user-* attrs
-export function populateUserUI(user) {
-  document.querySelectorAll('[data-user-name]').forEach(el => {
+function populateUserUI(user) {
+  document.querySelectorAll('[data-user-name]').forEach(function(el) {
     el.textContent = user.displayName || 'Student';
   });
-  document.querySelectorAll('[data-user-photo]').forEach(el => {
+  document.querySelectorAll('[data-user-photo]').forEach(function(el) {
     el.src = user.photoURL || 'assets/default-avatar.png';
   });
-  document.querySelectorAll('[data-user-email]').forEach(el => {
+  document.querySelectorAll('[data-user-email]').forEach(function(el) {
     el.textContent = user.email || '';
   });
 }
 
-// Logout button handler
-export function bindLogout(selector = '#logout-btn') {
-  const btn = document.querySelector(selector);
-  if (btn) btn.addEventListener('click', async () => {
-    await logout();
-    window.location.href = 'main.html';
+function bindLogout() {
+  var btn = document.getElementById('logout-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    firebase.auth().signOut().then(function() {
+      window.location.href = 'main.html';
+    });
   });
 }
 
-// Menu toggle (hamburger)
-export function bindMenu(toggleSel = '#menu-toggle', menuSel = '#side-menu') {
-  const toggle = document.querySelector(toggleSel);
-  const menu = document.querySelector(menuSel);
-  if (!toggle || !menu) return;
-  toggle.addEventListener('click', () => {
-    menu.classList.toggle('open');
+function requireAuth(redirect) {
+  redirect = redirect || 'login.html';
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) window.location.href = redirect;
   });
-  document.addEventListener('click', e => {
-    if (!menu.contains(e.target) && e.target !== toggle) {
-      menu.classList.remove('open');
-    }
+}
+
+function redirectIfAuth(to) {
+  to = to || 'student-home.html';
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) window.location.href = to;
   });
 }
