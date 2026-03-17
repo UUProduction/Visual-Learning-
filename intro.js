@@ -1,73 +1,95 @@
-const LETTERS = ['V','I','S','I','O','N'];
+var LETTERS = ['V','I','S','I','O','N',':'];
 
-function shake() {
-  document.body.style.transform = `translate(${(Math.random()-0.5)*18}px, ${(Math.random()-0.5)*18}px)`;
-  setTimeout(() => document.body.style.transform = '', 120);
+function wait(ms) {
+  return new Promise(function(r) { setTimeout(r, ms); });
 }
 
-async function wait(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-async function fadeIn(el, ms = 600) {
-  el.style.opacity = 0;
-  el.style.transition = `opacity ${ms}ms ease`;
-  el.style.display = '';
+async function fadeIn(el, ms) {
+  ms = ms || 600;
+  el.style.opacity = '0';
+  el.style.display = 'flex';
+  el.style.transition = 'opacity ' + ms + 'ms ease';
   await wait(30);
-  el.style.opacity = 1;
+  el.style.opacity = '1';
   await wait(ms);
 }
 
-async function fadeOut(el, ms = 500) {
-  el.style.transition = `opacity ${ms}ms ease`;
-  el.style.opacity = 0;
+async function fadeOut(el, ms) {
+  ms = ms || 500;
+  el.style.transition = 'opacity ' + ms + 'ms ease';
+  el.style.opacity = '0';
   await wait(ms);
   el.style.display = 'none';
 }
 
-export async function runIntro() {
-  const screen = document.getElementById('intro-screen');
-  const uup = document.getElementById('intro-uup');
-  const presents = document.getElementById('intro-presents');
-  const visionWrap = document.getElementById('intro-vision');
-  const learningEl = document.getElementById('intro-learning');
+function shake() {
+  var x = (Math.random() - 0.5) * 20;
+  var y = (Math.random() - 0.5) * 20;
+  document.body.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  setTimeout(function() { document.body.style.transform = ''; }, 100);
+}
 
-  // Step 1: UUP
-  await fadeIn(uup);
+async function runIntro() {
+  var uup        = document.getElementById('intro-uup');
+  var presents   = document.getElementById('intro-presents');
+  var visionWrap = document.getElementById('intro-vision-wrap');
+  var visionEl   = document.getElementById('intro-vision');
+  var learningEl = document.getElementById('intro-learning');
+  var creditsEl  = document.getElementById('intro-credits');
+
+  // UUP
+  await fadeIn(uup, 700);
   await wait(1400);
-  await fadeOut(uup);
+  await fadeOut(uup, 500);
 
-  // Step 2: presents
-  await fadeIn(presents);
-  await wait(1600);
-  await fadeOut(presents);
+  // Presents
+  presents.style.display = 'block';
+  presents.style.opacity = '0';
+  presents.style.transition = 'opacity 600ms ease';
+  await wait(30);
+  presents.style.opacity = '1';
+  await wait(1500);
+  await fadeOut(presents, 500);
 
-  // Step 3: VISION letter by letter
+  // VISION:
   visionWrap.style.display = 'flex';
-  visionWrap.style.opacity = 1;
 
-  for (let i = 0; i < LETTERS.length; i++) {
-    const span = document.createElement('span');
-    span.className = 'vision-letter';
+  for (var i = 0; i < LETTERS.length; i++) {
+    var span = document.createElement('span');
+    span.className = 'vision-letter' + (LETTERS[i] === ':' ? ' vision-colon' : '');
     span.textContent = LETTERS[i];
-    span.style.opacity = 0;
-    span.style.transform = 'scale(2.5) translateY(-30px)';
-    span.style.transition = 'opacity 0.15s, transform 0.2s cubic-bezier(.17,.67,.3,1.5)';
-    visionWrap.appendChild(span);
-
+    span.style.cssText = 'opacity:0;transform:scale(2.5) translateY(-30px);transition:opacity 0.15s ease,transform 0.22s cubic-bezier(.17,.67,.3,1.5);';
+    visionEl.appendChild(span);
     await wait(30);
-    span.style.opacity = 1;
+    span.style.opacity = '1';
     span.style.transform = 'scale(1) translateY(0)';
     shake();
-    await wait(180);
+    await wait(200);
   }
 
-  // Step 4: Learning
-  await wait(300);
-  await fadeIn(learningEl, 400);
-  await wait(1200);
+  // Learning
+  await wait(250);
+  learningEl.style.display = 'block';
+  learningEl.style.opacity = '0';
+  learningEl.style.transition = 'opacity 500ms ease';
+  await wait(30);
+  learningEl.style.opacity = '1';
+  await wait(800);
 
-  // Step 5: Fade whole screen then redirect
-  await fadeOut(screen, 700);
+  // Credits fade in
+  creditsEl.style.display = 'flex';
+  creditsEl.style.opacity = '0';
+  creditsEl.style.transition = 'opacity 700ms ease';
+  await wait(30);
+  creditsEl.style.opacity = '1';
+  await wait(2000);
+
+  // Fade everything out
+  var screen = document.getElementById('intro-screen');
+  screen.style.transition = 'opacity 700ms ease';
+  screen.style.opacity = '0';
+  await wait(750);
   window.location.href = 'main.html';
 }
+
+runIntro();
