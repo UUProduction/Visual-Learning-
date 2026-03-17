@@ -4,113 +4,135 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>V:L — Representative</title>
-  <link rel="stylesheet" href="classroom.css"/>
+  <link rel="stylesheet" href="style.css"/>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="firebase.js"></script>
 </head>
-<body class="gc-body">
+<body class="dash-body">
+<div class="dash-shell">
 
-  <header class="gc-topbar">
-    <button class="gc-hamburger" id="hamburger-btn">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-    </button>
-    <div class="gc-topbar-logo">
-      <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
-      <span>Vision: Learning</span>
-    </div>
-    <div class="gc-topbar-right">
-      <div class="gc-avatar-btn">
-        <img id="user-photo" src="assets/default-avatar.png" alt=""/>
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
+        <span>V<span class="brand-colon">:</span>L</span>
       </div>
+      <span class="rep-chip">REP</span>
     </div>
-  </header>
-
-  <div class="gc-drawer-overlay hidden" id="drawer-overlay"></div>
-  <nav class="gc-drawer" id="drawer">
-    <div class="gc-drawer-header">
-      <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
-      <span>Vision: Learning</span>
-    </div>
-    <div class="gc-drawer-items">
-      <div class="gc-drawer-item active" onclick="showHomeView()">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        Home
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Navigation</div>
+      <div class="snav-item active" onclick="goHome()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Dashboard
       </div>
-      <div class="gc-drawer-divider"></div>
-      <div class="gc-drawer-item" id="drawer-logout">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+    </nav>
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Classrooms</div>
+      <div id="sidebar-rooms"></div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <img id="t-pfp" src="assets/default-avatar.png" alt=""/>
+        <div class="sidebar-user-info">
+          <span id="t-name">Loading...</span>
+          <span id="t-email"></span>
+        </div>
+      </div>
+      <button class="signout-btn" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sign Out
-      </div>
+      </button>
     </div>
-  </nav>
+  </aside>
 
-  <main class="gc-main" id="main-area">
+  <main class="dash-content">
 
-    <!-- HOME -->
+    <!-- DASHBOARD -->
     <div id="view-home">
-      <div class="gc-page-header">
-        <h1>My Classes</h1>
-        <button class="gc-fab-btn" id="create-fab">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-          Create Class
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">My Classrooms</h1>
+          <p class="page-sub">Create and manage your classes</p>
+        </div>
+        <button class="btn-primary" id="create-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Classroom
         </button>
       </div>
-      <div class="gc-empty hidden" id="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="80" height="80"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        <h3>No classes yet</h3>
-        <p>Create your first class to get started</p>
-        <button class="gc-btn-filled" id="create-empty-btn">Create Class</button>
+      <div id="no-classes" class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="64" height="64"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <h3>No classrooms yet</h3>
+        <p>Create your first classroom to get started</p>
+        <button class="btn-primary" id="create-empty-btn">Create Classroom</button>
       </div>
-      <div class="gc-class-grid" id="class-grid"></div>
+      <div class="classroom-cards" id="classroom-cards"></div>
     </div>
 
     <!-- CLASSROOM VIEW -->
     <div id="view-classroom" class="hidden">
-      <div class="gc-class-banner" id="class-banner">
-        <div class="gc-class-banner-inner">
-          <h2 id="class-banner-name">Class Name</h2>
-          <p id="class-banner-section">You</p>
-          <div class="gc-banner-code-chip">
-            <span>Code: </span><strong id="banner-code">—</strong>
-          </div>
+      <div class="cls-banner" id="cls-banner">
+        <button class="banner-back" onclick="goHome()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="banner-info">
+          <div class="banner-name" id="banner-name">Class</div>
+          <div class="banner-teacher" id="banner-teacher">You</div>
         </div>
-        <button class="gc-banner-back" onclick="showHomeView()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        <div class="banner-code-box">
+          <span class="banner-code-label">Class Code</span>
+          <span class="banner-code-val" id="banner-code">—</span>
+        </div>
+      </div>
+
+      <div class="cls-tabs">
+        <button class="cls-tab active" data-tab="stream">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Stream
+        </button>
+        <button class="cls-tab" data-tab="games">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          Games
+        </button>
+        <button class="cls-tab" data-tab="people">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          People
+        </button>
+        <button class="cls-tab" data-tab="viewer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          V:Viewer
         </button>
       </div>
 
-      <div class="gc-tabs">
-        <button class="gc-tab active" data-tab="stream">Stream</button>
-        <button class="gc-tab" data-tab="classwork">Classwork</button>
-        <button class="gc-tab" data-tab="people">People</button>
-        <button class="gc-tab" data-tab="viewer">V:Viewer</button>
-      </div>
-
       <!-- STREAM -->
-      <div class="gc-tab-panel" id="panel-stream">
-        <div class="gc-stream-layout">
-          <div class="gc-stream-side">
-            <div class="gc-info-card">
-              <div class="gc-info-card-title">Class code</div>
-              <div class="gc-info-card-code" id="stream-class-code">—</div>
-              <div class="gc-info-card-hint">Share with students</div>
+      <div class="cls-panel" id="panel-stream">
+        <div class="stream-layout">
+          <aside class="stream-aside">
+            <div class="aside-card">
+              <div class="aside-card-label">Class Code</div>
+              <div class="aside-card-value" id="aside-code">—</div>
+              <div class="aside-card-hint">Share with students</div>
             </div>
-            <div class="gc-info-card" style="margin-top:12px;">
-              <div class="gc-info-card-title">Students</div>
-              <div class="gc-info-card-code" id="stream-student-count" style="font-size:28px;">0</div>
-              <div class="gc-info-card-hint">enrolled</div>
+            <div class="aside-card" style="margin-top:12px;">
+              <div class="aside-card-label">Students</div>
+              <div class="aside-card-value" id="aside-count" style="font-size:32px;">0</div>
+              <div class="aside-card-hint">enrolled</div>
             </div>
-          </div>
-          <div class="gc-stream-main">
-            <div class="gc-chat-box">
-              <div class="gc-chat-messages" id="chat-messages"></div>
-              <div class="gc-chat-input-wrap">
-                <img id="chat-user-photo" src="assets/default-avatar.png" alt=""/>
-                <input type="text" id="chat-input" placeholder="Share something with your class..."/>
-                <button id="chat-send">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </aside>
+          <div class="stream-main">
+            <div class="chat-wrap">
+              <div class="chat-feed" id="chat-feed">
+                <div class="chat-empty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="52" height="52"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <p>No messages yet</p>
+                </div>
+              </div>
+              <div class="chat-composer">
+                <img id="chat-pfp" src="assets/default-avatar.png" alt=""/>
+                <input id="chat-input" type="text" placeholder="Chat with your class..." maxlength="300"/>
+                <button id="chat-send-btn" class="chat-send">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
               </div>
             </div>
@@ -118,351 +140,315 @@
         </div>
       </div>
 
-      <!-- CLASSWORK -->
-      <div class="gc-tab-panel hidden" id="panel-classwork">
-        <div class="gc-classwork-list">
-          <div class="gc-classwork-section-title">Games</div>
+      <!-- GAMES -->
+      <div class="cls-panel hidden" id="panel-games">
+        <div class="games-grid">
 
-          <div class="gc-classwork-item" onclick="window.location.href='game-vl.html'">
-            <div class="gc-classwork-icon" style="background:#e8f0fe;">
-              <svg viewBox="0 0 24 24" fill="#1a73e8" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          <div class="game-card">
+            <div class="game-card-top purple-grad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             </div>
-            <div class="gc-classwork-info">
-              <div class="gc-classwork-title">Visual: Learning</div>
-              <div class="gc-classwork-sub">Solo vocabulary game</div>
+            <div class="game-card-body">
+              <h3>Game Hosting</h3>
+              <p>Host a live game session for your entire class — coming soon</p>
+              <div class="coming-soon-tag">Coming Soon</div>
             </div>
-            <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </div>
 
-          <div class="gc-classwork-item">
-            <div class="gc-classwork-icon" style="background:#fce8e6;">
-              <svg viewBox="0 0 24 24" fill="#d93025" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <div class="game-card" onclick="window.location.href='game-vl.html'">
+            <div class="game-card-top blue-grad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
             </div>
-            <div class="gc-classwork-info">
-              <div class="gc-classwork-title">Game Hosting</div>
-              <div class="gc-classwork-sub">Host a live class game session — coming soon</div>
+            <div class="game-card-body">
+              <h3>Visual: Learning</h3>
+              <p>Play the solo vocabulary game yourself</p>
+              <button class="btn-primary" style="margin-top:12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Play
+              </button>
             </div>
-            <span class="gc-locked-chip" style="background:#fce8e6;color:#d93025;border-color:#f28b82;">Soon</span>
           </div>
 
-          <div class="gc-classwork-item" onclick="openTournament()">
-            <div class="gc-classwork-icon" style="background:#fef7e0;">
-              <svg viewBox="0 0 24 24" fill="#f9ab00" width="20" height="20"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
+          <div class="game-card" onclick="openTournamentModal()">
+            <div class="game-card-top gold-grad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
             </div>
-            <div class="gc-classwork-info">
-              <div class="gc-classwork-title">Tournament</div>
-              <div class="gc-classwork-sub">Start a class tournament · 10 min · 2+ students</div>
+            <div class="game-card-body">
+              <h3>Tournament</h3>
+              <p>Start a class tournament — 10 minute race, 2+ students</p>
+              <button class="btn-gold" style="margin-top:12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+                Start Tournament
+              </button>
             </div>
-            <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </div>
+
         </div>
       </div>
 
       <!-- PEOPLE -->
-      <div class="gc-tab-panel hidden" id="panel-people">
-        <div class="gc-people-wrap">
-          <div class="gc-people-section">
-            <div class="gc-people-section-header"><h3>Teacher</h3><div class="gc-people-divider"></div></div>
-            <div id="people-teachers"></div>
+      <div class="cls-panel hidden" id="panel-people">
+        <div class="people-layout">
+          <div class="people-group">
+            <div class="people-group-header"><h3>Teacher</h3><div class="people-line"></div></div>
+            <div id="ppl-teachers" class="people-list"></div>
           </div>
-          <div class="gc-people-section" style="margin-top:28px;">
-            <div class="gc-people-section-header"><h3>Students</h3><div class="gc-people-divider"></div></div>
-            <div id="people-students"></div>
+          <div class="people-group" style="margin-top:28px;">
+            <div class="people-group-header"><h3>Students</h3><div class="people-line"></div></div>
+            <div id="ppl-students" class="people-list"></div>
           </div>
         </div>
       </div>
 
       <!-- V:VIEWER -->
-      <div class="gc-tab-panel hidden" id="panel-viewer">
-        <div class="gc-viewer-header">
-          <h3>Live Monitor</h3>
-          <div class="gc-online-chip">
-            <div class="gc-online-dot"></div>
-            <span id="viewer-online-count">0 online</span>
+      <div class="cls-panel hidden" id="panel-viewer">
+        <div class="viewer-header">
+          <div>
+            <h2 class="viewer-title">V<span style="color:var(--vl-cyan)">:</span>Viewer</h2>
+            <p class="viewer-sub">Live student monitor</p>
+          </div>
+          <div class="online-pill">
+            <div class="online-dot"></div>
+            <span id="viewer-online">0 online</span>
           </div>
         </div>
-        <div class="gc-viewer-grid" id="viewer-grid">
-          <div class="gc-empty" style="grid-column:1/-1;">
-            <p>Students will appear here when active</p>
-          </div>
+        <div class="viewer-grid" id="viewer-grid">
+          <div class="viewer-empty">No students connected yet</div>
         </div>
       </div>
 
     </div>
   </main>
+</div>
 
-  <!-- CREATE MODAL -->
-  <div class="gc-modal-overlay hidden" id="create-modal">
-    <div class="gc-modal">
-      <h2 class="gc-modal-title">Create class</h2>
-      <div class="gc-modal-field">
-        <label>Class name (required)</label>
-        <input type="text" id="class-name-input" placeholder="e.g. Period 3 English"/>
-      </div>
-      <div class="gc-modal-field">
-        <label>Section (optional)</label>
-        <input type="text" id="class-section-input" placeholder="e.g. Grade 5"/>
-      </div>
-      <div class="gc-modal-actions">
-        <button class="gc-btn-text" id="create-cancel">Cancel</button>
-        <button class="gc-btn-filled" id="create-confirm">Create</button>
-      </div>
+<!-- CREATE MODAL -->
+<div class="vl-modal-overlay hidden" id="create-modal">
+  <div class="vl-modal">
+    <div class="vl-modal-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <h2>New Classroom</h2>
+    </div>
+    <div class="vl-modal-field">
+      <label>Classroom Name</label>
+      <input type="text" id="cls-name-inp" placeholder="e.g. Period 3 English"/>
+    </div>
+    <div class="vl-modal-field">
+      <label>Section <span style="color:var(--vl-gray);font-weight:400;">(optional)</span></label>
+      <input type="text" id="cls-section-inp" placeholder="e.g. Grade 5"/>
+    </div>
+    <div class="vl-modal-actions">
+      <button class="btn-ghost" id="create-cancel">Cancel</button>
+      <button class="btn-primary" id="create-confirm">Create</button>
     </div>
   </div>
+</div>
 
-  <!-- TOURNAMENT MODAL -->
-  <div class="gc-modal-overlay hidden" id="tournament-modal">
-    <div class="gc-modal">
-      <h2 class="gc-modal-title">Tournament</h2>
-      <p class="gc-modal-sub" id="tournament-status-text">Waiting for students to join...</p>
-      <div id="tournament-player-list" style="display:flex;flex-direction:column;gap:8px;margin:16px 0;"></div>
-      <div class="gc-tournament-timer hidden" id="tournament-timer">10:00</div>
-      <div class="gc-modal-actions">
-        <button class="gc-btn-text" id="tournament-leave">End</button>
-      </div>
+<!-- TOURNAMENT MODAL -->
+<div class="vl-modal-overlay hidden" id="tournament-modal">
+  <div class="vl-modal">
+    <div class="vl-modal-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+      <h2>Tournament</h2>
+    </div>
+    <p class="vl-modal-sub" id="t-status">Waiting for students to join...</p>
+    <div id="t-players" class="t-player-list"></div>
+    <div class="t-timer hidden" id="t-timer">10:00</div>
+    <div class="vl-modal-actions">
+      <button class="btn-ghost" id="t-leave-btn">End Tournament</button>
     </div>
   </div>
+</div>
 
-  <div id="toast-container"></div>
-  <script src="app.js"></script>
-  <script>
-var currentUser = null;
-var currentClassroom = null;
-var unsubChat = null;
-var unsubPeople = null;
-var unsubViewer = null;
-var unsubTournament = null;
-var tournamentTimerInterval = null;
-var BAD_WORDS = ['fuck','shit','bitch','ass','damn','crap','piss','dick','cock','pussy','bastard','asshole'];
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+var me=null, room=null;
+var unsubChat=null, unsubPeople=null, unsubViewer=null, unsubT=null;
+var tInterval=null;
+var BADS=['fuck','shit','bitch','ass','damn','crap','piss','dick','cock','pussy','bastard','asshole'];
+var COLORS=['#0a84ff','#e52592','#0f9d58','#f29900','#673ab7','#03bcd4','#ff6d00'];
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if (!user) return window.location.href = 'login.html?role=teacher';
-  currentUser = user;
-  if (user.photoURL) {
-    document.getElementById('user-photo').src = user.photoURL;
-    document.getElementById('chat-user-photo').src = user.photoURL;
-  }
-  loadMyClasses();
+firebase.auth().onAuthStateChanged(function(u){
+  if(!u) return window.location.href='login.html?role=teacher';
+  me=u;
+  document.getElementById('t-name').textContent=u.displayName||'Representative';
+  document.getElementById('t-email').textContent=u.email||'';
+  if(u.photoURL){document.getElementById('t-pfp').src=u.photoURL;document.getElementById('chat-pfp').src=u.photoURL;}
+  loadRooms();
 });
 
-document.getElementById('hamburger-btn').addEventListener('click', function() {
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawer-overlay').classList.remove('hidden');
-});
-document.getElementById('drawer-overlay').addEventListener('click', function() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.add('hidden');
-});
-document.getElementById('drawer-logout').addEventListener('click', function() {
-  firebase.auth().signOut().then(function(){ window.location.href = 'main.html'; });
-});
-
-document.getElementById('create-fab').addEventListener('click', function(){ document.getElementById('create-modal').classList.remove('hidden'); });
-document.getElementById('create-empty-btn').addEventListener('click', function(){ document.getElementById('create-modal').classList.remove('hidden'); });
-document.getElementById('create-cancel').addEventListener('click', function(){ document.getElementById('create-modal').classList.add('hidden'); });
-
-document.getElementById('create-confirm').addEventListener('click', function() {
-  var name = document.getElementById('class-name-input').value.trim();
-  if (!name) return showToast('Enter a class name','error');
-  var code = Math.random().toString(36).substring(2,8).toUpperCase();
+document.getElementById('create-btn').onclick=function(){document.getElementById('create-modal').classList.remove('hidden');};
+document.getElementById('create-empty-btn').onclick=function(){document.getElementById('create-modal').classList.remove('hidden');};
+document.getElementById('create-cancel').onclick=function(){document.getElementById('create-modal').classList.add('hidden');};
+document.getElementById('create-confirm').onclick=function(){
+  var name=document.getElementById('cls-name-inp').value.trim();
+  if(!name) return showToast('Enter a class name','error');
+  var code=Math.random().toString(36).substring(2,8).toUpperCase();
   firebase.firestore().collection('classrooms').doc(code).set({
-    code: code, name: name,
-    section: document.getElementById('class-section-input').value.trim(),
-    teacherId: currentUser.uid,
-    teacherName: currentUser.displayName || 'Teacher',
-    students: {},
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(function() {
+    code:code,name:name,
+    section:document.getElementById('cls-section-inp').value.trim(),
+    teacherId:me.uid,teacherName:me.displayName||'Teacher',
+    students:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
     document.getElementById('create-modal').classList.add('hidden');
-    document.getElementById('class-name-input').value = '';
-    document.getElementById('class-section-input').value = '';
-    showToast('Class created! Code: ' + code, 'success');
-    loadMyClasses();
-  }).catch(function(e){ showToast(e.message,'error'); });
-});
+    document.getElementById('cls-name-inp').value='';
+    document.getElementById('cls-section-inp').value='';
+    showToast('Classroom created! Code: '+code,'success');
+    loadRooms();
+  }).catch(function(e){showToast(e.message,'error');});
+};
 
-function loadMyClasses() {
-  firebase.firestore().collection('classrooms').where('teacherId','==',currentUser.uid).get().then(function(snap) {
-    var grid = document.getElementById('class-grid');
-    var empty = document.getElementById('empty-state');
-    grid.innerHTML = '';
-    if (snap.empty) { empty.classList.remove('hidden'); return; }
-    empty.classList.add('hidden');
-    var COLORS = ['#1a73e8','#e52592','#0f9d58','#f29900','#673ab7','#03bcd4'];
-    snap.docs.forEach(function(doc, i) {
-      var d = doc.data();
-      var color = COLORS[i % COLORS.length];
-      var card = document.createElement('div');
-      card.className = 'gc-class-card';
-      card.innerHTML = `
-        <div class="gc-class-card-header" style="background:${color};">
-          <div class="gc-class-card-title">${d.name}</div>
-          <div class="gc-class-card-teacher">${d.section||''}</div>
-          <div class="gc-class-card-avatar">
-            <img src="${currentUser.photoURL||'assets/default-avatar.png'}" alt=""/>
-          </div>
-        </div>
-        <div class="gc-class-card-body">
-          <span class="gc-class-card-code">${d.code}</span>
-        </div>
-        <div class="gc-class-card-footer">
-          <button class="gc-icon-btn">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-          </button>
-        </div>
-      `;
-      card.querySelector('.gc-class-card-header').addEventListener('click', function(){ openClassroom(d, color); });
-      grid.appendChild(card);
+function loadRooms(){
+  firebase.firestore().collection('classrooms').where('teacherId','==',me.uid).get().then(function(snap){
+    var sidebar=document.getElementById('sidebar-rooms');
+    var cards=document.getElementById('classroom-cards');
+    var noMsg=document.getElementById('no-classes');
+    sidebar.innerHTML=''; cards.innerHTML='';
+    if(snap.empty){noMsg.classList.remove('hidden');return;}
+    noMsg.classList.add('hidden');
+    snap.docs.forEach(function(doc,i){
+      var d=doc.data(), color=COLORS[i%COLORS.length];
+      var sb=document.createElement('div'); sb.className='sidebar-room';
+      sb.innerHTML='<div class="sidebar-room-dot" style="background:'+color+'"></div><div><div class="sidebar-room-name">'+d.name+'</div><div class="sidebar-room-code">'+d.code+'</div></div>';
+      sb.onclick=function(){openRoom(d,color);}; sidebar.appendChild(sb);
+      var card=document.createElement('div'); card.className='cls-card';
+      card.innerHTML='<div class="cls-card-banner" style="background:'+color+'"><div class="cls-card-name">'+d.name+'</div><div class="cls-card-teacher">'+(d.section||d.teacherName)+'</div></div><div class="cls-card-footer"><span class="cls-card-code">'+d.code+'</span><button class="btn-primary btn-sm enter-btn">Enter Classroom</button></div>';
+      card.querySelector('.enter-btn').onclick=function(){openRoom(d,color);}; cards.appendChild(card);
     });
   });
 }
 
-function showHomeView() {
+function goHome(){
   document.getElementById('view-home').classList.remove('hidden');
   document.getElementById('view-classroom').classList.add('hidden');
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.add('hidden');
-  if (unsubChat) { unsubChat(); unsubChat = null; }
-  if (unsubPeople) { unsubPeople(); unsubPeople = null; }
-  if (unsubViewer) { unsubViewer(); unsubViewer = null; }
+  if(unsubChat){unsubChat();unsubChat=null;}
+  if(unsubPeople){unsubPeople();unsubPeople=null;}
+  if(unsubViewer){unsubViewer();unsubViewer=null;}
 }
 
-function openClassroom(data, color) {
-  currentClassroom = data;
+function openRoom(data,color){
+  room=data;
   document.getElementById('view-home').classList.add('hidden');
   document.getElementById('view-classroom').classList.remove('hidden');
-  document.getElementById('class-banner-name').textContent = data.name;
-  document.getElementById('class-banner-section').textContent = currentUser.displayName || 'Teacher';
-  document.getElementById('banner-code').textContent = data.code;
-  document.getElementById('stream-class-code').textContent = data.code;
-  if (color) document.getElementById('class-banner').style.background = color;
-  switchTab('stream');
-  listenChat();
-  listenPeople();
-  listenViewer();
+  document.getElementById('banner-name').textContent=data.name;
+  document.getElementById('banner-teacher').textContent=me.displayName||'Teacher';
+  document.getElementById('banner-code').textContent=data.code;
+  document.getElementById('aside-code').textContent=data.code;
+  document.getElementById('cls-banner').style.borderBottom='3px solid '+color;
+  switchTab('stream'); listenChat(); listenPeople(); listenViewer();
 }
 
-document.querySelectorAll('.gc-tab').forEach(function(tab) {
-  tab.addEventListener('click', function(){ switchTab(tab.getAttribute('data-tab')); });
-});
-
-function switchTab(name) {
-  document.querySelectorAll('.gc-tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.gc-tab-panel').forEach(function(p){ p.classList.add('hidden'); });
-  document.querySelector('.gc-tab[data-tab="'+name+'"]').classList.add('active');
+document.querySelectorAll('.cls-tab').forEach(function(t){t.onclick=function(){switchTab(t.dataset.tab);};});
+function switchTab(name){
+  document.querySelectorAll('.cls-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.cls-panel').forEach(function(p){p.classList.add('hidden');});
+  document.querySelector('.cls-tab[data-tab="'+name+'"]').classList.add('active');
   document.getElementById('panel-'+name).classList.remove('hidden');
 }
 
-function filterBad(text) {
-  var out = text;
-  BAD_WORDS.forEach(function(w){
-    out = out.replace(new RegExp('\\b'+w+'\\b','gi'), function(m){ return '*'.repeat(m.length); });
-  });
-  return out;
-}
+function clean(t){var o=t;BADS.forEach(function(w){o=o.replace(new RegExp('\\b'+w+'\\b','gi'),function(m){return'*'.repeat(m.length);});});return o;}
 
-function listenChat() {
-  if (unsubChat) unsubChat();
-  var box = document.getElementById('chat-messages');
-  unsubChat = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').orderBy('createdAt','asc').limit(100).onSnapshot(function(snap) {
-    box.innerHTML = '';
-    if (snap.empty) { box.innerHTML = '<div class="gc-chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>No messages yet</p></div>'; return; }
+function listenChat(){
+  if(unsubChat) unsubChat();
+  var feed=document.getElementById('chat-feed');
+  unsubChat=firebase.firestore().collection('classrooms').doc(room.code).collection('chat').orderBy('createdAt','asc').limit(100).onSnapshot(function(snap){
+    feed.innerHTML='';
+    if(snap.empty){feed.innerHTML='<div class="chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="52" height="52"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>No messages yet</p></div>';return;}
     snap.forEach(function(doc){
-      var d = doc.data(); var isMe = d.uid === currentUser.uid;
-      var el = document.createElement('div');
-      el.className = 'gc-msg'+(isMe?' gc-msg-me':'');
-      el.innerHTML = (!isMe?'<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>':'') + '<div class="gc-msg-body">'+(!isMe?'<div class="gc-msg-name">'+d.name+'</div>':'')+'<div class="gc-msg-bubble">'+filterBad(d.text)+'</div></div>';
-      box.appendChild(el);
+      var d=doc.data(),mine=d.uid===me.uid;
+      var el=document.createElement('div'); el.className='chat-msg'+(mine?' mine':'');
+      el.innerHTML=(mine?'':'<img class="msg-avatar" src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>')+'<div class="msg-body">'+(mine?'':'<div class="msg-sender">'+d.name+'</div>')+'<div class="msg-text">'+clean(d.text)+'</div></div>';
+      feed.appendChild(el);
     });
-    box.scrollTop = box.scrollHeight;
+    feed.scrollTop=feed.scrollHeight;
   });
 }
 
-document.getElementById('chat-send').addEventListener('click', sendMsg);
-document.getElementById('chat-input').addEventListener('keydown', function(e){ if(e.key==='Enter') sendMsg(); });
-
-function sendMsg() {
-  var input = document.getElementById('chat-input');
-  var text = input.value.trim();
-  if (!text||!currentClassroom) return;
-  input.value = '';
-  firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add({ uid: currentUser.uid, name: currentUser.displayName||'Teacher', photoURL: currentUser.photoURL||null, text: text, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+document.getElementById('chat-send-btn').onclick=sendMsg;
+document.getElementById('chat-input').onkeydown=function(e){if(e.key==='Enter')sendMsg();};
+function sendMsg(){
+  var inp=document.getElementById('chat-input'),t=inp.value.trim();
+  if(!t||!room) return; inp.value='';
+  firebase.firestore().collection('classrooms').doc(room.code).collection('chat').add({uid:me.uid,name:me.displayName||'Teacher',photoURL:me.photoURL||null,text:t,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
 }
 
-function listenPeople() {
-  if (unsubPeople) unsubPeople();
-  unsubPeople = firebase.firestore().collection('classrooms').doc(currentClassroom.code).onSnapshot(function(snap) {
-    if (!snap.exists) return;
-    var d = snap.data(); var students = Object.values(d.students||{});
-    document.getElementById('stream-student-count').textContent = students.length;
-    var tEl = document.getElementById('people-teachers');
-    var sEl = document.getElementById('people-students');
-    tEl.innerHTML = '<div class="gc-person-row">'+(currentUser.photoURL?'<img class="gc-person-avatar-img" src="'+currentUser.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(currentUser.displayName||'T')[0]+'</div>')+'<span>'+(currentUser.displayName||'Teacher')+'</span></div>';
-    sEl.innerHTML = '';
+function listenPeople(){
+  if(unsubPeople) unsubPeople();
+  unsubPeople=firebase.firestore().collection('classrooms').doc(room.code).onSnapshot(function(snap){
+    if(!snap.exists) return;
+    var d=snap.data(),students=Object.values(d.students||{});
+    document.getElementById('aside-count').textContent=students.length;
+    document.getElementById('ppl-teachers').innerHTML='<div class="person-row">'+(me.photoURL?'<img class="person-avatar-img" src="'+me.photoURL+'" alt=""/>':'<div class="person-avatar" style="background:#0a84ff;">'+(me.displayName||'T')[0]+'</div>')+'<div class="person-info"><span class="person-name">'+(me.displayName||'Teacher')+'</span><span class="person-role">Representative</span></div></div>';
+    var sEl=document.getElementById('ppl-students'); sEl.innerHTML='';
+    if(!students.length){sEl.innerHTML='<div class="people-empty">No students enrolled yet</div>';return;}
     students.forEach(function(s){
-      var row = document.createElement('div'); row.className = 'gc-person-row';
-      row.innerHTML = (s.photoURL?'<img class="gc-person-avatar-img" src="'+s.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(s.name||'S')[0]+'</div>')+'<span>'+(s.name||'Student')+'</span>'+(s.online?'<span class="gc-online-badge">Online</span>':'');
+      var row=document.createElement('div'); row.className='person-row';
+      row.innerHTML=(s.photoURL?'<img class="person-avatar-img" src="'+s.photoURL+'" alt=""/>':'<div class="person-avatar">'+(s.name||'S')[0].toUpperCase()+'</div>')+'<div class="person-info"><span class="person-name">'+(s.name||'Student')+'</span><span class="person-role">Student</span></div>'+(s.online?'<div class="person-online-dot"></div>':'');
       sEl.appendChild(row);
     });
   });
 }
 
-function listenViewer() {
-  if (unsubViewer) unsubViewer();
-  unsubViewer = firebase.firestore().collection('classrooms').doc(currentClassroom.code).onSnapshot(function(snap) {
-    if (!snap.exists) return;
-    var students = Object.values(snap.data().students||{});
-    var online = students.filter(function(s){ return s.online; }).length;
-    document.getElementById('viewer-online-count').textContent = online + ' online';
-    var grid = document.getElementById('viewer-grid');
-    grid.innerHTML = '';
-    if (!students.length) { grid.innerHTML = '<div class="gc-empty" style="grid-column:1/-1;"><p>No students yet</p></div>'; return; }
+function listenViewer(){
+  if(unsubViewer) unsubViewer();
+  unsubViewer=firebase.firestore().collection('classrooms').doc(room.code).onSnapshot(function(snap){
+    if(!snap.exists) return;
+    var students=Object.values(snap.data().students||{});
+    var online=students.filter(function(s){return s.online;}).length;
+    document.getElementById('viewer-online').textContent=online+' online';
+    var grid=document.getElementById('viewer-grid'); grid.innerHTML='';
+    if(!students.length){grid.innerHTML='<div class="viewer-empty">No students yet</div>';return;}
     students.forEach(function(s){
-      var card = document.createElement('div');
-      card.className = 'gc-viewer-card'+(s.online?' online':'');
-      card.innerHTML = '<div class="gc-viewer-status-dot '+(s.online?'dot-green':'dot-red')+'"></div>'+(s.photoURL?'<img src="'+s.photoURL+'" alt=""/>':'<div class="gc-viewer-letter">'+(s.name||'S')[0]+'</div>')+'<div class="gc-viewer-name">'+(s.name||'Student')+'</div><div class="gc-viewer-activity">'+(s.online?(s.currentActivity||'Active'):'Offline')+'</div>';
-      grid.appendChild(card);
+      var c=document.createElement('div'); c.className='viewer-card '+(s.online?'online':'offline');
+      c.innerHTML='<div class="viewer-status-dot '+(s.online?'dot-green':'dot-red')+'"></div>'+(s.photoURL?'<img src="'+s.photoURL+'" alt=""/>':'<div class="viewer-letter">'+(s.name||'S')[0]+'</div>')+'<div class="viewer-name">'+(s.name||'Student')+'</div><div class="viewer-act">'+(s.online?(s.currentActivity||'Active'):'Offline')+'</div>';
+      grid.appendChild(c);
     });
   });
 }
 
-function openTournament() {
-  if (!currentClassroom) return;
+function openTournamentModal(){
+  if(!room) return;
   document.getElementById('tournament-modal').classList.remove('hidden');
-  var lobbyRef = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby');
-  var update = {}; update['players.'+currentUser.uid] = { uid: currentUser.uid, name: currentUser.displayName||'Teacher', photoURL: currentUser.photoURL||null, points: 0 };
-  lobbyRef.set(update, { merge: true });
-  if (unsubTournament) unsubTournament();
-  unsubTournament = lobbyRef.onSnapshot(function(snap) {
-    if (!snap.exists) return;
-    var data = snap.data(); var players = Object.values(data.players||{});
-    var list = document.getElementById('tournament-player-list'); list.innerHTML = '';
+  var ref=firebase.firestore().collection('classrooms').doc(room.code).collection('tournament').doc('lobby');
+  var u={}; u['players.'+me.uid]={uid:me.uid,name:me.displayName||'Teacher',photoURL:me.photoURL||null,points:0};
+  ref.set(u,{merge:true});
+  if(unsubT) unsubT();
+  unsubT=ref.onSnapshot(function(snap){
+    if(!snap.exists) return;
+    var data=snap.data(), players=Object.values(data.players||{});
+    var list=document.getElementById('t-players'); list.innerHTML='';
     players.forEach(function(p){
-      var row = document.createElement('div'); row.className = 'gc-person-row';
-      row.innerHTML = (p.photoURL?'<img class="gc-person-avatar-img" src="'+p.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(p.name||'P')[0]+'</div>')+'<span>'+(p.name||'Player')+'</span><span style="margin-left:auto;font-weight:700;color:#1a73e8;">'+p.points+' pts</span>';
+      var row=document.createElement('div'); row.className='t-player-row';
+      row.innerHTML=(p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="t-player-letter">'+(p.name||'P')[0]+'</div>')+'<span>'+(p.name||'Player')+'</span><span class="t-player-pts">'+p.points+' pts</span>';
       list.appendChild(row);
     });
-    if (players.length >= 2 && data.status !== 'active') { lobbyRef.update({ status:'active', startedAt: firebase.firestore.FieldValue.serverTimestamp() }); }
-    if (data.status === 'active' && data.startedAt && !tournamentTimerInterval) {
-      document.getElementById('tournament-status-text').textContent = 'Tournament in progress!';
-      document.getElementById('tournament-timer').classList.remove('hidden');
-      var DURATION = 600000;
-      tournamentTimerInterval = setInterval(function(){
-        var left = DURATION - (Date.now() - data.startedAt.toDate().getTime());
-        if (left <= 0) { clearInterval(tournamentTimerInterval); tournamentTimerInterval = null; document.getElementById('tournament-modal').classList.add('hidden'); showToast('Tournament over!','success'); return; }
-        var m = Math.floor(left/60000); var s = Math.floor((left%60000)/1000);
-        document.getElementById('tournament-timer').textContent = m+':'+(s<10?'0':'')+s;
-      }, 500);
+    if(players.length>=2&&data.status!=='active'){
+      ref.update({status:'active',startedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    }
+    if(data.status==='active'&&data.startedAt&&!tInterval){
+      document.getElementById('t-status').textContent='Tournament in progress!';
+      document.getElementById('t-timer').classList.remove('hidden');
+      var startTime=data.startedAt.toDate().getTime();
+      var DURATION=600000;
+      tInterval=setInterval(function(){
+        var left=DURATION-(Date.now()-startTime);
+        if(left<=0){clearInterval(tInterval);tInterval=null;document.getElementById('tournament-modal').classList.add('hidden');showToast('Tournament over!','success');return;}
+        var m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+        document.getElementById('t-timer').textContent=m+':'+(s<10?'0':'')+s;
+      },500);
+    } else if(players.length<2){
+      document.getElementById('t-status').textContent='Waiting for students — need at least 2';
     }
   });
 }
 
-document.getElementById('tournament-leave').addEventListener('click', function(){
-  if (currentClassroom) firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby').delete();
-  if (unsubTournament) { unsubTournament(); unsubTournament = null; }
-  if (tournamentTimerInterval) { clearInterval(tournamentTimerInterval); tournamentTimerInterval = null; }
+document.getElementById('t-leave-btn').onclick=function(){
+  if(room) firebase.firestore().collection('classrooms').doc(room.code).collection('tournament').doc('lobby').delete();
+  if(unsubT){unsubT();unsubT=null;} if(tInterval){clearInterval(tInterval);tInterval=null;}
   document.getElementById('tournament-modal').classList.add('hidden');
-});
-  </script>
+};
+
+document.getElementById('logout-btn').onclick=function(){firebase.auth().signOut().then(function(){window.location.href='main.html';});};
+</script>
 </body>
 </html>
