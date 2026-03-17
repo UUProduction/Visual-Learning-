@@ -7,6 +7,10 @@ app.use(express.static('.'));
 
 app.post('/api/question', async (req, res) => {
   try {
+    console.log('Received question request');
+    console.log('API key exists:', !!process.env.ANTHROPIC_API_KEY);
+    console.log('API key starts with:', process.env.ANTHROPIC_API_KEY ? process.env.ANTHROPIC_API_KEY.substring(0, 10) : 'MISSING');
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -15,7 +19,7 @@ app.post('/api/question', async (req, res) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 300,
         messages: [{
           role: 'user',
@@ -24,38 +28,37 @@ app.post('/api/question', async (req, res) => {
       })
     });
 
-    const data = await response.json();
+    console.log('Anthropic status:', response.status);
+    const raw = await response.text();
+    console.log('Anthropic raw response:', raw);
+
+    const data = JSON.parse(raw);
 
     if (!data.content || !data.content[0]) {
-      console.error('Bad API response:', JSON.stringify(data));
-      return res.status(500).json({ error: 'No content in API response', raw: data });
+      return res.status(500).json({ error: 'No content in response', raw: data });
     }
 
-    // Strip any markdown fences Claude might add
     var text = data.content[0].text.trim();
-    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    text = text.replace(/```json|```/g, '').trim();
 
-    // Find JSON object in the text in case there's extra text around it
     var match = text.match(/\{[\s\S]*\}/);
     if (!match) {
-      console.error('No JSON found in response:', text);
-      return res.status(500).json({ error: 'No JSON in response', raw: text });
+      return res.status(500).json({ error: 'No JSON found', raw: text });
     }
 
     var parsed = JSON.parse(match[0]);
 
-    // Validate structure
-    if (!parsed.word || !parsed.correct || !parsed.choices || parsed.choices.length < 2) {
-      return res.status(500).json({ error: 'Invalid question structure', raw: parsed });
+    if (!parsed.word || !parsed.correct || !parsed.choices) {
+      return res.status(500).json({ error: 'Invalid structure', raw: parsed });
     }
 
     res.json({ content: [{ text: JSON.stringify(parsed) }] });
 
   } catch(e) {
-    console.error('Server error:', e.message);
+    console.error('Error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('V:L running on port ' + PORT));
+app.listen(PORT, () => console.log('V:L server running on port ' + PORT));
