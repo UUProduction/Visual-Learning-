@@ -13,12 +13,10 @@
 <body>
   <div id="login-screen">
     <div class="login-card">
-
       <div class="login-header">
         <img class="login-logo" src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="V:L"/>
         <div class="login-title" id="login-title">Vision: Learning</div>
       </div>
-
       <div class="login-body">
 
         <button class="login-oauth-btn" id="google-btn">
@@ -53,16 +51,23 @@
   <div id="toast-container"></div>
   <script src="app.js"></script>
   <script>
-    // ── AUTO-LOGIN GLOBAL SESSION ──
-    // If device already has Firebase session saved, skip login entirely
+
+    // ── AUTO LOGIN: check role and redirect properly ──
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) return;
       firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
         if (!doc.exists) return;
-        var role = doc.data().role;
-        window.location.href = role === 'teacher' ? 'teacher-home.html' : 'student-home.html';
+        redirectByRole(doc.data().role);
       });
     });
+
+    function redirectByRole(role) {
+      if (role === 'teacher' || role === 'admin') {
+        window.location.href = 'teacher-home.html';
+      } else {
+        window.location.href = 'student-home.html';
+      }
+    }
 
     var params = new URLSearchParams(location.search);
     var isTeacher = params.get('role') === 'teacher';
@@ -75,22 +80,21 @@
       var provider = new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       firebase.auth().signInWithPopup(provider).then(function(result) {
-        var user = result.user;
-        // Check if user doc exists already
-        firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
+        // Always check Firestore role first
+        firebase.firestore().collection('users').doc(result.user.uid).get().then(function(doc) {
           if (doc.exists) {
-            var role = doc.data().role;
-            window.location.href = role === 'teacher' ? 'teacher-home.html' : 'student-home.html';
+            // Existing user — redirect by their saved role
+            redirectByRole(doc.data().role);
           } else {
-            // New user via Google on login page — create as student by default
-            firebase.firestore().collection('users').doc(user.uid).set({
-              name: user.displayName,
-              email: user.email,
-              photoURL: user.photoURL,
+            // Brand new user via Google on login page — save as student by default
+            firebase.firestore().collection('users').doc(result.user.uid).set({
+              name: result.user.displayName,
+              email: result.user.email,
+              photoURL: result.user.photoURL,
               role: isTeacher ? 'teacher' : 'student',
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(function() {
-              window.location.href = isTeacher ? 'teacher-home.html' : 'student-home.html';
+              redirectByRole(isTeacher ? 'teacher' : 'student');
             });
           }
         });
@@ -108,14 +112,14 @@
       firebase.auth().signInWithEmailAndPassword(email, pass).then(function(result) {
         firebase.firestore().collection('users').doc(result.user.uid).get().then(function(doc) {
           if (doc.exists) {
-            var role = doc.data().role;
-            window.location.href = role === 'teacher' ? 'teacher-home.html' : 'student-home.html';
+            redirectByRole(doc.data().role);
           } else {
-            window.location.href = isTeacher ? 'teacher-home.html' : 'student-home.html';
+            redirectByRole(isTeacher ? 'teacher' : 'student');
           }
         });
       }).catch(function() { showToast('Invalid credentials', 'error'); });
     });
+
   </script>
 </body>
 </html>
