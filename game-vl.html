@@ -9,16 +9,272 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="firebase.js"></script>
+  <style>
+    body { background:#fff; color:#111; }
+    body::after { display:none; }
+
+    #game-wrap {
+      display:flex; flex-direction:column;
+      align-items:center; min-height:100vh;
+      background:#fff; padding:0 0 20px;
+    }
+
+    /* INTRO */
+    #intro-overlay {
+      position:fixed; inset:0; background:#050a14;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      z-index:500; gap:6px;
+    }
+    .intro-vl-title {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(52px,12vw,110px);
+      letter-spacing:0.08em; color:#e8f0ff;
+      text-shadow:0 0 30px rgba(0,229,255,0.4);
+      line-height:1;
+    }
+    .intro-vl-sub {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:clamp(14px,3vw,22px);
+      letter-spacing:0.4em; color:#00e5ff;
+      text-transform:uppercase;
+    }
+    .intro-credits {
+      margin-top:20px; display:flex; flex-direction:column;
+      align-items:center; gap:4px;
+    }
+    .intro-credit-row {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:13px; letter-spacing:0.12em;
+      color:rgba(136,153,187,0.7); text-align:center;
+    }
+    .intro-credit-row span { color:#e8f0ff; font-weight:700; }
+
+    /* TOP BAR */
+    .game-topbar {
+      width:100%; background:#0a84ff;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 20px; border-bottom:2px solid #007ae8;
+    }
+    .game-topbar-brand {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:22px; letter-spacing:0.1em; color:#fff;
+    }
+    .game-topbar-brand span { color:#00e5ff; }
+    .topbar-back {
+      display:flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.15); border:none;
+      border-radius:6px; padding:6px 12px; color:#fff;
+      font-family:'Barlow Condensed',sans-serif; font-size:13px;
+      font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+      cursor:pointer; text-decoration:none; transition:background 0.2s;
+    }
+    .topbar-back:hover { background:rgba(255,255,255,0.25); }
+    .topbar-back svg { width:14px; height:14px; stroke:#fff; }
+
+    /* HUD */
+    .game-hud {
+      display:flex; align-items:center; justify-content:space-between;
+      width:100%; max-width:700px; padding:16px 20px 8px;
+    }
+    .hud-points {
+      display:flex; flex-direction:column; align-items:flex-start;
+    }
+    .hud-pts-label {
+      font-family:'Barlow Condensed',sans-serif; font-size:11px;
+      font-weight:700; letter-spacing:0.2em; text-transform:uppercase;
+      color:#666;
+    }
+    .hud-pts-val {
+      font-family:'Bebas Neue',sans-serif; font-size:40px;
+      line-height:1; color:#111;
+    }
+    .rank-badge { display:flex; flex-direction:column; align-items:center; gap:1px; }
+    .rank-letter {
+      font-family:'Bebas Neue',sans-serif; font-size:52px;
+      line-height:1; transition:color 0.4s, text-shadow 0.4s;
+    }
+    .rank-name {
+      font-family:'Barlow Condensed',sans-serif; font-size:10px;
+      letter-spacing:0.2em; text-transform:uppercase; color:#888;
+    }
+    .hud-multiplier { text-align:right; }
+    .hud-mult-label {
+      font-family:'Barlow Condensed',sans-serif; font-size:11px;
+      font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#666;
+    }
+    .hud-mult-val {
+      font-family:'Bebas Neue',sans-serif; font-size:36px;
+      color:#f29900; text-shadow:0 0 10px rgba(242,153,0,0.3);
+    }
+
+    /* QUESTION CARD */
+    .q-card {
+      width:100%; max-width:620px; margin:0 20px;
+      background:#f8f9fc; border:2px solid #e0e8ff;
+      border-radius:16px; padding:28px 24px;
+      text-align:center; box-shadow:0 4px 24px rgba(10,132,255,0.08);
+    }
+    .q-prompt {
+      font-family:'Barlow Condensed',sans-serif; font-size:12px;
+      letter-spacing:0.22em; text-transform:uppercase; color:#888;
+      margin-bottom:8px;
+    }
+    .q-word {
+      font-family:'Bebas Neue',sans-serif; font-size:clamp(42px,8vw,70px);
+      color:#111; letter-spacing:0.04em; margin-bottom:24px;
+      min-height:70px; display:flex; align-items:center; justify-content:center;
+    }
+    .q-choices { display:flex; flex-direction:column; gap:10px; }
+    .choice-btn {
+      width:100%; padding:13px 18px;
+      background:#fff; border:2px solid #e0e8ff;
+      border-radius:10px; color:#111;
+      font-family:'Barlow',sans-serif; font-size:14px;
+      text-align:left; cursor:pointer;
+      transition:background 0.15s, border-color 0.15s, transform 0.1s;
+      box-shadow:0 2px 6px rgba(0,0,0,0.04);
+    }
+    .choice-btn:hover:not(:disabled) {
+      background:#eef3ff; border-color:#0a84ff; transform:translateX(4px);
+    }
+    .choice-btn.correct { background:#e6f9ee; border-color:#30d158; color:#0a7a30; }
+    .choice-btn.wrong   { background:#fef0ef; border-color:#ff3b30; color:#c0120a; }
+    .choice-btn:disabled { cursor:not-allowed; }
+
+    /* SPINNER */
+    .loading-spinner {
+      width:28px; height:28px; border:3px solid rgba(10,132,255,0.15);
+      border-top-color:#0a84ff; border-radius:50%;
+      animation:spin 0.8s linear infinite; margin:0 auto;
+    }
+    @keyframes spin { to{transform:rotate(360deg);} }
+
+    /* RANK POPUP */
+    .rank-popup {
+      position:fixed; top:50%; right:20px;
+      transform:translateY(-50%) translateX(120%);
+      background:#050a14; border-left:4px solid #ffd700;
+      border-radius:0 10px 10px 0; padding:14px 18px;
+      min-width:200px; z-index:400;
+      transition:transform 0.35s cubic-bezier(.17,.67,.3,1.4);
+      box-shadow:0 8px 32px rgba(0,0,0,0.3);
+    }
+    .rank-popup.show { transform:translateY(-50%) translateX(0); }
+    .popup-rank-id {
+      font-family:'Bebas Neue',sans-serif; font-size:38px;
+      line-height:1; letter-spacing:0.05em; color:#fff;
+    }
+    .popup-bonuses { margin-top:6px; display:flex; flex-direction:column; gap:2px; }
+    .popup-bonus {
+      font-family:'Barlow Condensed',sans-serif; font-size:11px;
+      font-weight:600; letter-spacing:0.1em; color:#00e5ff; text-transform:uppercase;
+    }
+    .popup-bonus::before { content:'+ '; color:#8899bb; }
+    .popup-mult-line { margin-top:8px; font-family:'Barlow Condensed',sans-serif; font-size:11px; color:#8899bb; }
+    .popup-mult-line strong { color:#ffd700; font-size:16px; }
+
+    /* VL ACHIEVED */
+    .vl-achieved {
+      position:fixed; inset:0; background:rgba(0,0,0,0.92);
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; z-index:900; gap:12px;
+      opacity:0; pointer-events:none; transition:opacity 0.6s;
+    }
+    .vl-achieved.show { opacity:1; pointer-events:all; }
+    .vl-achieved-title {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(44px,10vw,90px); color:#bf5af2;
+      letter-spacing:0.08em; animation:vl-pulse 2s infinite;
+    }
+    @keyframes vl-pulse {
+      0%,100%{text-shadow:0 0 60px rgba(191,90,242,0.6);}
+      50%{text-shadow:0 0 120px rgba(191,90,242,0.95);}
+    }
+    .vl-achieved-sub {
+      font-family:'Barlow Condensed',sans-serif; font-size:20px;
+      letter-spacing:0.3em; text-transform:uppercase; color:#8899bb;
+    }
+    .vl-continue-btn {
+      margin-top:16px; padding:12px 32px; background:#0a84ff;
+      border:none; border-radius:8px; color:#fff;
+      font-family:'Barlow Condensed',sans-serif; font-size:15px;
+      font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+      cursor:pointer; transition:background 0.2s;
+    }
+    .vl-continue-btn:hover { background:#2a94ff; }
+
+    /* KEYBOARD */
+    .keyboard-wrap {
+      position:fixed; bottom:16px; left:16px;
+      width:220px; opacity:0.65;
+      transition:opacity 0.2s; z-index:10;
+    }
+    .keyboard-wrap:hover { opacity:1; }
+    .keyboard-wrap img { width:100%; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+    .keyboard-label {
+      font-family:'Barlow Condensed',sans-serif; font-size:10px;
+      font-weight:600; letter-spacing:0.15em; text-transform:uppercase;
+      color:#888; text-align:center; margin-top:4px;
+    }
+
+    /* TOAST */
+    #toast-container {
+      position:fixed; bottom:22px; left:50%;
+      transform:translateX(-50%); z-index:9000;
+      display:flex; flex-direction:column; gap:6px;
+      align-items:center; pointer-events:none;
+    }
+    .toast {
+      background:#323232; border-radius:8px; padding:9px 20px;
+      font-family:'Barlow Condensed',sans-serif; font-size:13px;
+      letter-spacing:0.08em; color:#fff; white-space:nowrap;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2);
+      animation:toast-in 0.25s ease, toast-out 0.25s ease 2.75s forwards;
+    }
+    .toast.error { background:#b31412; }
+    .toast.success { background:#137333; }
+    @keyframes toast-in  { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes toast-out { to{opacity:0;transform:translateY(-7px);} }
+
+    @keyframes screen-shake {
+      0%{transform:translate(0,0);} 20%{transform:translate(-7px,3px);}
+      40%{transform:translate(7px,-3px);} 60%{transform:translate(-3px,7px);}
+      80%{transform:translate(3px,-2px);} 100%{transform:translate(0,0);}
+    }
+    .shake { animation:screen-shake 0.12s ease; }
+  </style>
 </head>
 <body>
 
-<div id="game-screen">
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div class="intro-vl-title">VISUAL<span style="color:#00e5ff;">:</span></div>
+  <div class="intro-vl-title" style="font-size:clamp(32px,7vw,68px);margin-top:-12px;">Learning</div>
+  <div class="intro-vl-sub">Vision: Learning</div>
+  <div class="intro-credits">
+    <div class="intro-credit-row">Created by <span>Lakayden</span></div>
+    <div class="intro-credit-row">Developers <span>Kyle.R &nbsp;·&nbsp; Dan.M</span></div>
+    <div class="intro-credit-row">Admins / Helpers <span>Chance.H</span></div>
+  </div>
+</div>
+
+<div id="game-wrap">
+
+  <!-- TOP BAR -->
+  <div class="game-topbar">
+    <div class="game-topbar-brand">V<span>:</span>L</div>
+    <a href="student-home.html" class="topbar-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+  </div>
 
   <!-- HUD -->
   <div class="game-hud">
     <div class="hud-points">
-      <span>Points</span>
-      <span id="hud-pts">0</span>
+      <div class="hud-pts-label">Points</div>
+      <div class="hud-pts-val" id="hud-pts">0</div>
     </div>
     <div class="rank-badge">
       <div class="rank-letter" id="rank-letter" style="color:#888;">D</div>
@@ -26,56 +282,53 @@
     </div>
     <div class="hud-multiplier">
       <div class="hud-mult-label">Multiplier</div>
-      <div class="hud-mult-value" id="hud-mult">x1.00</div>
+      <div class="hud-mult-val" id="hud-mult">x1.00</div>
     </div>
   </div>
 
-  <!-- Question card -->
-  <div class="question-card" id="question-card">
-    <div class="question-prompt">What does this word mean?</div>
-    <div class="question-word" id="q-word">
+  <!-- QUESTION CARD -->
+  <div class="q-card">
+    <div class="q-prompt">What does this word mean?</div>
+    <div class="q-word" id="q-word">
       <div class="loading-spinner"></div>
     </div>
-    <div class="question-choices" id="q-choices"></div>
+    <div class="q-choices" id="q-choices"></div>
   </div>
-
-  <a href="student-home.html" class="btn-ghost" style="margin-top:8px;text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
 
 </div>
 
-<!-- Rank popup -->
+<!-- KEYBOARD HINT -->
+<div class="keyboard-wrap">
+  <img src="https://miro.medium.com/v2/1*qYGBCM3HT4Kjxsm4UGTN1A.png" alt="Keyboard shortcuts"/>
+  <div class="keyboard-label">Use 1–4 to answer</div>
+</div>
+
+<!-- RANK POPUP -->
 <div class="rank-popup" id="rank-popup">
   <div class="popup-rank-id" id="popup-rank-id">D</div>
   <div class="popup-bonuses" id="popup-bonuses"></div>
-  <div class="popup-multiplier">MULTIPLIER <strong id="popup-mult">x1.00</strong></div>
+  <div class="popup-mult-line">MULTIPLIER <strong id="popup-mult">x1.00</strong></div>
 </div>
 
-<!-- VL Achieved -->
+<!-- VL ACHIEVED -->
 <div class="vl-achieved" id="vl-achieved">
   <div class="vl-achieved-title">VISUAL LEARNER</div>
   <div class="vl-achieved-sub">Rank Achieved</div>
-  <button class="btn-primary" style="margin-top:20px;" onclick="document.getElementById('vl-achieved').classList.remove('show')">Continue</button>
+  <button class="vl-continue-btn" onclick="document.getElementById('vl-achieved').classList.remove('show')">Continue</button>
 </div>
 
 <div id="toast-container"></div>
 <script src="app.js"></script>
 <script>
-// ========== CONFIG ==========
-var ANTHROPIC_API_KEY = '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';
-
-// ========== RANKS ==========
 var RANKS = [
-  { id:'D',  label:'D',             minPts:0,   minMult:0,   color:'#888888' },
-  { id:'C',  label:'C',             minPts:50,  minMult:1.0, color:'#30d158' },
-  { id:'B',  label:'B',             minPts:100, minMult:1.5, color:'#0a84ff' },
-  { id:'A',  label:'A',             minPts:175, minMult:2.0, color:'#ff9f0a' },
-  { id:'S',  label:'S',             minPts:250, minMult:2.5, color:'#ff3b30' },
-  { id:'SS', label:'SS',            minPts:350, minMult:3.0, color:'#ff375f' },
-  { id:'SSS',label:'SSS',           minPts:450, minMult:4.0, color:'#ffd700' },
-  { id:'VL', label:'VISUAL LEARNER',minPts:450, minMult:4.5, color:'#bf5af2' }
+  { id:'D',  label:'D',              minPts:0,   minMult:0,   color:'#888888' },
+  { id:'C',  label:'C',              minPts:50,  minMult:1.0, color:'#30d158' },
+  { id:'B',  label:'B',              minPts:100, minMult:1.5, color:'#0a84ff' },
+  { id:'A',  label:'A',              minPts:175, minMult:2.0, color:'#ff9f0a' },
+  { id:'S',  label:'S',              minPts:250, minMult:2.5, color:'#ff3b30' },
+  { id:'SS', label:'SS',             minPts:350, minMult:3.0, color:'#ff375f' },
+  { id:'SSS',label:'SSS',            minPts:450, minMult:4.0, color:'#ffd700' },
+  { id:'VL', label:'VISUAL LEARNER', minPts:450, minMult:4.5, color:'#bf5af2' }
 ];
 
 var state = { points:0, mult:1.0, streak:0, qStart:0, correct:'' };
@@ -91,7 +344,7 @@ function getRank(pts, mult) {
 }
 
 function calcMult(streak, ms) {
-  var m = 1.0 + (streak * 0.15);
+  var m = 1.0 + streak * 0.15;
   if (ms < 3000) m += 0.5;
   else if (ms < 5000) m += 0.25;
   return Math.min(parseFloat(m.toFixed(2)), 9.99);
@@ -106,41 +359,38 @@ function getBonuses(streak, ms) {
   return b;
 }
 
-// ========== LOAD QUESTION ==========
+// INTRO
+window.addEventListener('DOMContentLoaded', function() {
+  var overlay = document.getElementById('intro-overlay');
+  setTimeout(function() {
+    overlay.style.transition = 'opacity 0.8s ease';
+    overlay.style.opacity = '0';
+    setTimeout(function() {
+      overlay.style.display = 'none';
+    }, 800);
+  }, 3000);
+});
+
+// LOAD QUESTION
 async function loadQuestion() {
   document.getElementById('q-word').innerHTML = '<div class="loading-spinner"></div>';
   document.getElementById('q-choices').innerHTML = '';
 
   try {
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
+    var res = await fetch('/api/question', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        messages: [{
-          role: 'user',
-          content: 'Generate a vocabulary question for grades 1-6 ELA. Return ONLY a valid JSON object with no markdown, no extra text, exactly this format: {"word":"someword","correct":"the correct definition","choices":["correct definition","wrong def 1","wrong def 2","wrong def 3"]} — shuffle the choices randomly.'
-        }]
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
     });
 
+    if (!res.ok) throw new Error('Server error ' + res.status);
+
     var data = await res.json();
+    if (!data.content || !data.content[0]) throw new Error('No response from API');
 
-    if (!data.content || !data.content[0]) {
-      throw new Error('No response from API');
-    }
-
-    var text = data.content[0].text.trim();
-    // Strip any accidental markdown fences
-    text = text.replace(/```json|```/g, '').trim();
-
+    var text = data.content[0].text.trim().replace(/```json|```/g,'').trim();
     var parsed = JSON.parse(text);
+
     state.correct = parsed.correct;
     state.qStart = Date.now();
 
@@ -148,10 +398,11 @@ async function loadQuestion() {
 
     var choicesEl = document.getElementById('q-choices');
     choicesEl.innerHTML = '';
-    parsed.choices.forEach(function(choice) {
+    parsed.choices.forEach(function(choice, i) {
       var btn = document.createElement('button');
       btn.className = 'choice-btn';
-      btn.textContent = choice;
+      btn.innerHTML = '<span style="font-weight:700;color:#0a84ff;margin-right:8px;">' + (i+1) + '</span>' + choice;
+      btn.setAttribute('data-choice', choice);
       btn.addEventListener('click', function() { handleAnswer(choice, btn); });
       choicesEl.appendChild(btn);
     });
@@ -163,15 +414,23 @@ async function loadQuestion() {
   }
 }
 
-// ========== HANDLE ANSWER ==========
+// KEYBOARD SHORTCUTS 1-4
+document.addEventListener('keydown', function(e) {
+  var keys = {'1':0,'2':1,'3':2,'4':3};
+  if (keys[e.key] !== undefined) {
+    var btns = document.querySelectorAll('.choice-btn:not(:disabled)');
+    if (btns[keys[e.key]]) btns[keys[e.key]].click();
+  }
+});
+
+// HANDLE ANSWER
 function handleAnswer(chosen, btn) {
   var ms = Date.now() - state.qStart;
   var isCorrect = chosen === state.correct;
 
-  // Disable all buttons
   document.querySelectorAll('.choice-btn').forEach(function(b) {
     b.disabled = true;
-    if (b.textContent === state.correct) b.classList.add('correct');
+    if (b.getAttribute('data-choice') === state.correct) b.classList.add('correct');
   });
 
   if (!isCorrect) {
@@ -183,36 +442,27 @@ function handleAnswer(chosen, btn) {
     state.streak++;
     state.points++;
     state.mult = calcMult(state.streak, ms);
-    var bonuses = getBonuses(state.streak, ms);
-    showRankPopup(bonuses);
-
-    // Screen shake
+    showRankPopup(getBonuses(state.streak, ms));
     document.body.classList.add('shake');
-    setTimeout(function() { document.body.classList.remove('shake'); }, 150);
+    setTimeout(function(){ document.body.classList.remove('shake'); }, 150);
   }
 
-  // Update HUD
   document.getElementById('hud-pts').textContent = state.points;
   document.getElementById('hud-mult').textContent = 'x' + state.mult.toFixed(2);
 
-  // Update rank
   var rank = getRank(state.points, state.mult);
-  var rankLetter = document.getElementById('rank-letter');
-  rankLetter.textContent = rank.label;
-  rankLetter.style.color = rank.color;
-  rankLetter.style.textShadow = '0 0 20px ' + rank.color + '66';
+  var rl = document.getElementById('rank-letter');
+  rl.textContent = rank.label;
+  rl.style.color = rank.color;
+  rl.style.textShadow = '0 0 20px ' + rank.color + '66';
   document.getElementById('rank-name').textContent = rank.id === 'VL' ? 'Visual Learner' : rank.id;
 
-  // VL achieved?
   if (rank.id === 'VL' && !vlAchieved) {
     vlAchieved = true;
-    setTimeout(function() { document.getElementById('vl-achieved').classList.add('show'); }, 600);
+    setTimeout(function(){ document.getElementById('vl-achieved').classList.add('show'); }, 600);
   }
 
-  // Save to tournament if active
   saveTournamentScore();
-
-  // Next question
   setTimeout(loadQuestion, 1800);
 }
 
@@ -225,35 +475,34 @@ function showRankPopup(bonuses) {
   var bonusEl = document.getElementById('popup-bonuses');
   bonusEl.innerHTML = '';
   bonuses.forEach(function(b) {
-    var el = document.createElement('div');
-    el.className = 'popup-bonus';
-    el.textContent = b;
+    var el = document.createElement('div'); el.className = 'popup-bonus'; el.textContent = b;
     bonusEl.appendChild(el);
   });
   popup.classList.add('show');
   if (popupTimer) clearTimeout(popupTimer);
-  popupTimer = setTimeout(function() { popup.classList.remove('show'); }, 2200);
+  popupTimer = setTimeout(function(){ popup.classList.remove('show'); }, 2200);
 }
 
-// ========== TOURNAMENT SCORE SYNC ==========
 function saveTournamentScore() {
   var user = firebase.auth().currentUser;
   if (!user) return;
   firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
     if (!doc.exists) return;
-    var code = doc.data().classroomCode || (doc.data().classroomCodes || [])[0];
-    if (!code) return;
-    firebase.firestore().collection('classrooms').doc(code)
-      .collection('tournament').doc('lobby').get().then(function(snap) {
-        if (!snap.exists || snap.data().status !== 'active') return;
-        var upd = {};
-        upd['players.' + user.uid + '.points'] = state.points;
-        snap.ref.update(upd);
-      });
+    var codes = doc.data().classroomCodes || [];
+    if (doc.data().classroomCode) codes.push(doc.data().classroomCode);
+    codes = [...new Set(codes)];
+    codes.forEach(function(code) {
+      firebase.firestore().collection('classrooms').doc(code)
+        .collection('tournament').doc('lobby').get().then(function(snap) {
+          if (!snap.exists || snap.data().status !== 'active') return;
+          var upd = {};
+          upd['players.' + user.uid + '.points'] = state.points;
+          snap.ref.update(upd);
+        });
+    });
   });
 }
 
-// ========== START ==========
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) return window.location.href = 'login.html';
   loadQuestion();
