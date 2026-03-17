@@ -1,166 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visual: Learning — V:L</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
 </head>
 <body>
 
-  <div id="game-screen">
+<div id="game-screen">
 
-    <!-- HUD -->
-    <div class="game-hud">
-      <div class="hud-points">
-        <span>Points</span>
-        <span id="hud-points">0</span>
-      </div>
-      <div class="rank-badge">
-        <div class="rank-letter" id="rank-letter" style="color:var(--rank-d);">D</div>
-        <div class="rank-name" id="rank-name">Beginner</div>
-      </div>
-      <div class="hud-multiplier">
-        <div class="hud-mult-label">Multiplier</div>
-        <div class="hud-mult-value" id="hud-mult">x1.00</div>
-      </div>
+  <!-- HUD -->
+  <div class="game-hud">
+    <div class="hud-points">
+      <span>Points</span>
+      <span id="hud-pts">0</span>
     </div>
-
-    <!-- Question card -->
-    <div class="question-card" id="question-card">
-      <div class="question-prompt">What does this word mean?</div>
-      <div class="question-word" id="question-word">
-        <div class="loading-spinner"></div>
-      </div>
-      <div class="question-choices" id="question-choices"></div>
+    <div class="rank-badge">
+      <div class="rank-letter" id="rank-letter" style="color:#888;">D</div>
+      <div class="rank-name" id="rank-name">Beginner</div>
     </div>
-
-    <!-- Back button -->
-    <a href="student-home.html" class="vl-btn-ghost" style="margin-top:8px;">← Back to Home</a>
-
-  </div>
-
-  <!-- Rank popup (Ultrakill style) -->
-  <div class="rank-popup" id="rank-popup">
-    <div class="popup-rank-id" id="popup-rank-id">D</div>
-    <div class="popup-bonuses" id="popup-bonuses"></div>
-    <div class="popup-multiplier">
-      MULTIPLIER <strong id="popup-mult">x1.00</strong>
+    <div class="hud-multiplier">
+      <div class="hud-mult-label">Multiplier</div>
+      <div class="hud-mult-value" id="hud-mult">x1.00</div>
     </div>
   </div>
 
-  <!-- VL Achieved overlay -->
-  <div class="vl-achieved" id="vl-achieved">
-    <div class="vl-achieved-title">VISUAL LEARNER</div>
-    <div class="vl-achieved-sub">Rank Achieved</div>
-    <button class="vl-btn-primary" style="margin-top:24px;" onclick="document.getElementById('vl-achieved').classList.remove('show')">Continue</button>
+  <!-- Question card -->
+  <div class="question-card" id="question-card">
+    <div class="question-prompt">What does this word mean?</div>
+    <div class="question-word" id="q-word">
+      <div class="loading-spinner"></div>
+    </div>
+    <div class="question-choices" id="q-choices"></div>
   </div>
 
-  <div id="toast-container"></div>
+  <a href="student-home.html" class="btn-ghost" style="margin-top:8px;text-decoration:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </a>
 
-  <script type="module">
-    import { requireAuth } from './app.js';
-    import { loadQuestion, submitAnswer, getState, saveScore } from './game.js';
-    import { getStudentClassroom } from './classroom.js';
-    import { startStudentPing } from './viewer.js';
-    import { getRank } from './rank.js';
+</div>
 
-    const user = await requireAuth();
-    window._vlUser = user;
+<!-- Rank popup -->
+<div class="rank-popup" id="rank-popup">
+  <div class="popup-rank-id" id="popup-rank-id">D</div>
+  <div class="popup-bonuses" id="popup-bonuses"></div>
+  <div class="popup-multiplier">MULTIPLIER <strong id="popup-mult">x1.00</strong></div>
+</div>
 
-    const classroom = await getStudentClassroom();
-    if (classroom) startStudentPing(classroom.code, 'Visual: Learning');
+<!-- VL Achieved -->
+<div class="vl-achieved" id="vl-achieved">
+  <div class="vl-achieved-title">VISUAL LEARNER</div>
+  <div class="vl-achieved-sub">Rank Achieved</div>
+  <button class="btn-primary" style="margin-top:20px;" onclick="document.getElementById('vl-achieved').classList.remove('show')">Continue</button>
+</div>
 
-    let correctAnswer = '';
-    let popupTimer = null;
-    let vlAchieved = false;
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+// ========== CONFIG ==========
+var ANTHROPIC_API_KEY = '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';
 
-    async function nextQuestion() {
-      document.getElementById('question-word').innerHTML = '<div class="loading-spinner"></div>';
-      document.getElementById('question-choices').innerHTML = '';
+// ========== RANKS ==========
+var RANKS = [
+  { id:'D',  label:'D',             minPts:0,   minMult:0,   color:'#888888' },
+  { id:'C',  label:'C',             minPts:50,  minMult:1.0, color:'#30d158' },
+  { id:'B',  label:'B',             minPts:100, minMult:1.5, color:'#0a84ff' },
+  { id:'A',  label:'A',             minPts:175, minMult:2.0, color:'#ff9f0a' },
+  { id:'S',  label:'S',             minPts:250, minMult:2.5, color:'#ff3b30' },
+  { id:'SS', label:'SS',            minPts:350, minMult:3.0, color:'#ff375f' },
+  { id:'SSS',label:'SSS',           minPts:450, minMult:4.0, color:'#ffd700' },
+  { id:'VL', label:'VISUAL LEARNER',minPts:450, minMult:4.5, color:'#bf5af2' }
+];
 
-      const q = await loadQuestion();
-      correctAnswer = q.correct;
+var state = { points:0, mult:1.0, streak:0, qStart:0, correct:'' };
+var vlAchieved = false;
+var popupTimer = null;
 
-      document.getElementById('question-word').textContent = q.word;
+function getRank(pts, mult) {
+  var r = RANKS[0];
+  for (var i = 0; i < RANKS.length; i++) {
+    if (pts >= RANKS[i].minPts && mult >= RANKS[i].minMult) r = RANKS[i];
+  }
+  return r;
+}
 
-      const choices = document.getElementById('question-choices');
-      q.choices.forEach(choice => {
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
-        btn.textContent = choice;
-        btn.addEventListener('click', () => handleAnswer(choice, btn));
-        choices.appendChild(btn);
-      });
+function calcMult(streak, ms) {
+  var m = 1.0 + (streak * 0.15);
+  if (ms < 3000) m += 0.5;
+  else if (ms < 5000) m += 0.25;
+  return Math.min(parseFloat(m.toFixed(2)), 9.99);
+}
+
+function getBonuses(streak, ms) {
+  var b = [];
+  if (ms < 2000) b.push('AIRSHOT');
+  if (streak === 3) b.push('TRIPLE STREAK');
+  if (streak === 5) b.push('QUINTUPLE STREAK');
+  if (streak >= 2 && ms < 3000) b.push('RICOSHOT');
+  return b;
+}
+
+// ========== LOAD QUESTION ==========
+async function loadQuestion() {
+  document.getElementById('q-word').innerHTML = '<div class="loading-spinner"></div>';
+  document.getElementById('q-choices').innerHTML = '';
+
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{
+          role: 'user',
+          content: 'Generate a vocabulary question for grades 1-6 ELA. Return ONLY a valid JSON object with no markdown, no extra text, exactly this format: {"word":"someword","correct":"the correct definition","choices":["correct definition","wrong def 1","wrong def 2","wrong def 3"]} — shuffle the choices randomly.'
+        }]
+      })
+    });
+
+    var data = await res.json();
+
+    if (!data.content || !data.content[0]) {
+      throw new Error('No response from API');
     }
 
-    function handleAnswer(chosen, btn) {
-      const result = submitAnswer(chosen, correctAnswer);
-      const allBtns = document.querySelectorAll('.choice-btn');
+    var text = data.content[0].text.trim();
+    // Strip any accidental markdown fences
+    text = text.replace(/```json|```/g, '').trim();
 
-      // Disable all
-      allBtns.forEach(b => {
-        b.disabled = true;
-        if (b.textContent === correctAnswer) b.classList.add('correct');
+    var parsed = JSON.parse(text);
+    state.correct = parsed.correct;
+    state.qStart = Date.now();
+
+    document.getElementById('q-word').textContent = parsed.word;
+
+    var choicesEl = document.getElementById('q-choices');
+    choicesEl.innerHTML = '';
+    parsed.choices.forEach(function(choice) {
+      var btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = choice;
+      btn.addEventListener('click', function() { handleAnswer(choice, btn); });
+      choicesEl.appendChild(btn);
+    });
+
+  } catch(e) {
+    document.getElementById('q-word').textContent = 'Error loading question';
+    showToast('API error: ' + e.message, 'error');
+    setTimeout(loadQuestion, 3000);
+  }
+}
+
+// ========== HANDLE ANSWER ==========
+function handleAnswer(chosen, btn) {
+  var ms = Date.now() - state.qStart;
+  var isCorrect = chosen === state.correct;
+
+  // Disable all buttons
+  document.querySelectorAll('.choice-btn').forEach(function(b) {
+    b.disabled = true;
+    if (b.textContent === state.correct) b.classList.add('correct');
+  });
+
+  if (!isCorrect) {
+    btn.classList.add('wrong');
+    state.streak = 0;
+    state.mult = Math.max(1.0, parseFloat((state.mult - 0.25).toFixed(2)));
+    showRankPopup(['INTERRUPTION']);
+  } else {
+    state.streak++;
+    state.points++;
+    state.mult = calcMult(state.streak, ms);
+    var bonuses = getBonuses(state.streak, ms);
+    showRankPopup(bonuses);
+
+    // Screen shake
+    document.body.classList.add('shake');
+    setTimeout(function() { document.body.classList.remove('shake'); }, 150);
+  }
+
+  // Update HUD
+  document.getElementById('hud-pts').textContent = state.points;
+  document.getElementById('hud-mult').textContent = 'x' + state.mult.toFixed(2);
+
+  // Update rank
+  var rank = getRank(state.points, state.mult);
+  var rankLetter = document.getElementById('rank-letter');
+  rankLetter.textContent = rank.label;
+  rankLetter.style.color = rank.color;
+  rankLetter.style.textShadow = '0 0 20px ' + rank.color + '66';
+  document.getElementById('rank-name').textContent = rank.id === 'VL' ? 'Visual Learner' : rank.id;
+
+  // VL achieved?
+  if (rank.id === 'VL' && !vlAchieved) {
+    vlAchieved = true;
+    setTimeout(function() { document.getElementById('vl-achieved').classList.add('show'); }, 600);
+  }
+
+  // Save to tournament if active
+  saveTournamentScore();
+
+  // Next question
+  setTimeout(loadQuestion, 1800);
+}
+
+function showRankPopup(bonuses) {
+  var rank = getRank(state.points, state.mult);
+  var popup = document.getElementById('rank-popup');
+  document.getElementById('popup-rank-id').textContent = rank.label;
+  document.getElementById('popup-rank-id').style.color = rank.color;
+  document.getElementById('popup-mult').textContent = 'x' + state.mult.toFixed(2);
+  var bonusEl = document.getElementById('popup-bonuses');
+  bonusEl.innerHTML = '';
+  bonuses.forEach(function(b) {
+    var el = document.createElement('div');
+    el.className = 'popup-bonus';
+    el.textContent = b;
+    bonusEl.appendChild(el);
+  });
+  popup.classList.add('show');
+  if (popupTimer) clearTimeout(popupTimer);
+  popupTimer = setTimeout(function() { popup.classList.remove('show'); }, 2200);
+}
+
+// ========== TOURNAMENT SCORE SYNC ==========
+function saveTournamentScore() {
+  var user = firebase.auth().currentUser;
+  if (!user) return;
+  firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
+    if (!doc.exists) return;
+    var code = doc.data().classroomCode || (doc.data().classroomCodes || [])[0];
+    if (!code) return;
+    firebase.firestore().collection('classrooms').doc(code)
+      .collection('tournament').doc('lobby').get().then(function(snap) {
+        if (!snap.exists || snap.data().status !== 'active') return;
+        var upd = {};
+        upd['players.' + user.uid + '.points'] = state.points;
+        snap.ref.update(upd);
       });
-      if (!result.correct) btn.classList.add('wrong');
+  });
+}
 
-      // Update HUD
-      const state = getState();
-      document.getElementById('hud-points').textContent = state.points;
-      document.getElementById('hud-mult').textContent = `x${state.multiplier.toFixed(2)}`;
-
-      // Rank
-      const rank = getRank(state.points, state.multiplier);
-      const rankLetter = document.getElementById('rank-letter');
-      rankLetter.textContent = rank.label;
-      rankLetter.style.color = rank.color;
-      rankLetter.style.textShadow = `0 0 20px ${rank.color}66`;
-      document.getElementById('rank-name').textContent = rank.id === 'VL' ? 'Visual Learner' : rank.id;
-
-      // Screen shake on correct
-      if (result.correct) {
-        document.body.classList.add('shake');
-        setTimeout(() => document.body.classList.remove('shake'), 150);
-      }
-
-      // Popup
-      showRankPopup(rank, result.bonuses || [], state.multiplier);
-
-      // VL achieved?
-      if (rank.id === 'VL' && !vlAchieved) {
-        vlAchieved = true;
-        setTimeout(() => document.getElementById('vl-achieved').classList.add('show'), 600);
-      }
-
-      // Save score
-      if (classroom) saveScore(user.uid, classroom.code).catch(()=>{});
-
-      // Next question
-      setTimeout(nextQuestion, 1800);
-    }
-
-    function showRankPopup(rank, bonuses, mult) {
-      const popup = document.getElementById('rank-popup');
-      document.getElementById('popup-rank-id').textContent = rank.label;
-      document.getElementById('popup-rank-id').style.color = rank.color;
-      document.getElementById('popup-mult').textContent = `x${mult.toFixed(2)}`;
-
-      const bonusContainer = document.getElementById('popup-bonuses');
-      bonusContainer.innerHTML = '';
-      bonuses.forEach(b => {
-        const el = document.createElement('div');
-        el.className = 'popup-bonus';
-        el.textContent = b;
-        bonusContainer.appendChild(el);
-      });
-
-      popup.classList.add('show');
-      if (popupTimer) clearTimeout(popupTimer);
-      popupTimer = setTimeout(() => popup.classList.remove('show'), 2200);
-    }
-
-    nextQuestion();
-  </script>
+// ========== START ==========
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) return window.location.href = 'login.html';
+  loadQuestion();
+});
+</script>
 </body>
 </html>
