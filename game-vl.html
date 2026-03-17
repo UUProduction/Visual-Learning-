@@ -486,54 +486,48 @@ async function loadQuestion() {
   document.getElementById('q-choices').innerHTML = '';
 
   try {
-    var res = await fetch('/api/question', {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'YOUR_API_KEY_HERE',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        messages: [{
+          role: 'user',
+          content: 'Generate a vocabulary question for grades 1-6 ELA. Return ONLY a valid JSON object with no markdown, no extra text, exactly this format: {"word":"someword","correct":"the correct definition","choices":["correct definition","wrong def 1","wrong def 2","wrong def 3"]} — shuffle the choices randomly.'
+        }]
+      })
     });
 
-    // Read as text first to avoid "unexpected end of JSON" crash
     var rawText = await res.text();
-
-    if (!rawText || rawText.trim() === '') {
-      throw new Error('Server returned empty response — check Render logs');
-    }
+    if (!rawText || rawText.trim() === '') throw new Error('Empty response');
 
     var data;
-    try {
-      data = JSON.parse(rawText);
-    } catch(e) {
-      throw new Error('Response not JSON: ' + rawText.substring(0, 80));
-    }
+    try { data = JSON.parse(rawText); }
+    catch(e) { throw new Error('Response not JSON: ' + rawText.substring(0, 80)); }
 
-    if (!res.ok || data.error) {
-      throw new Error(data.error || 'Server error ' + res.status);
-    }
+    if (!res.ok || data.error) throw new Error(data.error ? (data.error.message || JSON.stringify(data.error)) : 'API error ' + res.status);
+    if (!data.content || !data.content[0] || !data.content[0].text) throw new Error('No content in response');
 
-    if (!data.content || !data.content[0] || !data.content[0].text) {
-      throw new Error('No content in response');
-    }
-
-    var text = data.content[0].text.trim();
-    text = text.replace(/```json|```/g, '').trim();
-
+    var text = data.content[0].text.trim().replace(/```json|```/g,'').trim();
     var match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('No JSON object in response');
+    if (!match) throw new Error('No JSON in response');
 
     var parsed;
-    try {
-      parsed = JSON.parse(match[0]);
-    } catch(e) {
-      throw new Error('Could not parse question JSON');
-    }
+    try { parsed = JSON.parse(match[0]); }
+    catch(e) { throw new Error('Could not parse question JSON'); }
 
     if (!parsed.word || !parsed.correct || !Array.isArray(parsed.choices) || parsed.choices.length < 2) {
-      throw new Error('Invalid question format from API');
+      throw new Error('Invalid question format');
     }
 
     state.correct = parsed.correct;
     state.qStart = Date.now();
-
     document.getElementById('q-word').textContent = parsed.word;
 
     var choicesEl = document.getElementById('q-choices');
