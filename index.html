@@ -7,16 +7,27 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <div id="intro-screen">
+
     <div id="intro-uup">
       <div class="uup-logo">UUP</div>
       <div class="uup-sub">UU Production</div>
     </div>
+
     <div id="intro-presents">and Anthropic's API presents</div>
+
     <div id="intro-vision-wrap">
       <div id="intro-vision"></div>
       <div id="intro-learning">Learning</div>
     </div>
+
+    <div id="intro-credits">
+      <div class="intro-credit-row">Created by <span>Lakayden</span></div>
+      <div class="intro-credit-row">Developers <span>Kyle.R &nbsp;·&nbsp; Dan.M</span></div>
+      <div class="intro-credit-row">Admins / Helpers <span>Chance.H</span></div>
+    </div>
+
   </div>
 
   <script>
@@ -59,6 +70,7 @@
       var visionWrap = document.getElementById('intro-vision-wrap');
       var visionEl   = document.getElementById('intro-vision');
       var learningEl = document.getElementById('intro-learning');
+      var creditsEl  = document.getElementById('intro-credits');
 
       // UUP
       await fadeIn(uup, 700);
@@ -97,7 +109,15 @@
       learningEl.style.transition = 'opacity 500ms ease';
       await wait(30);
       learningEl.style.opacity = '1';
-      await wait(1400);
+      await wait(800);
+
+      // Credits
+      creditsEl.style.display = 'flex';
+      creditsEl.style.opacity = '0';
+      creditsEl.style.transition = 'opacity 700ms ease';
+      await wait(30);
+      creditsEl.style.opacity = '1';
+      await wait(2000);
 
       // Fade out and redirect
       var screen = document.getElementById('intro-screen');
@@ -109,5 +129,6 @@
 
     runIntro();
   </script>
+
 </body>
 </html>
