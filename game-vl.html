@@ -13,7 +13,7 @@
     body { background:#fff; color:#111; }
     body::after { display:none; }
 
-    /* ===== GAME LOADING SCREEN ===== */
+    /* ===== LOADING SCREEN ===== */
     #game-loading {
       position:fixed; inset:0;
       background:#050a14;
@@ -30,39 +30,34 @@
       text-shadow:0 0 30px rgba(0,229,255,0.4);
       line-height:1;
     }
-
     .game-loading-brand span { color:#00e5ff; }
-
-    .game-loading-spinner-wrap {
-      display:flex; flex-direction:column;
-      align-items:center; gap:16px;
-    }
 
     .gc-spinner {
       width:52px; height:52px;
-      border:4px solid rgba(10,132,255,0.15);
+      border:4px solid rgba(10,132,255,0.2);
       border-top-color:#0a84ff;
       border-radius:50%;
       animation:gc-spin 0.9s linear infinite;
     }
-
     @keyframes gc-spin { to { transform:rotate(360deg); } }
 
     .game-loading-fact {
       font-family:'Barlow Condensed',sans-serif;
       font-size:15px; letter-spacing:0.06em;
-      color:rgba(136,153,187,0.7);
-      text-align:center; max-width:320px;
-      line-height:1.6; min-height:44px;
+      color:rgba(136,153,187,0.75);
+      text-align:center; max-width:300px;
+      line-height:1.6; min-height:48px;
       transition:opacity 0.4s ease;
     }
 
-    /* ===== INTRO CREDITS OVERLAY ===== */
+    /* ===== INTRO CREDITS ===== */
     #intro-overlay {
-      position:fixed; inset:0; background:#050a14;
-      display:flex; flex-direction:column;
+      position:fixed; inset:0;
+      background:#050a14;
+      display:none; flex-direction:column;
       align-items:center; justify-content:center;
       z-index:500; gap:6px;
+      transition:opacity 0.7s ease;
     }
 
     .intro-vl-title {
@@ -77,12 +72,13 @@
       font-family:'Barlow Condensed',sans-serif;
       font-size:clamp(14px,3vw,22px);
       letter-spacing:0.4em; color:#00e5ff;
-      text-transform:uppercase;
+      text-transform:uppercase; margin-top:4px;
     }
 
     .intro-credits {
-      margin-top:20px; display:flex;
-      flex-direction:column; align-items:center; gap:5px;
+      margin-top:22px;
+      display:flex; flex-direction:column;
+      align-items:center; gap:5px;
     }
 
     .intro-credit-row {
@@ -91,33 +87,31 @@
       color:rgba(136,153,187,0.65);
       text-align:center; text-transform:uppercase;
     }
-
     .intro-credit-row span { color:#e8f0ff; font-weight:700; }
 
     /* ===== TOP BAR ===== */
     .game-topbar {
       width:100%; background:#0a84ff;
       display:flex; align-items:center; justify-content:space-between;
-      padding:10px 20px; border-bottom:2px solid #007ae8;
+      padding:10px 20px; border-bottom:2px solid #0070e0;
     }
 
     .game-topbar-brand {
       font-family:'Bebas Neue',sans-serif;
       font-size:22px; letter-spacing:0.1em; color:#fff;
     }
-
     .game-topbar-brand span { color:#00e5ff; }
 
     .topbar-back {
-      display:flex; align-items:center; gap:6px;
-      background:rgba(255,255,255,0.15); border:none;
-      border-radius:6px; padding:6px 12px; color:#fff;
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.18); border:none;
+      border-radius:6px; padding:7px 14px; color:#fff;
       font-family:'Barlow Condensed',sans-serif; font-size:13px;
       font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
       cursor:pointer; text-decoration:none; transition:background 0.2s;
     }
-    .topbar-back:hover { background:rgba(255,255,255,0.25); }
-    .topbar-back svg { width:14px; height:14px; stroke:#fff; }
+    .topbar-back:hover { background:rgba(255,255,255,0.28); }
+    .topbar-back svg { width:14px; height:14px; stroke:#fff; flex-shrink:0; }
 
     /* ===== HUD ===== */
     .game-hud {
@@ -125,18 +119,18 @@
       width:100%; max-width:700px; padding:16px 20px 8px;
     }
 
-    .hud-points { display:flex; flex-direction:column; align-items:flex-start; }
+    .hud-points { display:flex; flex-direction:column; }
     .hud-pts-label {
       font-family:'Barlow Condensed',sans-serif; font-size:11px;
       font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#666;
     }
     .hud-pts-val {
-      font-family:'Bebas Neue',sans-serif; font-size:40px; line-height:1; color:#111;
+      font-family:'Bebas Neue',sans-serif; font-size:42px; line-height:1; color:#111;
     }
 
     .rank-badge { display:flex; flex-direction:column; align-items:center; gap:1px; }
     .rank-letter {
-      font-family:'Bebas Neue',sans-serif; font-size:52px;
+      font-family:'Bebas Neue',sans-serif; font-size:54px;
       line-height:1; transition:color 0.4s, text-shadow 0.4s;
     }
     .rank-name {
@@ -150,13 +144,13 @@
       font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#666;
     }
     .hud-mult-val {
-      font-family:'Bebas Neue',sans-serif; font-size:36px;
-      color:#f29900; text-shadow:0 0 10px rgba(242,153,0,0.3);
+      font-family:'Bebas Neue',sans-serif; font-size:38px;
+      color:#f29900; text-shadow:0 0 10px rgba(242,153,0,0.25);
     }
 
     /* ===== QUESTION CARD ===== */
     .q-card {
-      width:100%; max-width:620px; margin:0 20px;
+      width:calc(100% - 40px); max-width:620px;
       background:#f8f9fc; border:2px solid #e0e8ff;
       border-radius:16px; padding:28px 24px;
       text-align:center; box-shadow:0 4px 24px rgba(10,132,255,0.08);
@@ -164,13 +158,15 @@
 
     .q-prompt {
       font-family:'Barlow Condensed',sans-serif; font-size:12px;
-      letter-spacing:0.22em; text-transform:uppercase; color:#888; margin-bottom:8px;
+      letter-spacing:0.22em; text-transform:uppercase; color:#888;
+      margin-bottom:8px;
     }
 
     .q-word {
-      font-family:'Bebas Neue',sans-serif; font-size:clamp(42px,8vw,70px);
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(42px,8vw,70px);
       color:#111; letter-spacing:0.04em; margin-bottom:24px;
-      min-height:70px; display:flex; align-items:center; justify-content:center;
+      min-height:72px; display:flex; align-items:center; justify-content:center;
     }
 
     .q-choices { display:flex; flex-direction:column; gap:10px; }
@@ -184,12 +180,14 @@
       transition:background 0.15s, border-color 0.15s, transform 0.1s;
       box-shadow:0 2px 6px rgba(0,0,0,0.04);
     }
-    .choice-btn:hover:not(:disabled) { background:#eef3ff; border-color:#0a84ff; transform:translateX(4px); }
+    .choice-btn:hover:not(:disabled) {
+      background:#eef3ff; border-color:#0a84ff; transform:translateX(4px);
+    }
     .choice-btn.correct { background:#e6f9ee; border-color:#30d158; color:#0a7a30; }
     .choice-btn.wrong   { background:#fef0ef; border-color:#ff3b30; color:#c0120a; }
     .choice-btn:disabled { cursor:not-allowed; }
 
-    /* ===== INLINE SPINNER (inside q-card) ===== */
+    /* ===== INLINE CARD SPINNER ===== */
     .q-spinner {
       width:36px; height:36px;
       border:4px solid rgba(10,132,255,0.15);
@@ -202,33 +200,38 @@
     /* ===== RANK POPUP ===== */
     .rank-popup {
       position:fixed; top:50%; right:20px;
-      transform:translateY(-50%) translateX(120%);
+      transform:translateY(-50%) translateX(130%);
       background:#050a14; border-left:4px solid #ffd700;
       border-radius:0 10px 10px 0; padding:14px 18px;
-      min-width:200px; z-index:400;
+      min-width:210px; z-index:400;
       transition:transform 0.35s cubic-bezier(.17,.67,.3,1.4);
-      box-shadow:0 8px 32px rgba(0,0,0,0.3);
+      box-shadow:0 8px 32px rgba(0,0,0,0.35);
     }
     .rank-popup.show { transform:translateY(-50%) translateX(0); }
 
     .popup-rank-id {
-      font-family:'Bebas Neue',sans-serif; font-size:38px;
+      font-family:'Bebas Neue',sans-serif; font-size:40px;
       line-height:1; letter-spacing:0.05em; color:#fff;
     }
-    .popup-bonuses { margin-top:6px; display:flex; flex-direction:column; gap:2px; }
+    .popup-bonuses { margin-top:6px; display:flex; flex-direction:column; gap:3px; }
     .popup-bonus {
       font-family:'Barlow Condensed',sans-serif; font-size:11px;
-      font-weight:600; letter-spacing:0.1em; color:#00e5ff; text-transform:uppercase;
+      font-weight:600; letter-spacing:0.1em; color:#00e5ff;
+      text-transform:uppercase;
     }
     .popup-bonus::before { content:'+ '; color:#8899bb; }
-    .popup-mult-line { margin-top:8px; font-family:'Barlow Condensed',sans-serif; font-size:11px; color:#8899bb; }
-    .popup-mult-line strong { color:#ffd700; font-size:16px; }
+    .popup-mult-line {
+      margin-top:9px; font-family:'Barlow Condensed',sans-serif;
+      font-size:11px; color:#8899bb; letter-spacing:0.1em;
+    }
+    .popup-mult-line strong { color:#ffd700; font-size:17px; }
 
     /* ===== VL ACHIEVED ===== */
     .vl-achieved {
-      position:fixed; inset:0; background:rgba(0,0,0,0.92);
-      display:flex; flex-direction:column; align-items:center;
-      justify-content:center; z-index:900; gap:12px;
+      position:fixed; inset:0; background:rgba(0,0,0,0.93);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      z-index:900; gap:12px;
       opacity:0; pointer-events:none; transition:opacity 0.6s;
     }
     .vl-achieved.show { opacity:1; pointer-events:all; }
@@ -238,26 +241,26 @@
       letter-spacing:0.08em; animation:vl-pulse 2s infinite;
     }
     @keyframes vl-pulse {
-      0%,100%{text-shadow:0 0 60px rgba(191,90,242,0.6);}
-      50%{text-shadow:0 0 120px rgba(191,90,242,0.95);}
+      0%,100%{ text-shadow:0 0 60px rgba(191,90,242,0.6); }
+      50%{ text-shadow:0 0 120px rgba(191,90,242,0.95); }
     }
     .vl-achieved-sub {
       font-family:'Barlow Condensed',sans-serif; font-size:20px;
       letter-spacing:0.3em; text-transform:uppercase; color:#8899bb;
     }
     .vl-continue-btn {
-      margin-top:16px; padding:12px 32px; background:#0a84ff;
-      border:none; border-radius:8px; color:#fff;
+      margin-top:16px; padding:12px 32px;
+      background:#0a84ff; border:none; border-radius:8px; color:#fff;
       font-family:'Barlow Condensed',sans-serif; font-size:15px;
       font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
       cursor:pointer; transition:background 0.2s;
     }
     .vl-continue-btn:hover { background:#2a94ff; }
 
-    /* ===== KEYBOARD ===== */
+    /* ===== KEYBOARD HINT ===== */
     .keyboard-wrap {
       position:fixed; bottom:16px; left:16px;
-      width:200px; opacity:0.6;
+      width:200px; opacity:0.55;
       transition:opacity 0.2s; z-index:10;
     }
     .keyboard-wrap:hover { opacity:1; }
@@ -270,17 +273,17 @@
 
     /* ===== GAME WRAP ===== */
     #game-wrap {
-      display:flex; flex-direction:column;
+      display:none; flex-direction:column;
       align-items:center; min-height:100vh;
-      background:#fff; padding:0 0 20px;
+      background:#fff; padding-bottom:30px;
     }
 
     /* ===== TOAST ===== */
     #toast-container {
       position:fixed; bottom:22px; left:50%;
       transform:translateX(-50%); z-index:9000;
-      display:flex; flex-direction:column; gap:6px;
-      align-items:center; pointer-events:none;
+      display:flex; flex-direction:column;
+      gap:6px; align-items:center; pointer-events:none;
     }
     .toast {
       background:#323232; border-radius:8px; padding:9px 20px;
@@ -291,32 +294,33 @@
     }
     .toast.error   { background:#b31412; }
     .toast.success { background:#137333; }
-    @keyframes toast-in  { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes toast-in  { from{opacity:0;transform:translateY(10px);}  to{opacity:1;transform:translateY(0);} }
     @keyframes toast-out { to{opacity:0;transform:translateY(-7px);} }
 
     @keyframes screen-shake {
-      0%{transform:translate(0,0);} 20%{transform:translate(-7px,3px);}
-      40%{transform:translate(7px,-3px);} 60%{transform:translate(-3px,7px);}
-      80%{transform:translate(3px,-2px);} 100%{transform:translate(0,0);}
+      0%  {transform:translate(0,0);}
+      20% {transform:translate(-7px,3px);}
+      40% {transform:translate(7px,-3px);}
+      60% {transform:translate(-3px,7px);}
+      80% {transform:translate(3px,-2px);}
+      100%{transform:translate(0,0);}
     }
     .shake { animation:screen-shake 0.12s ease; }
   </style>
 </head>
 <body>
 
-<!-- GAME LOADING SCREEN -->
+<!-- ===== LOADING SCREEN ===== -->
 <div id="game-loading">
   <div class="game-loading-brand">V<span>:</span>L</div>
-  <div class="game-loading-spinner-wrap">
-    <div class="gc-spinner"></div>
-    <div class="game-loading-fact" id="loading-fact">Loading...</div>
-  </div>
+  <div class="gc-spinner"></div>
+  <div class="game-loading-fact" id="loading-fact"></div>
 </div>
 
-<!-- INTRO CREDITS OVERLAY -->
-<div id="intro-overlay" style="display:none;">
+<!-- ===== INTRO CREDITS ===== -->
+<div id="intro-overlay">
   <div class="intro-vl-title">VISUAL<span style="color:#00e5ff;">:</span></div>
-  <div class="intro-vl-title" style="font-size:clamp(32px,7vw,68px);margin-top:-12px;">Learning</div>
+  <div class="intro-vl-title" style="font-size:clamp(32px,7vw,68px);margin-top:-10px;">Learning</div>
   <div class="intro-vl-sub">Vision: Learning</div>
   <div class="intro-credits">
     <div class="intro-credit-row">Created by <span>Lakayden</span></div>
@@ -325,8 +329,8 @@
   </div>
 </div>
 
-<!-- GAME -->
-<div id="game-wrap" style="display:none;">
+<!-- ===== GAME ===== -->
+<div id="game-wrap">
 
   <div class="game-topbar">
     <div class="game-topbar-brand">V<span>:</span>L</div>
@@ -361,20 +365,20 @@
 
 </div>
 
-<!-- KEYBOARD HINT -->
+<!-- ===== KEYBOARD HINT ===== -->
 <div class="keyboard-wrap">
-  <img src="https://miro.medium.com/v2/1*qYGBCM3HT4Kjxsm4UGTN1A.png" alt="Keyboard shortcuts"/>
+  <img src="https://miro.medium.com/v2/1*qYGBCM3HT4Kjxsm4UGTN1A.png" alt="Keyboard"/>
   <div class="keyboard-label">Use 1–4 to answer</div>
 </div>
 
-<!-- RANK POPUP -->
+<!-- ===== RANK POPUP ===== -->
 <div class="rank-popup" id="rank-popup">
   <div class="popup-rank-id" id="popup-rank-id">D</div>
   <div class="popup-bonuses" id="popup-bonuses"></div>
   <div class="popup-mult-line">MULTIPLIER <strong id="popup-mult">x1.00</strong></div>
 </div>
 
-<!-- VL ACHIEVED -->
+<!-- ===== VL ACHIEVED ===== -->
 <div class="vl-achieved" id="vl-achieved">
   <div class="vl-achieved-title">VISUAL LEARNER</div>
   <div class="vl-achieved-sub">Rank Achieved</div>
@@ -385,17 +389,15 @@
 <script src="app.js"></script>
 <script>
 
-// ===== LOADING FACTS =====
+// ===== FACTS =====
 var FACTS = [
   'Did you know Skylar is short? 😭',
   'Don Don thinks he made this but in truth Lakayden did 🤣'
 ];
-
-var factEl = document.getElementById('loading-fact');
 var factIndex = Math.floor(Math.random() * FACTS.length);
+var factEl = document.getElementById('loading-fact');
 factEl.textContent = FACTS[factIndex];
 
-// Cycle facts every 3 seconds
 setInterval(function() {
   factEl.style.opacity = '0';
   setTimeout(function() {
@@ -403,7 +405,7 @@ setInterval(function() {
     factEl.textContent = FACTS[factIndex];
     factEl.style.opacity = '1';
   }, 400);
-}, 3000);
+}, 3500);
 
 // ===== RANKS =====
 var RANKS = [
@@ -445,36 +447,37 @@ function getBonuses(streak, ms) {
   return b;
 }
 
-// ===== SHOW INTRO THEN GAME =====
-function showIntro() {
+// ===== SEQUENCE: loading → intro → game =====
+function startSequence() {
   var loading = document.getElementById('game-loading');
   var intro   = document.getElementById('intro-overlay');
   var game    = document.getElementById('game-wrap');
 
-  // Fade out loading
-  loading.style.opacity = '0';
+  // Step 1: hide loading screen after 2s
   setTimeout(function() {
-    loading.style.display = 'none';
-
-    // Show intro credits
-    intro.style.display = 'flex';
-    intro.style.opacity = '0';
-    intro.style.transition = 'opacity 0.6s ease';
+    loading.style.opacity = '0';
     setTimeout(function() {
-      intro.style.opacity = '1';
-    }, 30);
+      loading.style.display = 'none';
 
-    // After 3s fade out intro and show game
-    setTimeout(function() {
+      // Step 2: show intro credits
+      intro.style.display = 'flex';
       intro.style.opacity = '0';
       setTimeout(function() {
-        intro.style.display = 'none';
-        game.style.display = 'flex';
-        loadQuestion();
-      }, 700);
-    }, 3000);
+        intro.style.opacity = '1';
+      }, 30);
 
-  }, 600);
+      // Step 3: after 3s hide intro, show game
+      setTimeout(function() {
+        intro.style.opacity = '0';
+        setTimeout(function() {
+          intro.style.display = 'none';
+          game.style.display = 'flex';
+          loadQuestion();
+        }, 700);
+      }, 3000);
+
+    }, 600);
+  }, 2000);
 }
 
 // ===== LOAD QUESTION =====
@@ -489,22 +492,44 @@ async function loadQuestion() {
       body: JSON.stringify({})
     });
 
-    if (!res.ok) {
-      var errData = await res.json();
-      throw new Error(errData.error || 'Server error ' + res.status);
+    // Read as text first to avoid "unexpected end of JSON" crash
+    var rawText = await res.text();
+
+    if (!rawText || rawText.trim() === '') {
+      throw new Error('Server returned empty response — check Render logs');
     }
 
-    var data = await res.json();
-    if (!data.content || !data.content[0]) throw new Error('No response from API');
+    var data;
+    try {
+      data = JSON.parse(rawText);
+    } catch(e) {
+      throw new Error('Response not JSON: ' + rawText.substring(0, 80));
+    }
+
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Server error ' + res.status);
+    }
+
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      throw new Error('No content in response');
+    }
 
     var text = data.content[0].text.trim();
     text = text.replace(/```json|```/g, '').trim();
 
     var match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('No JSON found in response');
+    if (!match) throw new Error('No JSON object in response');
 
-    var parsed = JSON.parse(match[0]);
-    if (!parsed.word || !parsed.correct || !parsed.choices) throw new Error('Invalid question structure');
+    var parsed;
+    try {
+      parsed = JSON.parse(match[0]);
+    } catch(e) {
+      throw new Error('Could not parse question JSON');
+    }
+
+    if (!parsed.word || !parsed.correct || !Array.isArray(parsed.choices) || parsed.choices.length < 2) {
+      throw new Error('Invalid question format from API');
+    }
 
     state.correct = parsed.correct;
     state.qStart = Date.now();
@@ -517,15 +542,15 @@ async function loadQuestion() {
       var btn = document.createElement('button');
       btn.className = 'choice-btn';
       btn.setAttribute('data-choice', choice);
-      btn.innerHTML = '<span style="font-weight:700;color:#0a84ff;margin-right:8px;">' + (i+1) + '</span>' + choice;
+      btn.innerHTML = '<span style="font-weight:700;color:#0a84ff;margin-right:8px;">'+(i+1)+'</span>'+choice;
       btn.addEventListener('click', function() { handleAnswer(choice, btn); });
       choicesEl.appendChild(btn);
     });
 
   } catch(e) {
-    document.getElementById('q-word').textContent = 'Error loading question';
+    document.getElementById('q-word').textContent = 'Error';
     showToast('Error: ' + e.message, 'error');
-    setTimeout(loadQuestion, 3000);
+    setTimeout(loadQuestion, 4000);
   }
 }
 
@@ -538,7 +563,7 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// ===== HANDLE ANSWER =====
+// ===== ANSWER HANDLER =====
 function handleAnswer(chosen, btn) {
   var ms = Date.now() - state.qStart;
   var isCorrect = chosen === state.correct;
@@ -621,12 +646,24 @@ function saveTournamentScore() {
   });
 }
 
-// ===== START =====
+// ===== TOAST =====
+function showToast(msg, type) {
+  type = type || '';
+  var c = document.getElementById('toast-container');
+  if (!c) return;
+  var t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3200);
+}
+
+// ===== INIT =====
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) return window.location.href = 'login.html';
-  // Show loading for at least 2s then show intro
-  setTimeout(showIntro, 2000);
+  startSequence();
 });
+
 </script>
 </body>
 </html>
