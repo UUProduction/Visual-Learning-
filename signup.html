@@ -13,26 +13,28 @@
 <body>
   <div id="login-screen">
     <div class="login-card">
-
       <div class="login-header">
         <img class="login-logo" src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="V:L"/>
-        <div class="login-title" id="page-title">Create Account</div>
+        <div class="login-title">Create Account</div>
       </div>
-
       <div class="login-body">
 
-        <!-- STEP 1: Pick role -->
+        <!-- STEP 1: Role -->
         <div id="step-role">
-          <div class="login-field" style="margin-bottom:16px;">
+          <div class="login-field" style="margin-bottom:14px;">
             <label>I am a...</label>
-            <div class="role-selector" style="margin-top:6px;">
+            <div class="role-selector" style="margin-top:6px;flex-wrap:wrap;gap:7px;">
               <button class="role-btn active" data-role="student">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>
                 Student
               </button>
               <button class="role-btn" data-role="teacher">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
                 Representative
+              </button>
+              <button class="role-btn" data-role="admin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Admin
               </button>
             </div>
           </div>
@@ -40,7 +42,7 @@
           <div class="login-rep-link" style="margin-top:10px;">Already have an account? <a href="login.html">Sign in</a></div>
         </div>
 
-        <!-- STEP 2A: STUDENT signup -->
+        <!-- STEP 2: Student -->
         <div id="step-student" class="hidden">
           <div style="display:flex;flex-direction:column;gap:10px;">
             <button class="login-oauth-btn" id="google-student-btn">
@@ -65,37 +67,36 @@
               <input type="password" id="s-confirm" placeholder="••••••••"/>
             </div>
             <button class="login-submit" id="student-signup-btn">Create Account</button>
-            <button class="login-rep-link" id="back-from-student" style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;">← Go back</button>
+            <button style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;margin-top:4px;" id="back-student">← Go back</button>
           </div>
         </div>
 
-        <!-- STEP 2B: REP — enter code first -->
+        <!-- STEP 2: Rep code -->
         <div id="step-rep-code" class="hidden">
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="text-align:center;padding:8px 0;">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.08em;color:var(--vl-cyan);margin-bottom:6px;">Representative Verification</div>
-              <div style="font-size:12px;color:var(--vl-gray);line-height:1.6;">You must enter the Representative code before you can create a Representative account.</div>
+            <div style="text-align:center;padding:6px 0;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.08em;color:var(--vl-cyan);margin-bottom:5px;">Representative Verification</div>
+              <div style="font-size:12px;color:var(--vl-gray);line-height:1.6;">Enter the Representative code to continue.</div>
             </div>
             <div class="login-field">
               <label>Representative Code</label>
-              <input type="password" id="rep-code-input" placeholder="Enter your code"/>
-              <span class="field-hint">Ask your school administrator for this code</span>
+              <input type="password" id="rep-code-input" placeholder="Enter code"/>
             </div>
             <button class="login-submit" id="rep-code-btn">Verify Code</button>
-            <button class="login-rep-link" id="back-from-rep-code" style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;">← Go back</button>
+            <button style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;" id="back-rep-code">← Go back</button>
           </div>
         </div>
 
-        <!-- STEP 3: REP — Google only after code verified -->
+        <!-- STEP 3: Rep signup -->
         <div id="step-rep-signup" class="hidden">
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="text-align:center;padding:8px 0;">
+            <div style="text-align:center;padding:6px 0;">
               <div style="font-size:13px;color:var(--vl-green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.1em;">✓ CODE VERIFIED</div>
-              <div style="font-size:12px;color:var(--vl-gray);margin-top:4px;">Sign up with Google to create your Representative account</div>
+              <div style="font-size:12px;color:var(--vl-gray);margin-top:3px;">Sign up as a Representative</div>
             </div>
             <button class="login-oauth-btn" id="google-rep-btn">
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
-              Sign up as Representative
+              Sign up with Google
             </button>
             <div class="login-divider"><span>or</span></div>
             <div class="login-field">
@@ -115,39 +116,90 @@
               <input type="password" id="r-confirm" placeholder="••••••••"/>
             </div>
             <button class="login-submit" id="rep-signup-btn">Create Representative Account</button>
-            <button class="login-rep-link" id="back-from-rep-signup" style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;">← Go back</button>
+            <button style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;" id="back-rep-signup">← Go back</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Admin code -->
+        <div id="step-admin-code" class="hidden">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="text-align:center;padding:6px 0;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.08em;color:var(--vl-purple);margin-bottom:5px;">Admin Verification</div>
+              <div style="font-size:12px;color:var(--vl-gray);line-height:1.6;">Enter the Admin code to continue.</div>
+            </div>
+            <div class="login-field">
+              <label>Admin Code</label>
+              <input type="password" id="admin-code-input" placeholder="Enter code"/>
+            </div>
+            <button class="login-submit" id="admin-code-btn" style="background:var(--vl-purple);">Verify Code</button>
+            <button style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;" id="back-admin-code">← Go back</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Admin signup -->
+        <div id="step-admin-signup" class="hidden">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="text-align:center;padding:6px 0;">
+              <div style="font-size:13px;color:var(--vl-purple);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.1em;">✓ ADMIN CODE VERIFIED</div>
+              <div style="font-size:12px;color:var(--vl-gray);margin-top:3px;">Sign up as an Admin</div>
+            </div>
+            <button class="login-oauth-btn" id="google-admin-btn">
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
+              Sign up with Google
+            </button>
+            <div class="login-divider"><span>or</span></div>
+            <div class="login-field">
+              <label>Display Name</label>
+              <input type="text" id="a-name" placeholder="Your name"/>
+            </div>
+            <div class="login-field">
+              <label>Email</label>
+              <input type="email" id="a-email" placeholder="you@email.com"/>
+            </div>
+            <div class="login-field">
+              <label>Password</label>
+              <input type="password" id="a-pass" placeholder="At least 6 characters"/>
+            </div>
+            <div class="login-field">
+              <label>Confirm Password</label>
+              <input type="password" id="a-confirm" placeholder="••••••••"/>
+            </div>
+            <button class="login-submit" id="admin-signup-btn" style="background:var(--vl-purple);">Create Admin Account</button>
+            <button style="background:none;border:none;cursor:pointer;color:var(--vl-gray);font-size:12px;text-align:center;" id="back-admin-signup">← Go back</button>
           </div>
         </div>
 
       </div>
     </div>
   </div>
-
   <div id="toast-container"></div>
   <script src="app.js"></script>
   <script>
-    var REP_CODE = 'Students4teachers';
+    var REP_CODE   = 'Chance';
+    var ADMIN_CODE = 'Lakayden';
     var selectedRole = 'student';
-    var repCodeVerified = false;
+    var repVerified   = false;
+    var adminVerified = false;
 
-    // Auto-login if session exists
+    // Auto-login
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) return;
       firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
-        if (doc.exists) {
-          window.location.href = doc.data().role === 'teacher' ? 'teacher-home.html' : 'student-home.html';
-        }
+        if (!doc.exists) return;
+        var role = doc.data().role;
+        if (role === 'teacher') window.location.href = 'teacher-home.html';
+        else if (role === 'admin') window.location.href = 'teacher-home.html';
+        else window.location.href = 'student-home.html';
       });
     });
 
     function showStep(id) {
-      ['step-role','step-student','step-rep-code','step-rep-signup'].forEach(function(s) {
+      ['step-role','step-student','step-rep-code','step-rep-signup','step-admin-code','step-admin-signup'].forEach(function(s){
         document.getElementById(s).classList.add('hidden');
       });
       document.getElementById(id).classList.remove('hidden');
     }
 
-    // Role buttons
     document.querySelectorAll('.role-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.role-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -156,33 +208,28 @@
       });
     });
 
-    // Continue from role select
     document.getElementById('role-next-btn').addEventListener('click', function() {
-      if (selectedRole === 'student') {
-        showStep('step-student');
-      } else {
-        showStep('step-rep-code');
-      }
+      if (selectedRole === 'student') showStep('step-student');
+      else if (selectedRole === 'teacher') showStep('step-rep-code');
+      else showStep('step-admin-code');
     });
 
-    // Back buttons
-    document.getElementById('back-from-student').addEventListener('click', function() { showStep('step-role'); });
-    document.getElementById('back-from-rep-code').addEventListener('click', function() { showStep('step-role'); });
-    document.getElementById('back-from-rep-signup').addEventListener('click', function() { showStep('step-rep-code'); });
+    document.getElementById('back-student').addEventListener('click',     function(){ showStep('step-role'); });
+    document.getElementById('back-rep-code').addEventListener('click',    function(){ showStep('step-role'); });
+    document.getElementById('back-rep-signup').addEventListener('click',  function(){ showStep('step-rep-code'); });
+    document.getElementById('back-admin-code').addEventListener('click',  function(){ showStep('step-role'); });
+    document.getElementById('back-admin-signup').addEventListener('click',function(){ showStep('step-admin-code'); });
 
-    // Verify rep code
     document.getElementById('rep-code-btn').addEventListener('click', function() {
-      var code = document.getElementById('rep-code-input').value.trim();
-      if (code !== REP_CODE) {
-        showToast('Incorrect Representative code', 'error');
-        return;
-      }
-      repCodeVerified = true;
-      showStep('step-rep-signup');
-      showToast('Code verified!', 'success');
+      if (document.getElementById('rep-code-input').value.trim() !== REP_CODE) return showToast('Incorrect Representative code','error');
+      repVerified = true; showStep('step-rep-signup'); showToast('Code verified!','success');
     });
 
-    // Save user to Firestore and redirect
+    document.getElementById('admin-code-btn').addEventListener('click', function() {
+      if (document.getElementById('admin-code-input').value.trim() !== ADMIN_CODE) return showToast('Incorrect Admin code','error');
+      adminVerified = true; showStep('step-admin-signup'); showToast('Code verified!','success');
+    });
+
     function saveAndRedirect(user, role) {
       return firebase.firestore().collection('users').doc(user.uid).set({
         name: user.displayName || '',
@@ -190,61 +237,76 @@
         photoURL: user.photoURL || null,
         role: role,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(function() {
-        window.location.href = role === 'teacher' ? 'teacher-home.html' : 'student-home.html';
+      }, { merge:true }).then(function() {
+        window.location.href = (role === 'student') ? 'student-home.html' : 'teacher-home.html';
       });
     }
 
-    // Google signup — STUDENT
+    // GOOGLE STUDENT
     document.getElementById('google-student-btn').addEventListener('click', function() {
-      var provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account' });
-      firebase.auth().signInWithPopup(provider).then(function(r) {
-        return saveAndRedirect(r.user, 'student');
-      }).catch(function(e) { showToast(e.message, 'error'); });
+      var p = new firebase.auth.GoogleAuthProvider();
+      p.setCustomParameters({ prompt:'select_account' });
+      firebase.auth().signInWithPopup(p).then(function(r){ return saveAndRedirect(r.user,'student'); }).catch(function(e){ showToast(e.message,'error'); });
     });
 
-    // Email signup — STUDENT
+    // EMAIL STUDENT
     document.getElementById('student-signup-btn').addEventListener('click', function() {
-      var name    = document.getElementById('s-name').value.trim();
-      var email   = document.getElementById('s-email').value.trim();
-      var pass    = document.getElementById('s-pass').value;
-      var confirm = document.getElementById('s-confirm').value;
-      if (!name||!email||!pass||!confirm) return showToast('Fill in all fields','error');
-      if (pass.length < 6) return showToast('Password must be 6+ characters','error');
-      if (pass !== confirm) return showToast('Passwords do not match','error');
-      firebase.auth().createUserWithEmailAndPassword(email, pass).then(function(r) {
-        return r.user.updateProfile({ displayName: name }).then(function() {
-          return saveAndRedirect(r.user, 'student');
-        });
-      }).catch(function(e) { showToast(e.message,'error'); });
+      var name=document.getElementById('s-name').value.trim();
+      var email=document.getElementById('s-email').value.trim();
+      var pass=document.getElementById('s-pass').value;
+      var conf=document.getElementById('s-confirm').value;
+      if(!name||!email||!pass||!conf) return showToast('Fill in all fields','error');
+      if(pass.length<6) return showToast('Password must be 6+ characters','error');
+      if(pass!==conf) return showToast('Passwords do not match','error');
+      firebase.auth().createUserWithEmailAndPassword(email,pass).then(function(r){
+        return r.user.updateProfile({displayName:name}).then(function(){ return saveAndRedirect(r.user,'student'); });
+      }).catch(function(e){ showToast(e.message,'error'); });
     });
 
-    // Google signup — REP (only reachable after code verified)
+    // GOOGLE REP
     document.getElementById('google-rep-btn').addEventListener('click', function() {
-      if (!repCodeVerified) { showToast('Verify your code first', 'error'); return; }
-      var provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account' });
-      firebase.auth().signInWithPopup(provider).then(function(r) {
-        return saveAndRedirect(r.user, 'teacher');
-      }).catch(function(e) { showToast(e.message, 'error'); });
+      if(!repVerified) return showToast('Verify your code first','error');
+      var p = new firebase.auth.GoogleAuthProvider();
+      p.setCustomParameters({ prompt:'select_account' });
+      firebase.auth().signInWithPopup(p).then(function(r){ return saveAndRedirect(r.user,'teacher'); }).catch(function(e){ showToast(e.message,'error'); });
     });
 
-    // Email signup — REP
+    // EMAIL REP
     document.getElementById('rep-signup-btn').addEventListener('click', function() {
-      if (!repCodeVerified) { showToast('Verify your code first', 'error'); return; }
-      var name    = document.getElementById('r-name').value.trim();
-      var email   = document.getElementById('r-email').value.trim();
-      var pass    = document.getElementById('r-pass').value;
-      var confirm = document.getElementById('r-confirm').value;
-      if (!name||!email||!pass||!confirm) return showToast('Fill in all fields','error');
-      if (pass.length < 6) return showToast('Password must be 6+ characters','error');
-      if (pass !== confirm) return showToast('Passwords do not match','error');
-      firebase.auth().createUserWithEmailAndPassword(email, pass).then(function(r) {
-        return r.user.updateProfile({ displayName: name }).then(function() {
-          return saveAndRedirect(r.user, 'teacher');
-        });
-      }).catch(function(e) { showToast(e.message,'error'); });
+      if(!repVerified) return showToast('Verify your code first','error');
+      var name=document.getElementById('r-name').value.trim();
+      var email=document.getElementById('r-email').value.trim();
+      var pass=document.getElementById('r-pass').value;
+      var conf=document.getElementById('r-confirm').value;
+      if(!name||!email||!pass||!conf) return showToast('Fill in all fields','error');
+      if(pass.length<6) return showToast('Password must be 6+ characters','error');
+      if(pass!==conf) return showToast('Passwords do not match','error');
+      firebase.auth().createUserWithEmailAndPassword(email,pass).then(function(r){
+        return r.user.updateProfile({displayName:name}).then(function(){ return saveAndRedirect(r.user,'teacher'); });
+      }).catch(function(e){ showToast(e.message,'error'); });
+    });
+
+    // GOOGLE ADMIN
+    document.getElementById('google-admin-btn').addEventListener('click', function() {
+      if(!adminVerified) return showToast('Verify your code first','error');
+      var p = new firebase.auth.GoogleAuthProvider();
+      p.setCustomParameters({ prompt:'select_account' });
+      firebase.auth().signInWithPopup(p).then(function(r){ return saveAndRedirect(r.user,'admin'); }).catch(function(e){ showToast(e.message,'error'); });
+    });
+
+    // EMAIL ADMIN
+    document.getElementById('admin-signup-btn').addEventListener('click', function() {
+      if(!adminVerified) return showToast('Verify your code first','error');
+      var name=document.getElementById('a-name').value.trim();
+      var email=document.getElementById('a-email').value.trim();
+      var pass=document.getElementById('a-pass').value;
+      var conf=document.getElementById('a-confirm').value;
+      if(!name||!email||!pass||!conf) return showToast('Fill in all fields','error');
+      if(pass.length<6) return showToast('Password must be 6+ characters','error');
+      if(pass!==conf) return showToast('Passwords do not match','error');
+      firebase.auth().createUserWithEmailAndPassword(email,pass).then(function(r){
+        return r.user.updateProfile({displayName:name}).then(function(){ return saveAndRedirect(r.user,'admin'); });
+      }).catch(function(e){ showToast(e.message,'error'); });
     });
   </script>
 </body>
