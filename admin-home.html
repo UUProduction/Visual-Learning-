@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>V:L — Admin</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+</head>
+<body class="dash-body">
+<div class="dash-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <img src="https://api.sherbert.cimpress.io/v2/assets/F5zyE9WKTEwyS-YQF3fkZ~200?signature=7f0e12c6a8f73ddad968a67bc734a472c8876d74" alt="VL"/>
+        <span>V<span class="brand-colon">:</span>L</span>
+      </div>
+      <span class="rep-chip" style="background:rgba(191,90,242,0.15);color:#bf5af2;border-color:rgba(191,90,242,0.3);">ADMIN</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Navigation</div>
+      <div class="snav-item active" id="snav-storage" onclick="switchView('storage')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        Storage
+      </div>
+      <div class="snav-item" id="snav-users" onclick="switchView('users')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </div>
+      <div class="snav-item" id="snav-classrooms" onclick="switchView('classrooms')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Classrooms
+      </div>
+      <div class="snav-item" id="snav-messages" onclick="switchView('messages')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+      </div>
+      <div class="snav-item" id="snav-banned" onclick="switchView('banned')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        Banned
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <img id="a-pfp" src="assets/default-avatar.png" alt=""/>
+        <div class="sidebar-user-info">
+          <span id="a-name">Admin</span>
+          <span id="a-email"></span>
+        </div>
+      </div>
+      <button class="signout-btn" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-content">
+
+    <!-- ===== STORAGE VIEW ===== -->
+    <div id="view-storage">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Storage <span>Overview</span></h1>
+          <p class="page-sub">Full database overview</p>
+        </div>
+        <button class="btn-primary" onclick="loadAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="admin-stats-row" id="stats-row">
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-users">—</div>
+          <div class="admin-stat-label">Total Users</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-teachers">—</div>
+          <div class="admin-stat-label">Representatives</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-students">—</div>
+          <div class="admin-stat-label">Students</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-classrooms">—</div>
+          <div class="admin-stat-label">Classrooms</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-val" id="stat-messages">—</div>
+          <div class="admin-stat-label">Messages</div>
+        </div>
+        <div class="admin-stat-card" style="border-color:rgba(255,59,48,0.3);">
+          <div class="admin-stat-val" id="stat-banned" style="color:var(--vl-red);">—</div>
+          <div class="admin-stat-label">Banned</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USERS VIEW ===== -->
+    <div id="view-users" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Users</h1>
+          <p class="page-sub">All students and representatives</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="text" id="user-search" placeholder="Search by name..." class="admin-search" oninput="filterUsers()"/>
+          <select id="role-filter" class="admin-select" onchange="filterUsers()">
+            <option value="">All roles</option>
+            <option value="student">Students</option>
+            <option value="teacher">Representatives</option>
+            <option value="admin">Admins</option>
+          </select>
+        </div>
+      </div>
+      <div id="users-list" class="admin-list"></div>
+    </div>
+
+    <!-- ===== CLASSROOMS VIEW ===== -->
+    <div id="view-classrooms" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Classrooms</h1>
+          <p class="page-sub">All active classrooms</p>
+        </div>
+        <input type="text" id="classroom-search" placeholder="Search..." class="admin-search" oninput="filterClassrooms()"/>
+      </div>
+      <div id="classrooms-list" class="admin-list"></div>
+    </div>
+
+    <!-- ===== MESSAGES VIEW ===== -->
+    <div id="view-messages" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Messages</h1>
+          <p class="page-sub">All classroom chat messages</p>
+        </div>
+      </div>
+      <div class="admin-classroom-select" id="msg-classroom-select">
+        <div style="font-size:13px;color:var(--vl-gray);">Select a classroom to view messages</div>
+      </div>
+      <div id="messages-list" class="admin-list" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- ===== BANNED VIEW ===== -->
+    <div id="view-banned" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Banned <span>Users</span></h1>
+          <p class="page-sub">Manage bans</p>
+        </div>
+      </div>
+      <div id="banned-list" class="admin-list"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- CLASSROOM DETAIL MODAL -->
+<div class="vl-modal-overlay hidden" id="classroom-modal">
+  <div class="vl-modal" style="max-width:520px;">
+    <div class="vl-modal-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <h2 id="modal-cls-name">Classroom</h2>
+    </div>
+    <div id="modal-cls-students" class="admin-list" style="max-height:300px;overflow-y:auto;"></div>
+    <div class="vl-modal-actions">
+      <button class="btn-ghost" onclick="document.getElementById('classroom-modal').classList.add('hidden')">Close</button>
+      <button class="btn-primary" style="background:var(--vl-red);box-shadow:none;" id="delete-cls-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Delete Classroom
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="vl-modal-overlay hidden" id="confirm-modal">
+  <div class="vl-modal" style="max-width:360px;">
+    <div class="vl-modal-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--vl-red)" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <h2 id="confirm-title">Confirm</h2>
+    </div>
+    <p class="vl-modal-sub" id="confirm-msg">Are you sure?</p>
+    <div class="vl-modal-actions">
+      <button class="btn-ghost" onclick="document.getElementById('confirm-modal').classList.add('hidden')">Cancel</button>
+      <button class="btn-primary" style="background:var(--vl-red);box-shadow:none;" id="confirm-yes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+var me = null;
+var allUsers = [];
+var allClassrooms = [];
+var selectedClassroom = null;
+
+firebase.auth().onAuthStateChanged(function(u) {
+  if (!u) return window.location.href = 'login.html';
+  firebase.firestore().collection('users').doc(u.uid).get().then(function(doc) {
+    if (!doc.exists || doc.data().role !== 'admin') {
+      return window.location.href = 'student-home.html';
+    }
+    me = u;
+    document.getElementById('a-name').textContent = u.displayName || 'Admin';
+    document.getElementById('a-email').textContent = u.email || '';
+    if (u.photoURL) document.getElementById('a-pfp').src = u.photoURL;
+    loadAll();
+  });
+});
+
+function switchView(name) {
+  ['storage','users','classrooms','messages','banned'].forEach(function(v) {
+    document.getElementById('view-'+v).classList.add('hidden');
+    document.getElementById('snav-'+v).classList.remove('active');
+  });
+  document.getElementById('view-'+name).classList.remove('hidden');
+  document.getElementById('snav-'+name).classList.add('active');
+}
+
+// ===== LOAD ALL =====
+function loadAll() {
+  loadStats();
+  loadUsers();
+  loadClassrooms();
+  loadBanned();
+}
+
+function loadStats() {
+  firebase.firestore().collection('users').get().then(function(snap) {
+    var teachers=0, students=0, banned=0;
+    snap.forEach(function(d) {
+      var r = d.data().role;
+      if (r === 'teacher' || r === 'admin') teachers++;
+      else students++;
+      if (d.data().banned) banned++;
+    });
+    document.getElementById('stat-users').textContent = snap.size;
+    document.getElementById('stat-teachers').textContent = teachers;
+    document.getElementById('stat-students').textContent = students;
+    document.getElementById('stat-banned').textContent = banned;
+  });
+  firebase.firestore().collection('classrooms').get().then(function(snap) {
+    document.getElementById('stat-classrooms').textContent = snap.size;
+    var msgCount = 0;
+    var promises = snap.docs.map(function(d) {
+      return firebase.firestore().collection('classrooms').doc(d.id).collection('chat').get().then(function(c) { msgCount += c.size; });
+    });
+    Promise.all(promises).then(function() {
+      document.getElementById('stat-messages').textContent = msgCount;
+    });
+  });
+}
+
+// ===== USERS =====
+function loadUsers() {
+  firebase.firestore().collection('users').get().then(function(snap) {
+    allUsers = [];
+    snap.forEach(function(d) { allUsers.push({ id: d.id, ...d.data() }); });
+    renderUsers(allUsers);
+  });
+}
+
+function filterUsers() {
+  var q = document.getElementById('user-search').value.toLowerCase();
+  var role = document.getElementById('role-filter').value;
+  var filtered = allUsers.filter(function(u) {
+    var nameMatch = (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+    var roleMatch = !role || u.role === role;
+    return nameMatch && roleMatch;
+  });
+  renderUsers(filtered);
+}
+
+function renderUsers(users) {
+  var list = document.getElementById('users-list');
+  list.innerHTML = '';
+  if (!users.length) { list.innerHTML = '<div class="admin-empty">No users found</div>'; return; }
+  users.forEach(function(u) {
+    var row = document.createElement('div');
+    row.className = 'admin-row';
+    var roleColor = u.role === 'admin' ? '#bf5af2' : u.role === 'teacher' ? '#0a84ff' : '#30d158';
+    row.innerHTML = `
+      <div class="admin-row-left">
+        ${u.photoURL ? '<img src="'+u.photoURL+'" class="admin-avatar"/>' : '<div class="admin-avatar-letter">'+(u.name||'?')[0].toUpperCase()+'</div>'}
+        <div class="admin-row-info">
+          <span class="admin-row-name">${u.name||'Unknown'}</span>
+          <span class="admin-row-sub">${u.email||''}</span>
+        </div>
+        <span class="admin-role-badge" style="background:${roleColor}22;color:${roleColor};border-color:${roleColor}44;">${u.role||'student'}</span>
+        ${u.banned ? '<span class="admin-banned-badge">BANNED</span>' : ''}
+      </div>
+      <div class="admin-row-actions">
+        ${!u.banned ? `<button class="admin-action-btn red" onclick="banUser('${u.id}','${u.name||'User'}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          Ban
+        </button>` : `<button class="admin-action-btn green" onclick="unbanUser('${u.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Unban
+        </button>`}
+        <button class="admin-action-btn red" onclick="deleteUser('${u.id}','${u.name||'User'}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Delete
+        </button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+// ===== CLASSROOMS =====
+function loadClassrooms() {
+  firebase.firestore().collection('classrooms').get().then(function(snap) {
+    allClassrooms = [];
+    snap.forEach(function(d) { allClassrooms.push({ id: d.id, ...d.data() }); });
+    renderClassrooms(allClassrooms);
+    renderMsgClassroomSelect(allClassrooms);
+  });
+}
+
+function filterClassrooms() {
+  var q = document.getElementById('classroom-search').value.toLowerCase();
+  var filtered = allClassrooms.filter(function(c) {
+    return (c.name||'').toLowerCase().includes(q) || (c.code||'').toLowerCase().includes(q) || (c.teacherName||'').toLowerCase().includes(q);
+  });
+  renderClassrooms(filtered);
+}
+
+function renderClassrooms(classrooms) {
+  var list = document.getElementById('classrooms-list');
+  list.innerHTML = '';
+  if (!classrooms.length) { list.innerHTML = '<div class="admin-empty">No classrooms found</div>'; return; }
+  classrooms.forEach(function(c) {
+    var students = Object.values(c.students || {});
+    var row = document.createElement('div');
+    row.className = 'admin-row';
+    row.innerHTML = `
+      <div class="admin-row-left">
+        <div class="admin-cls-code">${c.code}</div>
+        <div class="admin-row-info">
+          <span class="admin-row-name">${c.name}</span>
+          <span class="admin-row-sub">Teacher: ${c.teacherName} · ${students.length} students</span>
+        </div>
+      </div>
+      <div class="admin-row-actions">
+        <button class="admin-action-btn blue" onclick="viewClassroom('${c.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          View
+        </button>
+        <button class="admin-action-btn red" onclick="deleteClassroom('${c.id}','${c.name}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Delete
+        </button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function viewClassroom(id) {
+  var cls = allClassrooms.find(function(c){ return c.id === id; });
+  if (!cls) return;
+  selectedClassroom = cls;
+  document.getElementById('modal-cls-name').textContent = cls.name + ' (' + cls.code + ')';
+  document.getElementById('classroom-modal').classList.remove('hidden');
+  var studentList = document.getElementById('modal-cls-students');
+  studentList.innerHTML = '';
+  var students = Object.values(cls.students || {});
+  if (!students.length) { studentList.innerHTML = '<div class="admin-empty">No students</div>'; }
+  students.forEach(function(s) {
+    var row = document.createElement('div');
+    row.className = 'admin-row';
+    row.innerHTML = `
+      <div class="admin-row-left">
+        ${s.photoURL ? '<img src="'+s.photoURL+'" class="admin-avatar"/>' : '<div class="admin-avatar-letter">'+(s.name||'S')[0]+'</div>'}
+        <div class="admin-row-info">
+          <span class="admin-row-name">${s.name||'Student'}</span>
+          <span class="admin-row-sub">${s.online ? '🟢 Online' : '⚫ Offline'}</span>
+        </div>
+      </div>
+      <div class="admin-row-actions">
+        <button class="admin-action-btn red" onclick="kickFromClass('${cls.id}','${s.uid}','${s.name||'Student'}')">Kick</button>
+        <button class="admin-action-btn red" onclick="banUser('${s.uid}','${s.name||'Student'}')">Ban</button>
+      </div>
+    `;
+    studentList.appendChild(row);
+  });
+  document.getElementById('delete-cls-btn').onclick = function(){ deleteClassroom(cls.id, cls.name); };
+}
+
+// ===== MESSAGES =====
+function renderMsgClassroomSelect(classrooms) {
+  var sel = document.getElementById('msg-classroom-select');
+  sel.innerHTML = '';
+  classrooms.forEach(function(c) {
+    var btn = document.createElement('button');
+    btn.className = 'admin-cls-pill';
+    btn.textContent = c.name + ' (' + c.code + ')';
+    btn.onclick = function() {
+      document.querySelectorAll('.admin-cls-pill').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      loadMessages(c.id, c.code);
+    };
+    sel.appendChild(btn);
+  });
+}
+
+function loadMessages(classroomId, code) {
+  var list = document.getElementById('messages-list');
+  list.innerHTML = '<div class="admin-empty">Loading...</div>';
+  firebase.firestore().collection('classrooms').doc(code)
+    .collection('chat').orderBy('createdAt','desc').limit(50)
+    .get().then(function(snap) {
+      list.innerHTML = '';
+      if (snap.empty) { list.innerHTML = '<div class="admin-empty">No messages</div>'; return; }
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        var row = document.createElement('div');
+        row.className = 'admin-row';
+        row.innerHTML = `
+          <div class="admin-row-left">
+            ${d.photoURL ? '<img src="'+d.photoURL+'" class="admin-avatar"/>' : '<div class="admin-avatar-letter">'+(d.name||'?')[0]+'</div>'}
+            <div class="admin-row-info">
+              <span class="admin-row-name">${d.name||'Unknown'}</span>
+              <span class="admin-row-sub">${d.text||''}</span>
+            </div>
+          </div>
+          <div class="admin-row-actions">
+            <button class="admin-action-btn red" onclick="deleteMessage('${code}','${doc.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Delete
+            </button>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    });
+}
+
+// ===== BANNED =====
+function loadBanned() {
+  firebase.firestore().collection('users').where('banned','==',true).get().then(function(snap) {
+    var list = document.getElementById('banned-list');
+    list.innerHTML = '';
+    if (snap.empty) { list.innerHTML = '<div class="admin-empty">No banned users</div>'; return; }
+    snap.forEach(function(doc) {
+      var u = doc.data();
+      var row = document.createElement('div');
+      row.className = 'admin-row';
+      row.innerHTML = `
+        <div class="admin-row-left">
+          ${u.photoURL ? '<img src="'+u.photoURL+'" class="admin-avatar"/>' : '<div class="admin-avatar-letter">'+(u.name||'?')[0]+'</div>'}
+          <div class="admin-row-info">
+            <span class="admin-row-name">${u.name||'Unknown'}</span>
+            <span class="admin-row-sub">${u.email||''}</span>
+          </div>
+          <span class="admin-banned-badge">BANNED</span>
+        </div>
+        <div class="admin-row-actions">
+          <button class="admin-action-btn green" onclick="unbanUser('${doc.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Unban
+          </button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  });
+}
+
+// ===== ACTIONS =====
+function confirm(title, msg, cb) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-modal').classList.remove('hidden');
+  document.getElementById('confirm-yes').onclick = function() {
+    document.getElementById('confirm-modal').classList.add('hidden');
+    cb();
+  };
+}
+
+function banUser(uid, name) {
+  confirm('Ban User', 'Ban ' + name + '? They will not be able to access V:L.', function() {
+    firebase.firestore().collection('users').doc(uid).update({ banned: true })
+      .then(function() { showToast(name + ' banned', 'success'); loadAll(); })
+      .catch(function(e) { showToast(e.message, 'error'); });
+  });
+}
+
+function unbanUser(uid) {
+  firebase.firestore().collection('users').doc(uid).update({ banned: false })
+    .then(function() { showToast('User unbanned', 'success'); loadAll(); })
+    .catch(function(e) { showToast(e.message, 'error'); });
+}
+
+function deleteUser(uid, name) {
+  confirm('Delete User', 'Permanently delete ' + name + '? This cannot be undone.', function() {
+    firebase.firestore().collection('users').doc(uid).delete()
+      .then(function() { showToast(name + ' deleted', 'success'); loadAll(); })
+      .catch(function(e) { showToast(e.message, 'error'); });
+  });
+}
+
+function deleteClassroom(id, name) {
+  confirm('Delete Classroom', 'Delete "' + name + '"? All students and messages will be removed.', function() {
+    firebase.firestore().collection('classrooms').doc(id).delete()
+      .then(function() {
+        document.getElementById('classroom-modal').classList.add('hidden');
+        showToast('Classroom deleted', 'success');
+        loadAll();
+      })
+      .catch(function(e) { showToast(e.message, 'error'); });
+  });
+}
+
+function kickFromClass(classroomId, uid, name) {
+  confirm('Kick Student', 'Remove ' + name + ' from this classroom?', function() {
+    var upd = {};
+    upd['students.' + uid] = firebase.firestore.FieldValue.delete();
+    firebase.firestore().collection('classrooms').doc(classroomId).update(upd)
+      .then(function() {
+        showToast(name + ' kicked', 'success');
+        viewClassroom(classroomId);
+        loadAll();
+      })
+      .catch(function(e) { showToast(e.message, 'error'); });
+  });
+}
+
+function deleteMessage(code, msgId) {
+  firebase.firestore().collection('classrooms').doc(code)
+    .collection('chat').doc(msgId).delete()
+    .then(function() { showToast('Message deleted', 'success'); loadMessages(code, code); })
+    .catch(function(e) { showToast(e.message, 'error'); });
+}
+
+document.getElementById('logout-btn').onclick = function() {
+  firebase.auth().signOut().then(function() { window.location.href = 'main.html'; });
+};
+</script>
+</body>
+</html>
