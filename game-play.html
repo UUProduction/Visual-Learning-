@@ -11,54 +11,50 @@
   <script src="firebase.js"></script>
   <style>
     *{box-sizing:border-box;}
-    body{background:#050a14;color:#fff;margin:0;min-height:100vh;display:flex;flex-direction:column;font-family:'Barlow',sans-serif;}
+    body{background:#050a14;color:#fff;margin:0;min-height:100vh;display:flex;flex-direction:column;}
     body::after{display:none;}
-    .play-topbar{background:rgba(0,40,140,0.97);border-bottom:2px solid #00e5ff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;flex-shrink:0;}
+    .play-topbar{background:rgba(0,40,140,0.97);border-bottom:2px solid #00e5ff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
     .play-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.1em;color:#fff;}
     .play-brand span{color:#00e5ff;}
-    .play-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+    .play-score-wrap{display:flex;flex-direction:column;align-items:flex-end;}
     .play-score{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ffd700;line-height:1;}
-    .play-streak{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:rgba(255,255,255,0.5);}
+    .play-streak{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:rgba(255,255,255,0.45);}
     .play-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:16px;}
-    /* WAITING */
     .wait-screen{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
     .wait-spinner{width:40px;height:40px;border:3px solid rgba(10,132,255,0.2);border-top-color:#0a84ff;border-radius:50%;animation:spin 0.9s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .wait-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,7vw,56px);letter-spacing:0.07em;color:#fff;}
-    .wait-sub{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.1em;color:rgba(255,255,255,0.5);}
-    .wait-code{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,9vw,72px);color:#ffd700;letter-spacing:0.2em;text-shadow:0 0 20px rgba(255,215,0,0.3);}
-    /* QUESTION */
-    .q-prog-bar-wrap{width:100%;max-width:640px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
-    .q-prog-bar-fill{height:100%;background:#0a84ff;border-radius:3px;transition:width 0.3s;}
-    .q-timer-display{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:1;text-align:center;transition:color 0.3s;}
-    .q-question-card{width:100%;max-width:640px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:22px;text-align:center;}
-    .q-question-text{font-family:'Barlow',sans-serif;font-size:clamp(17px,3.5vw,24px);font-weight:600;color:#fff;line-height:1.4;}
-    .q-progress-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;}
-    /* ANSWERS */
+    .wait-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,7vw,52px);letter-spacing:0.07em;color:#fff;}
+    .wait-sub{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.1em;color:rgba(255,255,255,0.45);}
+    .wait-code{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,70px);color:#ffd700;letter-spacing:0.2em;text-shadow:0 0 20px rgba(255,215,0,0.3);}
+    .status-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(48,209,88,0.1);border:1px solid rgba(48,209,88,0.25);border-radius:20px;padding:5px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#30d158;}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:#30d158;animation:blink 1.2s infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+    .q-prog-wrap{width:100%;max-width:640px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+    .q-prog-fill{height:100%;background:#0a84ff;border-radius:3px;transition:width 0.3s;}
+    .q-timer{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:1;text-align:center;transition:color 0.3s;}
+    .q-meta{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:rgba(255,255,255,0.38);letter-spacing:0.1em;}
+    .q-card{width:100%;max-width:640px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:22px;text-align:center;}
+    .q-text{font-family:'Barlow',sans-serif;font-size:clamp(16px,3vw,23px);font-weight:600;color:#fff;line-height:1.4;}
     .answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:640px;}
-    .ans-btn{border:none;border-radius:12px;padding:18px 14px;display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.1s,box-shadow 0.15s;text-align:left;min-height:68px;}
+    .ans-btn{border:none;border-radius:12px;padding:18px 14px;display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.1s,box-shadow 0.15s;text-align:left;min-height:66px;width:100%;}
     .ans-btn:hover:not(:disabled){transform:scale(1.03);box-shadow:0 6px 20px rgba(0,0,0,0.35);}
-    .ans-btn:active:not(:disabled){transform:scale(0.97);}
-    .ans-btn.selected{transform:scale(1.05);box-shadow:0 0 0 3px #fff;}
-    .ans-btn.reveal-correct{box-shadow:0 0 20px rgba(48,209,88,0.6);}
-    .ans-btn.reveal-wrong{opacity:0.28;}
     .ans-btn:disabled{cursor:not-allowed;}
+    .ans-btn.selected{transform:scale(1.05);box-shadow:0 0 0 3px rgba(255,255,255,0.8);}
+    .ans-btn.reveal-correct{box-shadow:0 0 22px rgba(48,209,88,0.6);}
+    .ans-btn.reveal-wrong{opacity:0.25;}
     .ans-icon{width:32px;height:32px;border-radius:7px;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
-    /* TYPE ANSWER */
     .type-wrap{width:100%;max-width:500px;display:flex;gap:8px;}
-    .type-inp{flex:1;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);border-radius:9px;padding:13px 14px;color:#fff;font-family:'Barlow',sans-serif;font-size:17px;outline:none;transition:border-color 0.2s;}
+    .type-inp{flex:1;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.14);border-radius:9px;padding:13px 14px;color:#fff;font-family:'Barlow',sans-serif;font-size:17px;outline:none;transition:border-color 0.2s;}
     .type-inp:focus{border-color:#0a84ff;}
-    .type-inp::placeholder{color:rgba(255,255,255,0.28);}
-    .type-inp:disabled{opacity:0.5;}
-    .type-sub-btn{padding:13px 20px;background:#0a84ff;border:none;border-radius:9px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
-    .type-sub-btn:hover{background:#2a94ff;}
-    .type-sub-btn:disabled{opacity:0.5;cursor:not-allowed;}
-    /* FEEDBACK */
-    .feedback-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,60px);letter-spacing:0.06em;text-align:center;animation:pop-in 0.3s cubic-bezier(.17,.67,.3,1.5);}
+    .type-inp::placeholder{color:rgba(255,255,255,0.25);}
+    .type-inp:disabled,.type-sub:disabled{opacity:0.5;cursor:not-allowed;}
+    .type-sub{padding:13px 20px;background:#0a84ff;border:none;border-radius:9px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.1em;cursor:pointer;}
+    .type-sub:hover:not(:disabled){background:#2a94ff;}
+    .submitted-note{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#30d158;letter-spacing:0.08em;text-align:center;}
+    .feedback-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,8vw,58px);letter-spacing:0.06em;text-align:center;animation:pop-in 0.3s cubic-bezier(.17,.67,.3,1.5);}
     @keyframes pop-in{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
-    .pts-earned{font-family:'Barlow Condensed',sans-serif;font-size:17px;letter-spacing:0.1em;text-align:center;}
-    .reveal-correct-ans{background:rgba(48,209,88,0.1);border:2px solid #30d158;border-radius:11px;padding:16px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#30d158;width:100%;max-width:500px;}
-    /* END */
+    .pts-label{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:0.1em;text-align:center;}
+    .reveal-type-ans{background:rgba(48,209,88,0.1);border:2px solid #30d158;border-radius:11px;padding:16px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#30d158;width:100%;max-width:500px;}
     .end-screen{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
     .end-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,76px);color:#ffd700;letter-spacing:0.08em;animation:glow 2s infinite;}
     @keyframes glow{0%,100%{text-shadow:0 0 30px rgba(255,215,0,0.4);}50%{text-shadow:0 0 70px rgba(255,215,0,0.8);}}
@@ -69,20 +65,23 @@
   </style>
 </head>
 <body>
-  <div class="play-topbar">
-    <div class="play-brand">V<span>:</span>L</div>
-    <div class="play-score-wrap">
-      <div class="play-score" id="score-el">0 pts</div>
-      <div class="play-streak" id="streak-el"></div>
-    </div>
+
+<div class="play-topbar">
+  <div class="play-brand">V<span>:</span>L</div>
+  <div class="play-score-wrap">
+    <div class="play-score" id="score-el">0 pts</div>
+    <div class="play-streak" id="streak-el"></div>
   </div>
-  <div class="play-content" id="play-content">
-    <div class="wait-screen">
-      <div class="wait-spinner"></div>
-      <div class="wait-title">Loading...</div>
-    </div>
+</div>
+
+<div class="play-content" id="play-content">
+  <div class="wait-screen">
+    <div class="wait-spinner"></div>
+    <div class="wait-title">Connecting...</div>
   </div>
-  <div id="toast-container"></div>
+</div>
+
+<div id="toast-container"></div>
 <script src="app.js"></script>
 <script>
 var me = null;
@@ -93,231 +92,235 @@ var myStreak = 0;
 var answered = false;
 var lastQIdx = -1;
 var phase = 'init';
-var clientTimerInterval = null;
+var clientTimer = null;
+var sessionRef = null;
 
 var COLORS = ['#e53935','#1e88e5','#f9a825','#43a047'];
 var ICONS  = ['▲','◆','●','✕'];
 
-// Get room code from URL param
 var params = new URLSearchParams(location.search);
 roomCode = params.get('code');
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) return window.location.href = 'login.html';
   me = user;
-  if (!roomCode) {
-    findActiveGame();
-  } else {
-    joinAndListen();
-  }
+  if (!roomCode) findGame(); else boot();
 });
 
-// ===== FIND GAME (if no code in URL) =====
-function findActiveGame() {
+// ===== FIND ACTIVE GAME =====
+function findGame() {
   showWait('Finding your game...');
   firebase.firestore().collection('users').doc(me.uid).get().then(function(doc) {
     if (!doc.exists) return showWait('No classrooms found');
     var codes = doc.data().classroomCodes || [];
     if (!codes.length) return showWait('No classrooms joined');
-    var checked = 0, found = false;
+    var done = 0, found = false;
     codes.forEach(function(code) {
       firebase.firestore().collection('classrooms').doc(code)
-        .collection('gamehost').doc('session').get().then(function(snap) {
-          checked++;
+        .collection('gamehost').doc('session').get()
+        .then(function(snap) {
+          done++;
           if (!found && snap.exists && snap.data().status !== 'ended') {
             found = true;
             roomCode = code;
-            joinAndListen();
-          } else if (checked === codes.length && !found) {
-            showWait('No active game found in your classrooms');
+            boot();
+          } else if (done === codes.length && !found) {
+            showWait('No active game in your classrooms');
           }
-        }).catch(function(){ checked++; });
+        }).catch(function(){ done++; });
     });
   });
 }
 
-// ===== JOIN + LISTEN =====
-function joinAndListen() {
-  // Register player
-  var pData = {};
-  pData['players.'+me.uid] = {
-    uid: me.uid,
-    name: me.displayName || 'Student',
-    photoURL: me.photoURL || null,
-    score: 0,
-    streak: 0,
-    answeredCurrent: false,
-    lastAnswer: '',
-    lastAnswerIndex: -1,
-    answeredAt: 0
-  };
-
-  firebase.firestore().collection('classrooms').doc(roomCode)
-    .collection('gamehost').doc('session')
-    .set(pData, { merge: true })
-    .then(function() {
-      console.log('[PLAY] Joined session at classrooms/'+roomCode+'/gamehost/session');
-    }).catch(function(err) {
-      console.error('[PLAY] Join error:', err);
-    });
-
-  if (unsubGame) unsubGame();
-  unsubGame = firebase.firestore()
+// ===== BOOT — write player then listen =====
+function boot() {
+  sessionRef = firebase.firestore()
     .collection('classrooms').doc(roomCode)
-    .collection('gamehost').doc('session')
-    .onSnapshot(function(snap) {
-      if (!snap.exists) { showWait('Game not found'); return; }
-      var data = snap.data();
-      console.log('[PLAY] Status:', data.status, '| Q:', data.currentQuestion);
+    .collection('gamehost').doc('session');
 
-      if (data.status === 'lobby') {
-        showLobby(data);
-      } else if (data.status === 'question') {
-        handleQuestion(data);
-      } else if (data.status === 'reveal') {
-        handleReveal(data);
-      } else if (data.status === 'ended') {
-        showEnd(data);
+  showWait('Joining game...');
+
+  // Use individual field updates with dot notation — safest way
+  var upd = {};
+  upd['players.' + me.uid + '.uid']             = me.uid;
+  upd['players.' + me.uid + '.name']            = me.displayName || 'Student';
+  upd['players.' + me.uid + '.photoURL']        = me.photoURL || null;
+  upd['players.' + me.uid + '.score']           = 0;
+  upd['players.' + me.uid + '.streak']          = 0;
+  upd['players.' + me.uid + '.answeredCurrent'] = false;
+  upd['players.' + me.uid + '.lastAnswer']      = '';
+  upd['players.' + me.uid + '.lastAnswerIndex'] = -1;
+  upd['players.' + me.uid + '.answeredAt']      = 0;
+  upd['players.' + me.uid + '.lastPts']         = 0;
+  upd['players.' + me.uid + '.lastCorrect']     = false;
+
+  sessionRef.update(upd)
+    .then(function() {
+      console.log('[PLAY] Registered as', me.displayName, me.uid);
+      startListening();
+    })
+    .catch(function(err) {
+      console.error('[PLAY] update failed:', err.code, err.message);
+      // If document doesn't exist yet, try set with merge
+      if (err.code === 'not-found') {
+        showWait('Game not found. Ask your teacher to start the game first.');
+      } else {
+        showWait('Error joining: ' + err.message);
       }
-    }, function(err) {
-      console.error('[PLAY] Snapshot error:', err);
-      showWait('Connection error');
     });
 }
 
-function showWait(msg) {
-  clearClientTimer();
-  document.getElementById('play-content').innerHTML = `
-    <div class="wait-screen">
-      <div class="wait-spinner"></div>
-      <div class="wait-title">${msg||'Please wait...'}</div>
-    </div>
-  `;
+// ===== LISTEN =====
+function startListening() {
+  if (unsubGame) unsubGame();
+  unsubGame = sessionRef.onSnapshot(function(snap) {
+    if (!snap.exists) { showWait('Game ended'); return; }
+    var data = snap.data();
+
+    // Always sync my score from server
+    var me_data = (data.players || {})[me.uid];
+    if (me_data) {
+      myScore  = me_data.score  || 0;
+      myStreak = me_data.streak || 0;
+      document.getElementById('score-el').textContent  = myScore.toLocaleString() + ' pts';
+      document.getElementById('streak-el').textContent = myStreak >= 2 ? '🔥 ' + myStreak + ' streak' : '';
+    }
+
+    if      (data.status === 'lobby')    onLobby(data);
+    else if (data.status === 'question') onQuestion(data);
+    else if (data.status === 'reveal')   onReveal(data);
+    else if (data.status === 'ended')    onEnd(data);
+  }, function(err) {
+    console.error('[PLAY] listen error:', err);
+    showWait('Connection lost: ' + err.message);
+  });
 }
 
-function showLobby(data) {
+// ===== LOBBY =====
+function onLobby(data) {
   if (phase === 'lobby') return;
   phase = 'lobby';
-  myScore = 0; myStreak = 0;
-  document.getElementById('score-el').textContent = '0 pts';
-  document.getElementById('streak-el').textContent = '';
-  clearClientTimer();
+  killTimer();
   document.getElementById('play-content').innerHTML = `
     <div class="wait-screen">
-      <div class="wait-sub">You're in! Waiting for the game to start...</div>
+      <div class="status-pill"><div class="status-dot"></div>Connected</div>
+      <div class="wait-sub">You're in the lobby!</div>
       <div class="wait-code">${roomCode}</div>
-      <div class="wait-title">${data.teacherName||'Teacher'}'s Game</div>
+      <div class="wait-title">${data.teacherName || 'Teacher'}'s Game</div>
+      <div class="wait-sub">Waiting for the teacher to launch...</div>
       <div class="wait-spinner"></div>
     </div>
   `;
 }
 
-function handleQuestion(data) {
+// ===== QUESTION =====
+function onQuestion(data) {
   var idx = data.currentQuestion;
+  // Only re-render if new question
   if (idx === lastQIdx && phase === 'question') return;
   lastQIdx = idx;
   phase = 'question';
   answered = false;
-  clearClientTimer();
+  killTimer();
 
   var q = data.questionData;
   if (!q) return;
+  var total = data.totalQuestions || 1;
 
-  var totalQ = data.totalQuestions || 1;
   var answersHtml = '';
-
-  if (q.type==='mc'||q.type==='tf') {
+  if (q.type === 'mc' || q.type === 'tf') {
     answersHtml = '<div class="answers-grid">';
-    (q.answers||[]).forEach(function(ans,i){
+    (q.answers || []).forEach(function(ans, i) {
       if (!ans) return;
-      answersHtml += `<button class="ans-btn" id="abtn-${i}" style="background:linear-gradient(135deg,${COLORS[i]},${COLORS[i]}cc);" onclick="submitMC(${i},'${ans.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
-        <div class="ans-icon">${ICONS[i]||'?'}</div>${ans}
+      var safeAns = ans.replace(/'/g, "\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      answersHtml += `<button class="ans-btn" id="abtn-${i}"
+        style="background:linear-gradient(135deg,${COLORS[i]},${COLORS[i]}bb);"
+        onclick="pickMC(${i},'${safeAns}')">
+        <div class="ans-icon">${ICONS[i]}</div>${ans}
       </button>`;
     });
     answersHtml += '</div>';
   } else {
     answersHtml = `
       <div class="type-wrap">
-        <input class="type-inp" id="type-inp" placeholder="Type your answer..." autocomplete="off" spellcheck="false"/>
-        <button class="type-sub-btn" id="type-sub-btn" onclick="submitType()">Submit</button>
-      </div>
-    `;
+        <input class="type-inp" id="tinp" placeholder="Your answer..." autocomplete="off" spellcheck="false"/>
+        <button class="type-sub" id="tsub" onclick="pickType()">Submit</button>
+      </div>`;
   }
 
   document.getElementById('play-content').innerHTML = `
-    <div class="q-progress-label">Q${idx+1} of ${totalQ} · ${q.points} pts · Speed bonus active</div>
-    <div class="q-prog-bar-wrap"><div class="q-prog-bar-fill" style="width:${((idx+1)/totalQ)*100}%"></div></div>
-    <div class="q-timer-display" id="ptimer">${q.time}</div>
-    <div class="q-question-card"><div class="q-question-text">${q.question}</div></div>
+    <div class="q-meta">Q${idx+1} of ${total} · ${q.points} pts</div>
+    <div class="q-prog-wrap"><div class="q-prog-fill" style="width:${((idx+1)/total)*100}%"></div></div>
+    <div class="q-timer" id="ptimer">${q.time}</div>
+    <div class="q-card"><div class="q-text">${q.question}</div></div>
     ${answersHtml}
   `;
 
-  // Client-side display timer only
+  // Display countdown
   var t = q.time;
-  clientTimerInterval = setInterval(function(){
+  clientTimer = setInterval(function() {
     t--;
     var el = document.getElementById('ptimer');
-    if (el) { el.textContent=t; el.style.color=t<=5?'#ff3b30':t<=10?'#f9a825':'#fff'; }
-    if (t<=0) clearClientTimer();
-  },1000);
+    if (el) { el.textContent = t; el.style.color = t<=5?'#ff3b30':t<=10?'#f9a825':'#fff'; }
+    if (t <= 0) killTimer();
+  }, 1000);
 
-  if (q.type==='type') {
-    setTimeout(function(){ var inp=document.getElementById('type-inp'); if(inp) inp.focus(); },80);
+  if (q.type === 'type') {
     setTimeout(function(){
-      var inp=document.getElementById('type-inp');
-      if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter') submitType(); });
-    },100);
+      var inp = document.getElementById('tinp');
+      if (inp) { inp.focus(); inp.addEventListener('keydown', function(e){ if(e.key==='Enter') pickType(); }); }
+    }, 100);
   }
 }
 
-function submitMC(idx, text) {
+function pickMC(idx, text) {
   if (answered) return;
   answered = true;
   document.querySelectorAll('.ans-btn').forEach(function(b){ b.disabled=true; });
   var btn = document.getElementById('abtn-'+idx);
   if (btn) btn.classList.add('selected');
-  recordAnswer(text, idx);
+  writeAnswer(text, idx);
 }
 
-function submitType() {
+function pickType() {
   if (answered) return;
-  var inp = document.getElementById('type-inp');
-  var sub = document.getElementById('type-sub-btn');
+  var inp = document.getElementById('tinp');
+  var sub = document.getElementById('tsub');
   if (!inp || !inp.value.trim()) return;
   answered = true;
   inp.disabled = true;
   if (sub) sub.disabled = true;
-  recordAnswer(inp.value.trim(), -1);
+  writeAnswer(inp.value.trim(), -1);
 }
 
-function recordAnswer(text, idx) {
-  var now = Date.now();
+function writeAnswer(text, idx) {
   var upd = {};
-  upd['players.'+me.uid+'.answeredCurrent'] = true;
-  upd['players.'+me.uid+'.lastAnswer']      = text;
-  upd['players.'+me.uid+'.lastAnswerIndex'] = idx;
-  upd['players.'+me.uid+'.answeredAt']      = now;
+  upd['players.' + me.uid + '.answeredCurrent'] = true;
+  upd['players.' + me.uid + '.lastAnswer']      = text;
+  upd['players.' + me.uid + '.lastAnswerIndex'] = idx;
+  upd['players.' + me.uid + '.answeredAt']      = Date.now();
 
-  firebase.firestore().collection('classrooms').doc(roomCode)
-    .collection('gamehost').doc('session').update(upd);
-
-  // Show submitted indicator
-  var content = document.getElementById('play-content');
-  var ind = document.createElement('div');
-  ind.style.cssText='font-family:\'Barlow Condensed\',sans-serif;font-size:13px;color:#30d158;letter-spacing:0.1em;text-align:center;';
-  ind.textContent='✓ Answer submitted — waiting for reveal...';
-  content.appendChild(ind);
+  sessionRef.update(upd).then(function(){
+    console.log('[PLAY] Answer written:', text, idx);
+    // Show submitted note without killing the answer buttons
+    var extra = document.createElement('div');
+    extra.className = 'submitted-note';
+    extra.textContent = '✓ Answer submitted — waiting for reveal...';
+    document.getElementById('play-content').appendChild(extra);
+  }).catch(function(err){
+    console.error('[PLAY] Answer write failed:', err);
+  });
 }
 
-function handleReveal(data) {
+// ===== REVEAL =====
+function onReveal(data) {
   if (phase === 'reveal') return;
   phase = 'reveal';
-  clearClientTimer();
+  killTimer();
 
   var q = data.questionData;
   if (!q) return;
-
-  var myData = (data.players||{})[me.uid] || {};
+  var myData = (data.players || {})[me.uid] || {};
   var isCorrect = false;
 
   if (q.type==='mc'||q.type==='tf') {
@@ -326,50 +329,48 @@ function handleReveal(data) {
     isCorrect = (myData.lastAnswer||'').toLowerCase().trim() === (q.answer||'').toLowerCase().trim();
   }
 
-  // Read score from Firestore (host calculated it)
-  myScore  = myData.score  || 0;
-  myStreak = myData.streak || 0;
+  var ptsEarned = myData.lastPts || 0;
 
-  document.getElementById('score-el').textContent  = myScore.toLocaleString()+' pts';
-  document.getElementById('streak-el').textContent = myStreak>=2?'🔥 '+myStreak+' streak':'';
-
-  var revealAnswerHtml = '';
+  // Answers reveal
+  var revHtml = '';
   if (q.type==='mc'||q.type==='tf') {
-    var rHtml = '<div class="answers-grid" style="pointer-events:none;">';
+    revHtml = '<div class="answers-grid" style="pointer-events:none;">';
     (q.answers||[]).forEach(function(ans,i){
-      if(!ans) return;
-      var isC = i===q.correct;
-      rHtml += `<div class="ans-btn ${isC?'reveal-correct':'reveal-wrong'}" style="background:linear-gradient(135deg,${COLORS[i]},${COLORS[i]}cc);">
+      if (!ans) return;
+      var isC = i === q.correct;
+      revHtml += `<div class="ans-btn ${isC?'reveal-correct':'reveal-wrong'}"
+        style="background:linear-gradient(135deg,${COLORS[i]},${COLORS[i]}bb);">
         <div class="ans-icon">${isC?'✓':ICONS[i]}</div>${ans}
       </div>`;
     });
-    rHtml += '</div>';
-    revealAnswerHtml = rHtml;
+    revHtml += '</div>';
   } else {
-    revealAnswerHtml = `<div class="reveal-correct-ans">Answer: ${q.answer}</div>`;
+    revHtml = `<div class="reveal-type-ans">Answer: ${q.answer}</div>`;
   }
 
-  var ptsEarned = myData.lastPts || 0;
-
   document.getElementById('play-content').innerHTML = `
-    <div class="feedback-big" style="color:${isCorrect?'#30d158':'#ff3b30'};">${isCorrect?'✓ CORRECT!':'✗ WRONG'}</div>
-    <div class="pts-earned" style="color:${isCorrect?'#ffd700':'rgba(255,255,255,0.4)'};">${isCorrect?'+'+ptsEarned+' pts':'No points'}</div>
-    ${revealAnswerHtml}
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;">Waiting for next question...</div>
+    <div class="feedback-big" style="color:${isCorrect?'#30d158':'#ff3b30'};">
+      ${isCorrect?'✓ CORRECT!':'✗ WRONG'}
+    </div>
+    <div class="pts-label" style="color:${isCorrect?'#ffd700':'rgba(255,255,255,0.35)'};">
+      ${isCorrect?'+'+ptsEarned+' pts'+'(streak: '+myStreak+')':'No points'}
+    </div>
+    ${revHtml}
+    <div class="wait-sub" style="margin-top:6px;">Waiting for next question...</div>
   `;
 }
 
-function showEnd(data) {
+// ===== END =====
+function onEnd(data) {
   phase = 'ended';
-  clearClientTimer();
+  killTimer();
   var sorted = Object.values(data.players||{}).sort(function(a,b){return (b.score||0)-(a.score||0);});
   var myRank = sorted.findIndex(function(p){return p.uid===me.uid;})+1;
   var medals = {1:'🥇',2:'🥈',3:'🥉'};
-  myScore = ((data.players||{})[me.uid]||{}).score || myScore;
   document.getElementById('play-content').innerHTML = `
     <div class="end-screen">
       <div class="end-title">Game Over!</div>
-      <div class="end-rank">${medals[myRank]||'#'+myRank} Place out of ${sorted.length}</div>
+      <div class="end-rank">${medals[myRank]||'#'+myRank} of ${sorted.length}</div>
       <div class="end-score">${myScore.toLocaleString()} pts</div>
       <a href="student-home.html" class="end-back">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
@@ -379,12 +380,66 @@ function showEnd(data) {
   `;
 }
 
-function clearClientTimer() {
-  clearInterval(clientTimerInterval);
-  clientTimerInterval = null;
+// ===== UTILS =====
+function showWait(msg) {
+  killTimer();
+  document.getElementById('play-content').innerHTML = `
+    <div class="wait-screen">
+      <div class="wait-spinner"></div>
+      <div class="wait-title" style="font-size:clamp(18px,4vw,32px);">${msg}</div>
+    </div>
+  `;
 }
+
+function killTimer() { clearInterval(clientTimer); clientTimer = null; }
 
 function showToast(msg,type){type=type||'';var c=document.getElementById('toast-container');if(!c)return;var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;c.appendChild(t);setTimeout(function(){t.remove();},3200);}
 </script>
 </body>
 </html>
+Now add a Players tab to game-host.html — find the topbar actions area and add this viewer panel. In game-host.html find renderLobby and replace just the actions.innerHTML line:
+actions.innerHTML = `
+  <button class="btn-ghost" id="players-btn" onclick="togglePlayersPanel()" style="position:relative;">
+    👥 Players <span id="players-badge" style="background:#0a84ff;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">0</span>
+  </button>
+  <button class="btn-primary" id="launch-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Launch
+  </button>
+  <div id="players-panel" style="display:none;position:absolute;top:52px;right:16px;background:#020c1e;border:1px solid var(--vl-border);border-radius:12px;padding:16px;min-width:260px;max-height:360px;overflow-y:auto;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--vl-gray);margin-bottom:10px;">Players in Game</div>
+    <div id="players-panel-list"></div>
+  </div>
+`;
+document.getElementById('launch-btn').onclick = launchGame;
+document.getElementById('topbar-actions').style.position = 'relative';
+Then add this function anywhere in game-host.html's script:
+function togglePlayersPanel() {
+  var panel = document.getElementById('players-panel');
+  if (!panel) return;
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  renderPlayersPanel();
+}
+
+function renderPlayersPanel() {
+  var list = document.getElementById('players-panel-list');
+  var badge = document.getElementById('players-badge');
+  if (!list) return;
+  var pArr = Object.values(players);
+  if (badge) badge.textContent = pArr.length;
+  if (!pArr.length) { list.innerHTML='<div style="font-size:12px;color:var(--vl-gray);text-align:center;padding:12px;">No players yet</div>'; return; }
+  list.innerHTML = '';
+  pArr.forEach(function(p) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
+    row.innerHTML =
+      (p.photoURL ? '<img src="'+p.photoURL+'" width="30" height="30" style="border-radius:50%;object-fit:cover;flex-shrink:0;" alt=""/>'
+        : '<div style="width:30px;height:30px;border-radius:50%;background:#0a84ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">'+(p.name||'?')[0]+'</div>') +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(p.name||'Player')+'</div>' +
+        '<div style="font-size:10px;color:var(--vl-gray);">'+(p.answeredCurrent?'✓ Answered':'Waiting...')+'</div>' +
+      '</div>' +
+      '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:18px;color:#00e5ff;">'+(p.score||0)+'</div>';
+    list.appendChild(row);
+  });
+}
