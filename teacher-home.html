@@ -49,7 +49,6 @@
 
   <main class="dash-content">
 
-    <!-- DASHBOARD -->
     <div id="view-home">
       <div class="page-header">
         <div>
@@ -70,7 +69,6 @@
       <div class="classroom-cards" id="classroom-cards"></div>
     </div>
 
-    <!-- CLASSROOM VIEW -->
     <div id="view-classroom" class="hidden">
       <div class="cls-banner" id="cls-banner">
         <button class="banner-back" onclick="goHome()">
@@ -150,7 +148,7 @@
             </div>
             <div class="game-card-body">
               <h3>Game Hosting</h3>
-              <p>Host a live game session for your entire class — coming soon</p>
+              <p>Host a live game session for your entire class</p>
               <div class="coming-soon-tag">Coming Soon</div>
             </div>
           </div>
@@ -161,10 +159,38 @@
             </div>
             <div class="game-card-body">
               <h3>Visual: Learning</h3>
-              <p>Play the solo vocabulary game yourself</p>
+              <p>Typing + Description modes · F to Visual Learner · 150pts per question</p>
               <button class="btn-primary" style="margin-top:12px;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 Play
+              </button>
+            </div>
+          </div>
+
+          <div class="game-card" onclick="window.location.href='game-math.html'">
+            <div class="game-card-top green-grad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="game-card-body">
+              <h3>Math Challenge</h3>
+              <p>Addition → Powers → Fractions · 500pts per question · 8 rank tiers</p>
+              <button class="btn-primary" style="margin-top:12px;background:#0f9d58;box-shadow:0 3px 12px rgba(15,157,88,0.3);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Play
+              </button>
+            </div>
+          </div>
+
+          <div class="game-card" onclick="window.location.href='visual-watcher.html'">
+            <div class="game-card-top" style="background:linear-gradient(135deg,#b31412,#ea4335);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58a2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff" stroke="none"/></svg>
+            </div>
+            <div class="game-card-body">
+              <h3>Visual Watcher</h3>
+              <p>Featured educational video — plays instantly for your students</p>
+              <button class="btn-primary" style="margin-top:12px;background:#ea4335;box-shadow:0 3px 12px rgba(234,67,53,0.3);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Watch
               </button>
             </div>
           </div>
@@ -175,10 +201,10 @@
             </div>
             <div class="game-card-body">
               <h3>Tournament</h3>
-              <p>Start a class tournament — 10 minute race, 2+ students</p>
+              <p>Start a class tournament · 10 minute race · 2+ students</p>
               <button class="btn-gold" style="margin-top:12px;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
-                Start Tournament
+                Start
               </button>
             </div>
           </div>
@@ -262,14 +288,14 @@
 <div id="toast-container"></div>
 <script src="app.js"></script>
 <script>
-var me=null, room=null;
-var unsubChat=null, unsubPeople=null, unsubViewer=null, unsubT=null;
+var me=null,room=null;
+var unsubChat=null,unsubPeople=null,unsubViewer=null,unsubT=null;
 var tInterval=null;
-var BADS=['fuck','shit','bitch','ass','damn','crap','piss','dick','cock','pussy','bastard','asshole'];
+var BADS=['fuck','shit','bitch','ass','asf','puh','dih','bih','nig','ga','wtf','wth','nigga','nigger','piss','dick','cock','pussy','bastard','asshole'];
 var COLORS=['#0a84ff','#e52592','#0f9d58','#f29900','#673ab7','#03bcd4','#ff6d00'];
 
 firebase.auth().onAuthStateChanged(function(u){
-  if(!u) return window.location.href='login.html?role=teacher';
+  if(!u) return window.location.href='login.html';
   me=u;
   document.getElementById('t-name').textContent=u.displayName||'Representative';
   document.getElementById('t-email').textContent=u.email||'';
@@ -285,8 +311,7 @@ document.getElementById('create-confirm').onclick=function(){
   if(!name) return showToast('Enter a class name','error');
   var code=Math.random().toString(36).substring(2,8).toUpperCase();
   firebase.firestore().collection('classrooms').doc(code).set({
-    code:code,name:name,
-    section:document.getElementById('cls-section-inp').value.trim(),
+    code:code,name:name,section:document.getElementById('cls-section-inp').value.trim(),
     teacherId:me.uid,teacherName:me.displayName||'Teacher',
     students:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()
   }).then(function(){
@@ -307,12 +332,12 @@ function loadRooms(){
     if(snap.empty){noMsg.classList.remove('hidden');return;}
     noMsg.classList.add('hidden');
     snap.docs.forEach(function(doc,i){
-      var d=doc.data(), color=COLORS[i%COLORS.length];
+      var d=doc.data(),color=COLORS[i%COLORS.length];
       var sb=document.createElement('div'); sb.className='sidebar-room';
       sb.innerHTML='<div class="sidebar-room-dot" style="background:'+color+'"></div><div><div class="sidebar-room-name">'+d.name+'</div><div class="sidebar-room-code">'+d.code+'</div></div>';
       sb.onclick=function(){openRoom(d,color);}; sidebar.appendChild(sb);
       var card=document.createElement('div'); card.className='cls-card';
-      card.innerHTML='<div class="cls-card-banner" style="background:'+color+'"><div class="cls-card-name">'+d.name+'</div><div class="cls-card-teacher">'+(d.section||d.teacherName)+'</div></div><div class="cls-card-footer"><span class="cls-card-code">'+d.code+'</span><button class="btn-primary btn-sm enter-btn">Enter Classroom</button></div>';
+      card.innerHTML='<div class="cls-card-banner" style="background:'+color+'"><div class="cls-card-name">'+d.name+'</div><div class="cls-card-teacher">'+(d.section||d.teacherName)+'</div></div><div class="cls-card-footer"><span class="cls-card-code">'+d.code+'</span><button class="btn-primary btn-sm enter-btn">Enter</button></div>';
       card.querySelector('.enter-btn').onclick=function(){openRoom(d,color);}; cards.appendChild(card);
     });
   });
@@ -351,13 +376,14 @@ function clean(t){var o=t;BADS.forEach(function(w){o=o.replace(new RegExp('\\b'+
 function listenChat(){
   if(unsubChat) unsubChat();
   var feed=document.getElementById('chat-feed');
-  unsubChat=firebase.firestore().collection('classrooms').doc(room.code).collection('chat').orderBy('createdAt','asc').limit(100).onSnapshot(function(snap){
+  unsubChat=firebase.firestore().collection('classrooms').doc(room.code).collection('chat').orderBy('createdAt','asc').limit(200).onSnapshot(function(snap){
     feed.innerHTML='';
     if(snap.empty){feed.innerHTML='<div class="chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="52" height="52"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>No messages yet</p></div>';return;}
     snap.forEach(function(doc){
       var d=doc.data(),mine=d.uid===me.uid;
       var el=document.createElement('div'); el.className='chat-msg'+(mine?' mine':'');
-      el.innerHTML=(mine?'':'<img class="msg-avatar" src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>')+'<div class="msg-body">'+(mine?'':'<div class="msg-sender">'+d.name+'</div>')+'<div class="msg-text">'+clean(d.text)+'</div></div>';
+      var bubble=d.imageUrl?'<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>':(d.flagged?'<div class="msg-text msg-flagged">[Flagged]</div>':'<div class="msg-text">'+clean(d.text||'')+'</div>');
+      el.innerHTML=(mine?'':'<img class="msg-avatar" src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>')+'<div class="msg-body">'+(mine?'':'<div class="msg-sender">'+d.name+'</div>')+bubble+'</div>';
       feed.appendChild(el);
     });
     feed.scrollTop=feed.scrollHeight;
@@ -369,7 +395,10 @@ document.getElementById('chat-input').onkeydown=function(e){if(e.key==='Enter')s
 function sendMsg(){
   var inp=document.getElementById('chat-input'),t=inp.value.trim();
   if(!t||!room) return; inp.value='';
-  firebase.firestore().collection('classrooms').doc(room.code).collection('chat').add({uid:me.uid,name:me.displayName||'Teacher',photoURL:me.photoURL||null,text:t,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  firebase.firestore().collection('classrooms').doc(room.code).collection('chat').add({
+    uid:me.uid,name:me.displayName||'Teacher',photoURL:me.photoURL||null,
+    text:t,flagged:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
 }
 
 function listenPeople(){
@@ -400,7 +429,7 @@ function listenViewer(){
     if(!students.length){grid.innerHTML='<div class="viewer-empty">No students yet</div>';return;}
     students.forEach(function(s){
       var c=document.createElement('div'); c.className='viewer-card '+(s.online?'online':'offline');
-      c.innerHTML='<div class="viewer-status-dot '+(s.online?'dot-green':'dot-red')+'"></div>'+(s.photoURL?'<img src="'+s.photoURL+'" alt=""/>':'<div class="viewer-letter">'+(s.name||'S')[0]+'</div>')+'<div class="viewer-name">'+(s.name||'Student')+'</div><div class="viewer-act">'+(s.online?(s.currentActivity||'Active'):'Offline')+'</div>';
+      c.innerHTML='<div class="viewer-status-dot '+(s.online?'dot-green':'dot-red')+'"></div>'+(s.photoURL?'<img src="'+s.photoURL+'" alt=""/>':'<div class="viewer-letter">'+(s.name||'S')[0]+'</div>')+'<div class="viewer-name">'+(s.name||'Student')+'</div><div class="viewer-act">'+(s.online?'Active':'Offline')+'</div>';
       grid.appendChild(c);
     });
   });
@@ -415,23 +444,20 @@ function openTournamentModal(){
   if(unsubT) unsubT();
   unsubT=ref.onSnapshot(function(snap){
     if(!snap.exists) return;
-    var data=snap.data(), players=Object.values(data.players||{});
+    var data=snap.data(),players=Object.values(data.players||{});
     var list=document.getElementById('t-players'); list.innerHTML='';
     players.forEach(function(p){
       var row=document.createElement('div'); row.className='t-player-row';
       row.innerHTML=(p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="t-player-letter">'+(p.name||'P')[0]+'</div>')+'<span>'+(p.name||'Player')+'</span><span class="t-player-pts">'+p.points+' pts</span>';
       list.appendChild(row);
     });
-    if(players.length>=2&&data.status!=='active'){
-      ref.update({status:'active',startedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    }
+    if(players.length>=2&&data.status!=='active') ref.update({status:'active',startedAt:firebase.firestore.FieldValue.serverTimestamp()});
     if(data.status==='active'&&data.startedAt&&!tInterval){
       document.getElementById('t-status').textContent='Tournament in progress!';
       document.getElementById('t-timer').classList.remove('hidden');
       var startTime=data.startedAt.toDate().getTime();
-      var DURATION=600000;
       tInterval=setInterval(function(){
-        var left=DURATION-(Date.now()-startTime);
+        var left=600000-(Date.now()-startTime);
         if(left<=0){clearInterval(tInterval);tInterval=null;document.getElementById('tournament-modal').classList.add('hidden');showToast('Tournament over!','success');return;}
         var m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
         document.getElementById('t-timer').textContent=m+':'+(s<10?'0':'')+s;
@@ -447,8 +473,9 @@ document.getElementById('t-leave-btn').onclick=function(){
   if(unsubT){unsubT();unsubT=null;} if(tInterval){clearInterval(tInterval);tInterval=null;}
   document.getElementById('tournament-modal').classList.add('hidden');
 };
-
 document.getElementById('logout-btn').onclick=function(){firebase.auth().signOut().then(function(){window.location.href='main.html';});};
+
+function showToast(msg,type){type=type||'';var c=document.getElementById('toast-container');if(!c)return;var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;c.appendChild(t);setTimeout(function(){t.remove();},3200);}
 </script>
 </body>
 </html>
