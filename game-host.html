@@ -20,7 +20,6 @@
     .host-questions-list{flex:1;overflow-y:auto;padding:10px;}
     .host-q-item{background:var(--vl-surface);border:1px solid var(--vl-border);border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:border-color 0.15s;}
     .host-q-item:hover{border-color:rgba(10,132,255,0.35);}
-    .host-q-item.active{border-color:var(--vl-blue);background:rgba(10,132,255,0.07);}
     .host-q-num{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--vl-gray);}
     .host-q-text{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:var(--vl-white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
     .host-q-meta{font-size:10px;color:var(--vl-gray);margin-top:2px;}
@@ -49,7 +48,7 @@
     .vl-textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 13px;color:var(--vl-white);font-family:'Barlow',sans-serif;font-size:14px;outline:none;resize:none;transition:border-color 0.2s;margin-bottom:12px;box-sizing:border-box;}
     .vl-textarea:focus{border-color:var(--vl-blue);}
     .vl-textarea::placeholder{color:var(--vl-gray);}
-    .answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+    .answers-grid-build{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
     .ans-row{display:flex;align-items:center;gap:7px;}
     .ans-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     .ans-correct-btn{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.18);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
@@ -91,7 +90,7 @@
     .results-list{width:100%;display:flex;flex-direction:column;gap:7px;}
     .r-row{display:flex;align-items:center;gap:10px;background:var(--vl-surface);border:1px solid var(--vl-border);border-radius:9px;padding:11px 14px;}
     .podium-wrap-outer{display:flex;flex-direction:column;align-items:center;gap:20px;}
-    .podium-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,7vw,68px);letter-spacing:0.08em;color:var(--vl-gold);text-shadow:0 0 30px rgba(255,215,0,0.4);animation:glow 2s infinite;}
+    .podium-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,7vw,68px);letter-spacing:0.08em;color:var(--vl-gold);animation:glow 2s infinite;}
     @keyframes glow{0%,100%{text-shadow:0 0 30px rgba(255,215,0,0.4);}50%{text-shadow:0 0 70px rgba(255,215,0,0.8);}}
     .podium-stage{display:flex;align-items:flex-end;gap:10px;justify-content:center;}
     .podium-block{display:flex;flex-direction:column;align-items:center;gap:6px;}
@@ -103,15 +102,15 @@
     .podium-pts{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--vl-cyan);}
     .podium-rest{width:100%;max-width:480px;display:flex;flex-direction:column;gap:5px;}
     .cls-select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;color:var(--vl-white);font-family:'Barlow Condensed',sans-serif;font-size:13px;outline:none;margin-bottom:4px;}
-    /* PLAYERS PANEL */
     .players-panel{display:none;position:absolute;top:52px;right:16px;background:#020c1e;border:1px solid var(--vl-border);border-radius:12px;padding:16px;min-width:280px;max-height:380px;overflow-y:auto;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.6);}
     .players-panel-header{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--vl-gray);margin-bottom:10px;}
     .pp-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
     .pp-row:last-child{border-bottom:none;}
     .pp-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;}
     .pp-letter{width:32px;height:32px;border-radius:50%;background:var(--vl-blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
-    .pp-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;color:var(--vl-white);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .pp-status{font-size:10px;color:var(--vl-gray);}
+    .pp-info{flex:1;min-width:0;}
+    .pp-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;color:var(--vl-white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pp-status{font-size:10px;color:var(--vl-gray);margin-top:1px;}
     .pp-score{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--vl-cyan);}
     .players-badge{background:var(--vl-blue);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;}
     @media(max-width:700px){.host-shell{grid-template-columns:1fr;}.host-panel{display:none;}.q-answers{grid-template-columns:1fr;}}
@@ -120,7 +119,6 @@
 <body>
 <div class="host-shell">
 
-  <!-- LEFT PANEL -->
   <div class="host-panel">
     <div class="host-panel-top">
       <div class="host-brand">V<span>:</span>L HOST</div>
@@ -140,7 +138,6 @@
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="host-main">
     <div class="host-topbar">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -180,7 +177,6 @@ firebase.auth().onAuthStateChanged(function(u) {
   renderSetup();
 });
 
-// ===== LOAD CLASSROOMS =====
 function loadRooms() {
   firebase.firestore().collection('classrooms').where('teacherId','==',me.uid).get().then(function(snap) {
     myRooms = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
@@ -208,7 +204,6 @@ function checkStartBtn() {
   document.getElementById('start-btn').style.display = (selectedRoom && questions.length > 0) ? '' : 'none';
 }
 
-// ===== SETUP =====
 function renderSetup() {
   document.getElementById('host-content').innerHTML = `
     <div class="setup-wrap">
@@ -242,7 +237,6 @@ function renderSetup() {
   renderSidebar();
 }
 
-// ===== EDITOR =====
 function openEditor(type, idx) {
   editIdx = idx;
   correctIdx = 0;
@@ -276,7 +270,7 @@ function openEditor(type, idx) {
     var defs = ex ? ex.answers : ['','','',''];
     var cor  = ex ? ex.correct : 0;
     correctIdx = cor;
-    aa.innerHTML = '<div class="answers-grid" id="mc-grid"></div>';
+    aa.innerHTML = '<div class="answers-grid-build" id="mc-grid"></div>';
     var grid = document.getElementById('mc-grid');
     defs.forEach(function(a,i){
       var row = document.createElement('div'); row.className='ans-row';
@@ -333,8 +327,7 @@ function saveQ(type) {
   }
   if (editIdx>=0) questions[editIdx]=q; else questions.push(q);
   document.getElementById('q-editor').innerHTML='';
-  renderSidebar();
-  checkStartBtn();
+  renderSidebar(); checkStartBtn();
   showToast(editIdx>=0?'Updated':'Question added','success');
   editIdx=-1;
 }
@@ -342,13 +335,11 @@ function saveQ(type) {
 function deleteQ(i) {
   questions.splice(i,1);
   document.getElementById('q-editor').innerHTML='';
-  renderSidebar();
-  checkStartBtn();
+  renderSidebar(); checkStartBtn();
 }
 
 function renderSidebar() {
-  var s = document.getElementById('q-sidebar');
-  s.innerHTML='';
+  var s = document.getElementById('q-sidebar'); s.innerHTML='';
   if (!questions.length) { s.innerHTML='<div style="color:var(--vl-gray);font-size:12px;padding:12px;text-align:center;">No questions yet</div>'; return; }
   questions.forEach(function(q,i){
     var item=document.createElement('div'); item.className='host-q-item';
@@ -362,14 +353,12 @@ function handleCSV(e) {
   var file=e.target.files[0]; if(!file) return;
   var reader=new FileReader();
   reader.onload=function(ev){
-    var lines=ev.target.result.split('\n').filter(Boolean);
-    var added=0;
+    var lines=ev.target.result.split('\n').filter(Boolean); var added=0;
     lines.forEach(function(line,i){
       if(i===0&&line.toLowerCase().startsWith('type')) return;
       var cols=line.split(',');
       var type=(cols[0]||'').trim().toLowerCase();
-      var question=(cols[1]||'').trim();
-      if(!question) return;
+      var question=(cols[1]||'').trim(); if(!question) return;
       var q={type:type,question:question,points:parseInt(cols[7])||1000,time:parseInt(cols[8])||20};
       if(type==='mc'){ q.answers=[cols[2],cols[3],cols[4],cols[5]].map(function(c){return(c||'').trim();}); q.correct=parseInt(cols[6])||0; }
       else if(type==='tf'){ q.answers=['True','False']; q.correct=parseInt(cols[6])||0; }
@@ -386,14 +375,9 @@ function handleCSV(e) {
 document.getElementById('start-btn').onclick = function() {
   if (!selectedRoom) return showToast('Select a classroom first','error');
   if (!questions.length) return showToast('Add at least one question','error');
-  players = {};
-  currentQIdx = 0;
-  gamePhase = 'lobby';
-
-  firebase.firestore()
-    .collection('classrooms').doc(selectedRoom.code)
-    .collection('gamehost').doc('session')
-    .set({
+  players = {}; currentQIdx = 0; gamePhase = 'lobby';
+  firebase.firestore().collection('classrooms').doc(selectedRoom.code)
+    .collection('gamehost').doc('session').set({
       status: 'lobby',
       teacherId: me.uid,
       teacherName: me.displayName||'Teacher',
@@ -404,12 +388,12 @@ document.getElementById('start-btn').onclick = function() {
       players: {},
       startedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
-      console.log('[HOST] Session written to classrooms/'+selectedRoom.code+'/gamehost/session');
+      console.log('[HOST] Session created at classrooms/'+selectedRoom.code+'/gamehost/session');
       showToast('Game created! Waiting for players...','success');
       renderLobby();
       listenSession();
     }).catch(function(err){
-      console.error('[HOST] Failed to write session:', err);
+      console.error('[HOST] Failed:', err);
       showToast('Error: '+err.message,'error');
     });
 };
@@ -426,19 +410,15 @@ function listenSession() {
       players = data.players || {};
       var count = Object.keys(players).length;
 
-      // Update topbar count
       var tpEl = document.getElementById('topbar-players');
       if (tpEl) tpEl.textContent = count+' player'+(count!==1?'s':'')+' joined';
 
-      // Update lobby count
       var lcEl = document.getElementById('lobby-count-el');
       if (lcEl) lcEl.textContent = count+' player'+(count!==1?'s':'')+' joined';
 
-      // Update players badge
       var badge = document.getElementById('players-badge');
       if (badge) badge.textContent = count;
 
-      // Update all live UI
       updateLobbyChips();
       updateLiveScores();
       updateAnsweredCount();
@@ -455,9 +435,7 @@ function renderLobby() {
   document.getElementById('topbar-code').style.display = '';
   document.getElementById('topbar-code').textContent = selectedRoom.code;
 
-  // Topbar actions with Players panel button
-  var actions = document.getElementById('topbar-actions');
-  actions.innerHTML = `
+  document.getElementById('topbar-actions').innerHTML = `
     <button class="btn-ghost" onclick="togglePlayersPanel()">
       👥 Players <span class="players-badge" id="players-badge">0</span>
     </button>
@@ -487,7 +465,7 @@ function renderLobby() {
 function togglePlayersPanel() {
   var panel = document.getElementById('players-panel');
   if (!panel) return;
-  panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+  panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
   renderPlayersPanel();
 }
 
@@ -506,10 +484,7 @@ function renderPlayersPanel() {
     var row = document.createElement('div'); row.className='pp-row';
     row.innerHTML =
       (p.photoURL ? '<img src="'+p.photoURL+'" class="pp-avatar" alt=""/>' : '<div class="pp-letter">'+(p.name||'?')[0]+'</div>') +
-      '<div style="flex:1;min-width:0;">'+
-        '<div class="pp-name">'+(p.name||'Player')+'</div>'+
-        '<div class="pp-status">'+(p.answeredCurrent ? '✓ Answered' : '⏳ Waiting...')+'</div>'+
-      '</div>'+
+      '<div class="pp-info"><div class="pp-name">'+(p.name||'Player')+'</div><div class="pp-status">'+(p.answeredCurrent?'✓ Answered':'⏳ Waiting...')+'</div></div>'+
       '<div class="pp-score">'+(p.score||0)+'</div>';
     list.appendChild(row);
   });
@@ -517,8 +492,7 @@ function renderPlayersPanel() {
 
 // ===== UPDATE HELPERS =====
 function updateLobbyChips() {
-  var grid = document.getElementById('lobby-chips-grid');
-  if (!grid) return;
+  var grid = document.getElementById('lobby-chips-grid'); if (!grid) return;
   grid.innerHTML = '';
   Object.values(players).forEach(function(p){
     var chip=document.createElement('div'); chip.className='lchip';
@@ -529,8 +503,8 @@ function updateLobbyChips() {
 
 function updateLiveScores() {
   var panel = document.getElementById('live-scores-panel');
-  if (!panel || gamePhase === 'lobby' || gamePhase === 'setup') return;
-  panel.innerHTML = '';
+  if (!panel || gamePhase==='lobby'||gamePhase==='setup') return;
+  panel.innerHTML='';
   Object.values(players).sort(function(a,b){return (b.score||0)-(a.score||0);}).forEach(function(p,i){
     var row=document.createElement('div'); row.className='ls-row';
     row.innerHTML='<div class="ls-rank">'+(i+1)+'</div>'+
@@ -543,8 +517,7 @@ function updateLiveScores() {
 }
 
 function updateAnsweredCount() {
-  var el = document.getElementById('answered-count-el');
-  if (!el) return;
+  var el = document.getElementById('answered-count-el'); if (!el) return;
   var total    = Object.keys(players).length;
   var answered = Object.values(players).filter(function(p){ return p.answeredCurrent; }).length;
   el.textContent = answered+' / '+total+' answered';
@@ -559,10 +532,8 @@ function launchGame() {
 // ===== SHOW QUESTION =====
 function showQuestion(idx) {
   if (idx >= questions.length) { endGame(); return; }
-  currentQIdx = idx;
-  gamePhase = 'question';
-  var q = questions[idx];
-  timerLeft = q.time;
+  currentQIdx = idx; gamePhase = 'question';
+  var q = questions[idx]; timerLeft = q.time;
 
   document.getElementById('live-scores-panel').classList.remove('hidden');
   document.getElementById('live-scores-panel').innerHTML='';
@@ -572,13 +543,10 @@ function showQuestion(idx) {
     currentQuestion: idx,
     questionStartedAt: firebase.firestore.FieldValue.serverTimestamp(),
     questionData: {
-      type: q.type,
-      question: q.question,
-      answers: q.answers || [],
-      answer: q.answer || '',
+      type: q.type, question: q.question,
+      answers: q.answers || [], answer: q.answer || '',
       correct: q.correct !== undefined ? q.correct : -1,
-      points: q.points,
-      time: q.time
+      points: q.points, time: q.time
     }
   };
   Object.keys(players).forEach(function(uid){
@@ -586,7 +554,6 @@ function showQuestion(idx) {
     upd['players.'+uid+'.lastAnswer']      = '';
     upd['players.'+uid+'.lastAnswerIndex'] = -1;
   });
-
   firebase.firestore().collection('classrooms').doc(selectedRoom.code)
     .collection('gamehost').doc('session').update(upd);
 
@@ -604,12 +571,10 @@ function showQuestion(idx) {
 function renderQuestionScreen(q, idx) {
   document.getElementById('topbar-actions').innerHTML =
     '<button class="btn-ghost" onclick="skipTimer()">Skip Timer</button>';
-
   var answersHtml = '';
   if (q.type==='mc'||q.type==='tf') {
-    var ans = q.answers||[];
     answersHtml = '<div class="q-answers">';
-    ans.forEach(function(a,i){
+    (q.answers||[]).forEach(function(a,i){
       if(!a) return;
       answersHtml += `<div class="q-ans" id="qans-${i}" style="background:linear-gradient(135deg,${COLORS[i]},${COLORS[i]}cc);"><div class="q-ans-icon">${ICONS[i]}</div>${a}</div>`;
     });
@@ -617,7 +582,6 @@ function renderQuestionScreen(q, idx) {
   } else {
     answersHtml = '<div style="background:var(--vl-surface);border:1px solid var(--vl-border);border-radius:11px;padding:18px;text-align:center;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;color:var(--vl-gray);width:100%;max-width:680px;">Students type their answer</div>';
   }
-
   document.getElementById('host-content').innerHTML = `
     <div class="q-screen">
       <div class="q-prog" style="width:100%;max-width:680px;">
@@ -638,10 +602,8 @@ function skipTimer() { clearInterval(timerInterval); revealAnswer(); }
 function revealAnswer() {
   gamePhase = 'reveal';
   var q = questions[currentQIdx];
-
   firebase.firestore().collection('classrooms').doc(selectedRoom.code)
     .collection('gamehost').doc('session').update({ status:'reveal' });
-
   var batch = {};
   Object.entries(players).forEach(function(entry){
     var uid=entry[0], p=entry[1];
@@ -661,17 +623,13 @@ function revealAnswer() {
     batch['players.'+uid+'.lastCorrect'] = isCorrect;
     batch['players.'+uid+'.lastPts']     = ptsEarned;
   });
-
   firebase.firestore().collection('classrooms').doc(selectedRoom.code)
     .collection('gamehost').doc('session').update(batch);
-
   renderRevealScreen(q);
-
   document.getElementById('topbar-actions').innerHTML =
     '<button class="btn-primary" id="next-btn">'+(currentQIdx+1<questions.length?'Next Question →':'See Podium 🏆')+'</button>';
   document.getElementById('next-btn').onclick = function(){
-    if (currentQIdx+1 < questions.length) showQuestion(currentQIdx+1);
-    else endGame();
+    if (currentQIdx+1 < questions.length) showQuestion(currentQIdx+1); else endGame();
   };
 }
 
@@ -688,7 +646,6 @@ function renderRevealScreen(q) {
   } else {
     answersHtml = `<div style="background:rgba(48,209,88,0.1);border:2px solid #30d158;border-radius:11px;padding:18px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:#30d158;width:100%;max-width:680px;">Answer: ${q.answer}</div>`;
   }
-
   var playerList = Object.values(players).sort(function(a,b){return (b.score||0)-(a.score||0);});
   var listHtml = playerList.slice(0,6).map(function(p,i){
     return `<div class="r-row">
@@ -699,7 +656,6 @@ function renderRevealScreen(q) {
       <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--vl-cyan);">${p.score||0}</span>
     </div>`;
   }).join('');
-
   document.getElementById('host-content').innerHTML = `
     <div class="results-wrap">
       <div class="results-h">Answer Revealed</div>
@@ -712,26 +668,29 @@ function renderRevealScreen(q) {
 
 // ===== PODIUM =====
 function endGame() {
-  gamePhase = 'podium';
-  clearInterval(timerInterval);
-
+  gamePhase = 'podium'; clearInterval(timerInterval);
+  // Set ended first so students see it, then delete after 3s
   firebase.firestore().collection('classrooms').doc(selectedRoom.code)
-    .collection('gamehost').doc('session').update({ status:'ended' });
+    .collection('gamehost').doc('session')
+    .update({ status: 'ended' })
+    .then(function() {
+      setTimeout(function() {
+        firebase.firestore().collection('classrooms').doc(selectedRoom.code)
+          .collection('gamehost').doc('session').delete();
+      }, 3000);
+    }).catch(function() {
+      firebase.firestore().collection('classrooms').doc(selectedRoom.code)
+        .collection('gamehost').doc('session').delete();
+    });
 
   var sorted = Object.values(players).sort(function(a,b){return (b.score||0)-(a.score||0);});
   document.getElementById('topbar-actions').innerHTML =
     '<button class="btn-primary" onclick="resetGame()">End Game</button>';
-
-  var order  = [1,0,2];
-  var pbClass= ['pb-2','pb-1','pb-3'];
-  var medals = ['🥈','🥇','🥉'];
-  var sizes  = [56,72,46];
-
-  var stageHtml = '';
+  var order=[1,0,2], pbClass=['pb-2','pb-1','pb-3'], medals=['🥈','🥇','🥉'], sizes=[56,72,46];
+  var stageHtml='';
   order.forEach(function(rank,col){
-    var p = sorted[rank];
-    if (!p) return;
-    stageHtml += `<div class="podium-block">
+    var p=sorted[rank]; if(!p) return;
+    stageHtml+=`<div class="podium-block">
       ${p.photoURL?`<img src="${p.photoURL}" width="${sizes[col]}" height="${sizes[col]}" style="border-radius:50%;object-fit:cover;border:3px solid ${['#c0c0c0','#ffd700','#cd7f32'][col]};" alt=""/>`:
         `<div style="width:${sizes[col]}px;height:${sizes[col]}px;border-radius:50%;background:var(--vl-blue);display:flex;align-items:center;justify-content:center;font-size:${Math.floor(sizes[col]*0.33)}px;font-weight:700;color:#fff;">${(p.name||'P')[0]}</div>`}
       <div class="podium-name">${p.name||'Player'}</div>
@@ -739,8 +698,7 @@ function endGame() {
       <div class="podium-bar ${pbClass[col]}">${medals[col]}</div>
     </div>`;
   });
-
-  var restHtml = sorted.slice(3).map(function(p,i){
+  var restHtml=sorted.slice(3).map(function(p,i){
     return `<div class="r-row">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--vl-gray);width:24px;">#${i+4}</div>
       ${p.photoURL?'<img src="'+p.photoURL+'" width="26" height="26" style="border-radius:50%;object-fit:cover;" alt=""/>':'<div style="width:26px;height:26px;border-radius:50%;background:var(--vl-blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">'+(p.name||'P')[0]+'</div>'}
@@ -748,8 +706,7 @@ function endGame() {
       <span style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--vl-cyan);">${p.score||0}</span>
     </div>`;
   }).join('');
-
-  document.getElementById('host-content').innerHTML = `
+  document.getElementById('host-content').innerHTML=`
     <div class="podium-wrap-outer">
       <div class="podium-title">🏆 Game Over!</div>
       <div class="podium-stage">${stageHtml}</div>
@@ -758,13 +715,10 @@ function endGame() {
   `;
 }
 
+// ===== RESET =====
 function resetGame() {
   if (unsubGame){unsubGame();unsubGame=null;}
   clearInterval(timerInterval);
-  if (selectedRoom) {
-    firebase.firestore().collection('classrooms').doc(selectedRoom.code)
-      .collection('gamehost').doc('session').delete();
-  }
   questions=[]; players={}; gamePhase='setup'; currentQIdx=0;
   document.getElementById('q-sidebar').classList.remove('hidden');
   document.getElementById('live-scores-panel').classList.add('hidden');
