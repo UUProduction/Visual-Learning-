@@ -11,37 +11,13 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <script src="firebase.js"></script>
   <style>
-    #boiled-overlay {
-      position:fixed; inset:0; z-index:9999;
-      display:flex; align-items:center; justify-content:center;
-      background:rgba(0,0,0,0.85);
-      opacity:0; pointer-events:none;
-      transition:opacity 0.3s ease;
-    }
-    #boiled-overlay.show { opacity:1; pointer-events:all; }
-    #boiled-overlay img { width:clamp(200px,60vw,480px); border-radius:12px; cursor:pointer; }
-
-    .game-live-item {
-      background:linear-gradient(135deg,rgba(103,58,183,0.12),rgba(103,58,183,0.06));
-      border:2px solid rgba(103,58,183,0.4) !important;
-      animation:pulse-border 2s infinite;
-    }
-    @keyframes pulse-border {
-      0%,100%{border-color:rgba(103,58,183,0.4);}
-      50%{border-color:rgba(103,58,183,0.8);}
-    }
-    .game-live-badge {
-      display:inline-flex; align-items:center; gap:5px;
-      background:rgba(103,58,183,0.15); border:1px solid rgba(103,58,183,0.3);
-      border-radius:12px; padding:3px 10px;
-      font-family:'Barlow Condensed',sans-serif; font-size:11px;
-      font-weight:700; letter-spacing:0.1em; color:#9c6fff;
-      text-transform:uppercase;
-    }
-    .game-live-dot {
-      width:6px; height:6px; border-radius:50%; background:#9c6fff;
-      animation:blink 1s infinite;
-    }
+    #boiled-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);opacity:0;pointer-events:none;transition:opacity 0.3s ease;}
+    #boiled-overlay.show{opacity:1;pointer-events:all;}
+    #boiled-overlay img{width:clamp(200px,60vw,480px);border-radius:12px;cursor:pointer;}
+    .game-live-item{background:linear-gradient(135deg,rgba(103,58,183,0.12),rgba(103,58,183,0.06));border:2px solid rgba(103,58,183,0.4)!important;animation:pulse-border 2s infinite;}
+    @keyframes pulse-border{0%,100%{border-color:rgba(103,58,183,0.4);}50%{border-color:rgba(103,58,183,0.85);}}
+    .game-live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(103,58,183,0.15);border:1px solid rgba(103,58,183,0.3);border-radius:12px;padding:3px 10px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#9c6fff;text-transform:uppercase;}
+    .game-live-dot{width:6px;height:6px;border-radius:50%;background:#9c6fff;animation:blink 1s infinite;}
     @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
   </style>
 </head>
@@ -212,7 +188,7 @@
             <button class="gc-btn-outlined" onclick="event.stopPropagation();openTournament()">Join</button>
           </div>
 
-          <!-- GAME HOSTING — live state -->
+          <!-- GAME HOSTING LIVE -->
           <div class="gc-classwork-item game-live-item" id="game-hosting-live" style="display:none;" onclick="joinActiveGame()">
             <div class="gc-classwork-icon" style="background:#f3e8ff;">
               <svg viewBox="0 0 24 24" fill="#673ab7" width="20" height="20"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5S14.67 12 15.5 12s1.5.67 1.5 1.5S16.33 15 15.5 15zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5S19.33 12 18.5 12z"/></svg>
@@ -227,7 +203,7 @@
             <button class="gc-btn-outlined" style="border-color:#673ab7;color:#673ab7;font-weight:700;" onclick="event.stopPropagation();joinActiveGame()">Join!</button>
           </div>
 
-          <!-- GAME HOSTING — locked state -->
+          <!-- GAME HOSTING LOCKED -->
           <div class="gc-classwork-item gc-classwork-locked" id="game-hosting-locked">
             <div class="gc-classwork-icon" style="background:#f1f3f4;">
               <svg viewBox="0 0 24 24" fill="#9aa0a6" width="20" height="20"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
@@ -339,8 +315,8 @@ var lbSort = 'totalPoints';
 var BAD_WORDS = ['fuck','shit','bitch','ass','asf','puh','dih','bih','nig','ga','wtf','wth','nigga','nigger','piss','dick','cock','pussy','bastard','asshole'];
 var FLAGGED_WORDS = ['nigga','nigger','mf','bitch','asf','ass','nig','wtf','wth','dih','bih'];
 
-function showBoiled() { document.getElementById('boiled-overlay').classList.add('show'); setTimeout(hideBoiled,6000); }
-function hideBoiled() { document.getElementById('boiled-overlay').classList.remove('show'); }
+function showBoiled(){ document.getElementById('boiled-overlay').classList.add('show'); setTimeout(hideBoiled,6000); }
+function hideBoiled(){ document.getElementById('boiled-overlay').classList.remove('show'); }
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) return window.location.href = 'login.html';
@@ -382,15 +358,14 @@ function joinClass() {
     if (!snap.exists) return showToast('Classroom not found','error');
     var data = snap.data();
     var upd = {};
-    upd['students.'+currentUser.uid+'.uid'] = currentUser.uid;
-    upd['students.'+currentUser.uid+'.name'] = currentUser.displayName||'Student';
+    upd['students.'+currentUser.uid+'.uid']      = currentUser.uid;
+    upd['students.'+currentUser.uid+'.name']     = currentUser.displayName||'Student';
     upd['students.'+currentUser.uid+'.photoURL'] = currentUser.photoURL||null;
-    upd['students.'+currentUser.uid+'.online'] = true;
+    upd['students.'+currentUser.uid+'.online']   = true;
     return firebase.firestore().collection('classrooms').doc(code).update(upd)
       .then(function(){
-        return firebase.firestore().collection('users').doc(currentUser.uid).set(
-          { classroomCodes: firebase.firestore.FieldValue.arrayUnion(code) }, {merge:true}
-        );
+        return firebase.firestore().collection('users').doc(currentUser.uid)
+          .set({ classroomCodes: firebase.firestore.FieldValue.arrayUnion(code) },{merge:true});
       }).then(function(){
         document.getElementById('join-modal').classList.add('hidden');
         document.getElementById('join-code-input').value = '';
@@ -411,12 +386,11 @@ function loadMyClasses() {
     if (!codes.length) { document.getElementById('empty-state').classList.remove('hidden'); return; }
     document.getElementById('empty-state').classList.add('hidden');
     var COLORS = ['#1a73e8','#e52592','#0f9d58','#f29900','#673ab7','#03bcd4'];
-    codes.forEach(function(code, i) {
+    codes.forEach(function(code,i) {
       firebase.firestore().collection('classrooms').doc(code).get().then(function(c) {
         if (!c.exists) return;
         var d = c.data(), color = COLORS[i%COLORS.length];
-        var card = document.createElement('div');
-        card.className = 'gc-class-card';
+        var card = document.createElement('div'); card.className='gc-class-card';
         card.innerHTML = `
           <div class="gc-class-card-header" style="background:${color};" onclick="openClassroom(${JSON.stringify(d).replace(/"/g,'&quot;')},'${color}')">
             <div class="gc-class-card-title">${d.name}</div>
@@ -464,12 +438,14 @@ function openClassroom(data, color) {
 document.querySelectorAll('.gc-tab').forEach(function(tab) {
   tab.addEventListener('click', function(){ switchTab(tab.getAttribute('data-tab')); });
 });
+
 function switchTab(name) {
   document.querySelectorAll('.gc-tab').forEach(function(t){ t.classList.remove('active'); });
   document.querySelectorAll('.gc-tab-panel').forEach(function(p){ p.classList.add('hidden'); });
   document.querySelector('.gc-tab[data-tab="'+name+'"]').classList.add('active');
   document.getElementById('panel-'+name).classList.remove('hidden');
   if (name === 'leaderboard') loadLeaderboard();
+  if (name === 'classwork' && currentClassroom) watchGameHosting();
 }
 
 function watchSlowMode() {
@@ -494,14 +470,14 @@ function checkTimeout() {
       if (endMs > Date.now()) { timeoutEndTime = endMs; startTimeoutCountdown(); }
     });
 }
+
 function startTimeoutCountdown() {
   clearInterval(timeoutInterval);
-  var banner = document.getElementById('timeout-banner');
-  banner.classList.remove('hidden');
+  document.getElementById('timeout-banner').classList.remove('hidden');
   timeoutInterval = setInterval(function() {
     var left = Math.max(0, Math.ceil((timeoutEndTime-Date.now())/1000));
     document.getElementById('timeout-countdown').textContent = left;
-    if (left <= 0) { clearInterval(timeoutInterval); banner.classList.add('hidden'); timeoutEndTime = 0; }
+    if (left <= 0) { clearInterval(timeoutInterval); document.getElementById('timeout-banner').classList.add('hidden'); timeoutEndTime = 0; }
   }, 500);
 }
 
@@ -518,26 +494,19 @@ function filterBad(text) {
 function listenChat() {
   if (unsubChat) unsubChat();
   var box = document.getElementById('chat-messages');
-  unsubChat = firebase.firestore()
-    .collection('classrooms').doc(currentClassroom.code)
+  unsubChat = firebase.firestore().collection('classrooms').doc(currentClassroom.code)
     .collection('chat').orderBy('createdAt','asc').limit(200)
     .onSnapshot(function(snap) {
       box.innerHTML = '';
-      if (snap.empty) {
-        box.innerHTML = '<div class="gc-chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>This is where you can talk to your class</p></div>';
-        return;
-      }
+      if (snap.empty) { box.innerHTML='<div class="gc-chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>This is where you can talk to your class</p></div>'; return; }
       snap.forEach(function(doc) {
         var d = doc.data(), isMe = d.uid === currentUser.uid;
-        var el = document.createElement('div');
-        el.className = 'gc-msg' + (isMe?' gc-msg-me':'');
-        var bubble = d.flagged
-          ? '<div class="gc-msg-bubble msg-flagged">[Flagged for review]</div><div class="msg-flagged-label">⚠ Sent to admin</div>'
-          : d.imageUrl
-          ? '<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>'
+        var el = document.createElement('div'); el.className='gc-msg'+(isMe?' gc-msg-me':'');
+        var bubble = d.flagged ? '<div class="gc-msg-bubble msg-flagged">[Flagged for review]</div><div class="msg-flagged-label">⚠ Sent to admin</div>'
+          : d.imageUrl ? '<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>'
           : '<div class="gc-msg-bubble">'+filterBad(d.text||'')+'</div>';
-        el.innerHTML = (!isMe?'<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>':'') +
-          '<div class="gc-msg-body">' + (!isMe?'<div class="gc-msg-name">'+d.name+'</div>':'') + bubble + '</div>';
+        el.innerHTML = (!isMe?'<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>':'')+
+          '<div class="gc-msg-body">'+(!isMe?'<div class="gc-msg-name">'+d.name+'</div>':'')+bubble+'</div>';
         box.appendChild(el);
       });
       box.scrollTop = box.scrollHeight;
@@ -566,23 +535,20 @@ function sendMsg() {
   var input = document.getElementById('chat-input');
   var text = input.value.trim();
   if (!text) return;
-  input.value = '';
-  lastMsgTime = Date.now();
-
+  input.value = ''; lastMsgTime = Date.now();
   if (text.toLowerCase() === 'boiled') showBoiled();
-
   var isFlagged = containsFlaggedWord(text);
   firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add({
-    uid: currentUser.uid, name: currentUser.displayName||'Student',
-    photoURL: currentUser.photoURL||null, text: text, flagged: isFlagged,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    uid:currentUser.uid, name:currentUser.displayName||'Student',
+    photoURL:currentUser.photoURL||null, text:text, flagged:isFlagged,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
   if (isFlagged) {
     firebase.firestore().collection('reports').add({
-      classroomCode: currentClassroom.code, classroomName: currentClassroom.name,
-      teacherId: currentClassroom.teacherId, senderUid: currentUser.uid,
-      senderName: currentUser.displayName, text: text, type: 'flagged_message',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(), reviewed: false
+      classroomCode:currentClassroom.code, classroomName:currentClassroom.name,
+      teacherId:currentClassroom.teacherId, senderUid:currentUser.uid,
+      senderName:currentUser.displayName, text:text, type:'flagged_message',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(), reviewed:false
     });
   }
 }
@@ -595,19 +561,20 @@ function listenPeople() {
     document.getElementById('people-teachers').innerHTML =
       '<div class="gc-person-row"><div class="gc-person-avatar" style="background:#1a73e8;">'+(d.teacherName||'T')[0].toUpperCase()+'</div><span>'+d.teacherName+'</span></div>';
     var sEl = document.getElementById('people-students'); sEl.innerHTML = '';
-    if (!students.length) { sEl.innerHTML = '<div style="color:#8899bb;font-size:13px;padding:12px 0;">No classmates yet</div>'; return; }
+    if (!students.length) { sEl.innerHTML='<div style="color:#8899bb;font-size:13px;padding:12px 0;">No classmates yet</div>'; return; }
     students.forEach(function(s) {
-      var row = document.createElement('div'); row.className = 'gc-person-row';
-      row.innerHTML = (s.photoURL?'<img class="gc-person-avatar-img" src="'+s.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(s.name||'S')[0]+'</div>')+'<span>'+(s.name||'Student')+'</span>';
+      var row = document.createElement('div'); row.className='gc-person-row';
+      row.innerHTML=(s.photoURL?'<img class="gc-person-avatar-img" src="'+s.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(s.name||'S')[0]+'</div>')+'<span>'+(s.name||'Student')+'</span>';
       sEl.appendChild(row);
     });
   });
 }
 
-// ===== GAME HOSTING WATCHER =====
+// ===== GAME HOSTING WATCHER — FIXED =====
 function watchGameHosting() {
   if (!currentClassroom) return;
   if (unsubGameHost) { unsubGameHost(); unsubGameHost = null; }
+
   unsubGameHost = firebase.firestore()
     .collection('classrooms').doc(currentClassroom.code)
     .collection('gamehost').doc('session')
@@ -615,13 +582,27 @@ function watchGameHosting() {
       var liveEl   = document.getElementById('game-hosting-live');
       var lockedEl = document.getElementById('game-hosting-locked');
       if (!liveEl || !lockedEl) return;
-      var isLive = snap.exists && snap.data().status !== 'ended';
+
+      // Not live if doc doesn't exist OR status is ended
+      var isLive = snap.exists &&
+                   snap.data().status !== 'ended' &&
+                   snap.data().status !== undefined;
+
       liveEl.style.display   = isLive ? '' : 'none';
       lockedEl.style.display = isLive ? 'none' : '';
+
       if (isLive) {
+        var d = snap.data();
+        var count = Object.keys(d.players || {}).length;
         document.getElementById('game-hosting-sub').textContent =
-          (snap.data().teacherName||'Teacher') + ' is hosting — tap to join!';
+          (d.teacherName||'Teacher') + ' is hosting · ' + count + ' in game';
       }
+    }, function(err) {
+      // Permission error — just show locked
+      var liveEl   = document.getElementById('game-hosting-live');
+      var lockedEl = document.getElementById('game-hosting-locked');
+      if (liveEl)   liveEl.style.display   = 'none';
+      if (lockedEl) lockedEl.style.display = '';
     });
 }
 
@@ -630,13 +611,11 @@ function joinActiveGame() {
   window.location.href = 'game-play.html?code=' + currentClassroom.code;
 }
 
-// ===== LEADERBOARD =====
 function loadLeaderboard() {
   firebase.firestore().collection('users').get().then(function(snap) {
     lbData = [];
     snap.forEach(function(doc) {
-      var d = doc.data();
-      if (d.role === 'admin') return;
+      var d = doc.data(); if (d.role==='admin') return;
       lbData.push({ id:doc.id, name:d.name||'Unknown', photoURL:d.photoURL||null, role:d.role||'student',
         totalPoints:d.totalPoints||0, totalAnswered:d.totalAnswered||0,
         mathPoints:d.mathPoints||0, bestStreak:d.bestStreak||0 });
@@ -652,15 +631,15 @@ function switchLB(sort, btn) {
 }
 function renderLB(sort) {
   var sorted = lbData.slice().sort(function(a,b){ return (b[sort]||0)-(a[sort]||0); });
-  var list = document.getElementById('lb-list'); list.innerHTML = '';
-  if (!sorted.length) { list.innerHTML = '<div style="color:#8899bb;font-size:13px;padding:20px;text-align:center;">No players yet</div>'; return; }
-  var labels = {totalPoints:'pts',totalAnswered:'answers',mathPoints:'math pts',bestStreak:'streak'};
-  var medals = ['🥇','🥈','🥉'];
-  sorted.forEach(function(u, i) {
-    var isMe = u.id === currentUser.uid;
-    var row = document.createElement('div'); row.className = 'gc-person-row';
-    row.style.cssText = 'padding:10px 8px;border-radius:8px;'+(isMe?'background:rgba(26,115,232,0.06);':'');
-    row.innerHTML =
+  var list = document.getElementById('lb-list'); list.innerHTML='';
+  if (!sorted.length) { list.innerHTML='<div style="color:#8899bb;font-size:13px;padding:20px;text-align:center;">No players yet</div>'; return; }
+  var labels={totalPoints:'pts',totalAnswered:'answers',mathPoints:'math pts',bestStreak:'streak'};
+  var medals=['🥇','🥈','🥉'];
+  sorted.forEach(function(u,i) {
+    var isMe = u.id===currentUser.uid;
+    var row = document.createElement('div'); row.className='gc-person-row';
+    row.style.cssText='padding:10px 8px;border-radius:8px;'+(isMe?'background:rgba(26,115,232,0.06);':'');
+    row.innerHTML=
       '<span style="font-size:20px;width:32px;text-align:center;flex-shrink:0;">'+(i<3?medals[i]:'#'+(i+1))+'</span>'+
       (u.photoURL?'<img class="gc-person-avatar-img" src="'+u.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(u.name||'?')[0].toUpperCase()+'</div>')+
       '<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:600;">'+u.name+(isMe?' <span style="color:#1a73e8;font-size:11px;">(You)</span>':'')+'</span>'+
@@ -669,40 +648,35 @@ function renderLB(sort) {
   });
 }
 
-// ===== TOURNAMENT =====
 function openTournament() {
   if (!currentClassroom) return;
   document.getElementById('tournament-lobby').classList.remove('hidden');
   document.getElementById('lobby-code').textContent = currentClassroom.code;
   var lobbyRef = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby');
-  var pd = {}; pd['players.'+currentUser.uid] = { uid:currentUser.uid, name:currentUser.displayName||'Student', photoURL:currentUser.photoURL||null, points:0 };
-  lobbyRef.set(pd, {merge:true});
+  var pd={}; pd['players.'+currentUser.uid]={uid:currentUser.uid,name:currentUser.displayName||'Student',photoURL:currentUser.photoURL||null,points:0};
+  lobbyRef.set(pd,{merge:true});
   if (unsubTournament) unsubTournament();
   unsubTournament = lobbyRef.onSnapshot(function(snap) {
     if (!snap.exists) return;
-    var data = snap.data(), players = Object.values(data.players||{});
-    var grid = document.getElementById('lobby-players-grid'); grid.innerHTML = '';
-    players.forEach(function(p) {
-      var chip = document.createElement('div'); chip.className = 't-lobby-player-chip';
-      chip.innerHTML = (p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="chip-letter">'+(p.name||'P')[0]+'</div>')+'<span>'+(p.name||'Player')+'</span>';
-      grid.appendChild(chip);
-    });
-    document.getElementById('lobby-count').textContent = players.length+' player'+(players.length!==1?'s':'')+' joined';
-    var hint = document.getElementById('lobby-start-hint');
-    if (players.length >= 2) { hint.textContent='✓ Ready to start!'; hint.style.color='#30d158'; }
-    else { hint.textContent='Need at least 2 players to start'; hint.style.color=''; }
-    if (players.length >= 2 && data.status !== 'active') lobbyRef.update({status:'active',startedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    if (data.status === 'active' && data.startedAt && !tournamentTimerInterval) {
+    var data=snap.data(), players=Object.values(data.players||{});
+    var grid=document.getElementById('lobby-players-grid'); grid.innerHTML='';
+    players.forEach(function(p){ var chip=document.createElement('div'); chip.className='t-lobby-player-chip'; chip.innerHTML=(p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="chip-letter">'+(p.name||'P')[0]+'</div>')+'<span>'+(p.name||'Player')+'</span>'; grid.appendChild(chip); });
+    document.getElementById('lobby-count').textContent=players.length+' player'+(players.length!==1?'s':'')+' joined';
+    var hint=document.getElementById('lobby-start-hint');
+    if (players.length>=2){hint.textContent='✓ Ready to start!';hint.style.color='#30d158';}
+    else{hint.textContent='Need at least 2 players to start';hint.style.color='';}
+    if (players.length>=2&&data.status!=='active') lobbyRef.update({status:'active',startedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    if (data.status==='active'&&data.startedAt&&!tournamentTimerInterval){
       document.getElementById('tournament-lobby').classList.add('hidden');
       document.getElementById('tournament-modal').classList.remove('hidden');
-      var startTime = data.startedAt.toDate().getTime();
-      tournamentTimerInterval = setInterval(function() {
-        var left = 600000-(Date.now()-startTime);
-        if (left<=0){clearInterval(tournamentTimerInterval);tournamentTimerInterval=null;document.getElementById('tournament-modal').classList.add('hidden');showToast('Tournament over!','success');return;}
+      var startTime=data.startedAt.toDate().getTime();
+      tournamentTimerInterval=setInterval(function(){
+        var left=600000-(Date.now()-startTime);
+        if(left<=0){clearInterval(tournamentTimerInterval);tournamentTimerInterval=null;document.getElementById('tournament-modal').classList.add('hidden');showToast('Tournament over!','success');return;}
         var m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
         document.getElementById('tournament-timer').textContent=m+':'+(s<10?'0':'')+s;
       },500);
-      var scoreList = document.getElementById('tournament-player-list'); scoreList.innerHTML='';
+      var scoreList=document.getElementById('tournament-player-list'); scoreList.innerHTML='';
       players.sort(function(a,b){return (b.points||0)-(a.points||0);}).forEach(function(p){
         var row=document.createElement('div'); row.className='gc-person-row'; row.id='tscore-'+p.uid;
         row.innerHTML=(p.photoURL?'<img class="gc-person-avatar-img" src="'+p.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(p.name||'P')[0]+'</div>')+
@@ -716,6 +690,7 @@ function openTournament() {
 
 document.getElementById('lobby-leave-btn').addEventListener('click', function(){ leaveTournament(); document.getElementById('tournament-lobby').classList.add('hidden'); });
 document.getElementById('tournament-leave').addEventListener('click', function(){ leaveTournament(); document.getElementById('tournament-modal').classList.add('hidden'); });
+
 function leaveTournament() {
   if (currentClassroom) firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby').update({['players.'+currentUser.uid]:firebase.firestore.FieldValue.delete()});
   if (unsubTournament){unsubTournament();unsubTournament=null;}
