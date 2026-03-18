@@ -98,7 +98,6 @@
             </div>
           </div>
           <div class="gc-stream-main">
-            <!-- Slow mode banner -->
             <div class="slow-mode-banner hidden" id="slow-mode-banner">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               Slow mode is on — <span id="slow-mode-secs">0</span>s between messages
@@ -110,22 +109,17 @@
                   <p>This is where you can talk to your class</p>
                 </div>
               </div>
-
-              <!-- Timed out banner -->
               <div class="chat-slowmode-timer hidden" id="timeout-banner">
                 🚫 You are timed out — <span id="timeout-countdown">0</span>s remaining
               </div>
               <div class="chat-slowmode-timer hidden" id="slowmode-countdown">
                 ⏱ Wait <span id="slow-countdown">0</span>s before sending again
               </div>
-
-              <!-- Image preview -->
               <div class="chat-img-preview hidden" id="img-preview">
                 <img id="img-preview-thumb" src="" alt=""/>
                 <span class="chat-img-preview-name" id="img-preview-name"></span>
                 <button class="chat-img-preview-remove" onclick="removeImagePreview()">✕</button>
               </div>
-
               <div class="gc-chat-input-wrap">
                 <img id="chat-user-photo" src="assets/default-avatar.png" alt=""/>
                 <div class="chat-composer-inner">
@@ -155,18 +149,29 @@
             </div>
             <div class="gc-classwork-info">
               <div class="gc-classwork-title">Visual: Learning</div>
-              <div class="gc-classwork-sub">Solo vocab game · D to Visual Learner rank</div>
+              <div class="gc-classwork-sub">Typing + Description · F to Visual Learner · 150pts per question</div>
             </div>
             <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </div>
 
           <div class="gc-classwork-item" onclick="window.location.href='game-math.html'">
             <div class="gc-classwork-icon" style="background:#e6f4ea;">
-              <svg viewBox="0 0 24 24" fill="#0f9d58" width="20" height="20"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#0f9d58" width="20" height="20"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
             </div>
             <div class="gc-classwork-info">
               <div class="gc-classwork-title">Math Challenge</div>
-              <div class="gc-classwork-sub">Easy / Medium / Hard · Timer · Streak bonuses</div>
+              <div class="gc-classwork-sub">Addition → Powers → Fractions · 500pts per question · 8 rank tiers</div>
+            </div>
+            <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </div>
+
+          <div class="gc-classwork-item" onclick="window.location.href='visual-watcher.html'">
+            <div class="gc-classwork-icon" style="background:#fce8e6;">
+              <svg viewBox="0 0 24 24" fill="#ea4335" width="20" height="20"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>
+            </div>
+            <div class="gc-classwork-info">
+              <div class="gc-classwork-title">Visual Watcher</div>
+              <div class="gc-classwork-sub">Watch a featured educational video — plays instantly</div>
             </div>
             <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </div>
@@ -177,7 +182,7 @@
             </div>
             <div class="gc-classwork-info">
               <div class="gc-classwork-title">Tournament</div>
-              <div class="gc-classwork-sub">Race classmates · 10 minute limit · 2+ students</div>
+              <div class="gc-classwork-sub">Race classmates · 10 minute limit · 2+ students needed</div>
             </div>
             <button class="gc-btn-outlined" onclick="event.stopPropagation();openTournament()">Join</button>
           </div>
@@ -213,9 +218,10 @@
       <div class="gc-tab-panel hidden" id="panel-leaderboard">
         <div style="max-width:660px;">
           <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-            <button class="gc-btn-outlined lb-sort-btn active" data-sort="totalPoints" onclick="switchLB('totalPoints',this)">Most Points</button>
-            <button class="gc-btn-outlined lb-sort-btn" data-sort="totalAnswered" onclick="switchLB('totalAnswered',this)">Most Answered</button>
-            <button class="gc-btn-outlined lb-sort-btn" data-sort="bestStreak" onclick="switchLB('bestStreak',this)">Top Streaks</button>
+            <button class="gc-btn-outlined lb-sort-btn active" data-sort="totalPoints" onclick="switchLB('totalPoints',this)">📖 Vocab Points</button>
+            <button class="gc-btn-outlined lb-sort-btn" data-sort="totalAnswered" onclick="switchLB('totalAnswered',this)">✏️ Most Answered</button>
+            <button class="gc-btn-outlined lb-sort-btn" data-sort="mathPoints" onclick="switchLB('mathPoints',this)">➕ Math Points</button>
+            <button class="gc-btn-outlined lb-sort-btn" data-sort="bestStreak" onclick="switchLB('bestStreak',this)">🔥 Top Streaks</button>
           </div>
           <div id="lb-list"></div>
         </div>
@@ -240,7 +246,7 @@
     </div>
   </div>
 
-  <!-- TOURNAMENT LOBBY (Kahoot style) -->
+  <!-- TOURNAMENT LOBBY -->
   <div class="t-lobby-overlay hidden" id="tournament-lobby">
     <div class="t-lobby-header">
       <div class="t-lobby-title">🏆 Tournament Lobby</div>
@@ -257,7 +263,7 @@
     <div class="t-lobby-count" id="lobby-start-hint">Need at least 2 players to start</div>
   </div>
 
-  <!-- TOURNAMENT ACTIVE MODAL -->
+  <!-- TOURNAMENT ACTIVE -->
   <div class="gc-modal-overlay hidden" id="tournament-modal">
     <div class="gc-modal">
       <h2 class="gc-modal-title">🏆 Tournament</h2>
@@ -301,7 +307,6 @@ firebase.auth().onAuthStateChanged(function(user) {
   loadMyClasses();
 });
 
-// DRAWER
 document.getElementById('hamburger-btn').addEventListener('click', function() {
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawer-overlay').classList.remove('hidden');
@@ -315,7 +320,6 @@ document.getElementById('drawer-logout').addEventListener('click', function() {
   firebase.auth().signOut().then(function(){ window.location.href = 'main.html'; });
 });
 
-// JOIN
 document.getElementById('join-fab').addEventListener('click', openJoinModal);
 document.getElementById('join-empty-btn').addEventListener('click', openJoinModal);
 document.getElementById('join-cancel').addEventListener('click', function(){ document.getElementById('join-modal').classList.add('hidden'); });
@@ -411,7 +415,6 @@ function openClassroom(data, color) {
 document.querySelectorAll('.gc-tab').forEach(function(tab) {
   tab.addEventListener('click', function(){ switchTab(tab.getAttribute('data-tab')); });
 });
-
 function switchTab(name) {
   document.querySelectorAll('.gc-tab').forEach(function(t){ t.classList.remove('active'); });
   document.querySelectorAll('.gc-tab-panel').forEach(function(p){ p.classList.add('hidden'); });
@@ -420,25 +423,17 @@ function switchTab(name) {
   if (name === 'leaderboard') loadLeaderboard();
 }
 
-// ===== SLOW MODE =====
 function watchSlowMode() {
   if (!currentClassroom) return;
   firebase.firestore().collection('classrooms').doc(currentClassroom.code).onSnapshot(function(snap) {
     if (!snap.exists) return;
-    var d = snap.data();
-    slowModeSecs = d.slowMode || 0;
+    slowModeSecs = snap.data().slowMode || 0;
     var banner = document.getElementById('slow-mode-banner');
-    var secsEl = document.getElementById('slow-mode-secs');
-    if (slowModeSecs > 0) {
-      banner.classList.remove('hidden');
-      secsEl.textContent = slowModeSecs;
-    } else {
-      banner.classList.add('hidden');
-    }
+    if (slowModeSecs > 0) { banner.classList.remove('hidden'); document.getElementById('slow-mode-secs').textContent = slowModeSecs; }
+    else banner.classList.add('hidden');
   });
 }
 
-// ===== TIMEOUT CHECK =====
 function checkTimeout() {
   if (!currentClassroom) return;
   firebase.firestore().collection('classrooms').doc(currentClassroom.code)
@@ -447,97 +442,64 @@ function checkTimeout() {
       var endsAt = doc.data().endsAt;
       if (!endsAt) return;
       var endMs = endsAt.toDate ? endsAt.toDate().getTime() : endsAt;
-      if (endMs > Date.now()) {
-        timeoutEndTime = endMs;
-        startTimeoutCountdown();
-      }
+      if (endMs > Date.now()) { timeoutEndTime = endMs; startTimeoutCountdown(); }
     });
 }
-
 function startTimeoutCountdown() {
   clearInterval(timeoutInterval);
   var banner = document.getElementById('timeout-banner');
-  var countdown = document.getElementById('timeout-countdown');
   banner.classList.remove('hidden');
   timeoutInterval = setInterval(function() {
     var left = Math.max(0, Math.ceil((timeoutEndTime - Date.now()) / 1000));
-    countdown.textContent = left;
-    if (left <= 0) {
-      clearInterval(timeoutInterval);
-      banner.classList.add('hidden');
-      timeoutEndTime = 0;
-    }
+    document.getElementById('timeout-countdown').textContent = left;
+    if (left <= 0) { clearInterval(timeoutInterval); banner.classList.add('hidden'); timeoutEndTime = 0; }
   }, 500);
 }
 
-// ===== BAD WORD DETECTION =====
 function containsFlaggedWord(text) {
   var lower = text.toLowerCase();
-  return FLAGGED_WORDS.some(function(w) {
-    return new RegExp('\\b'+w+'\\b','i').test(lower);
-  });
+  return FLAGGED_WORDS.some(function(w){ return new RegExp('\\b'+w+'\\b','i').test(lower); });
 }
-
 function filterBad(text) {
   var out = text;
-  BAD_WORDS.forEach(function(w) {
-    out = out.replace(new RegExp('\\b'+w+'\\b','gi'), function(m){ return '*'.repeat(m.length); });
-  });
+  BAD_WORDS.forEach(function(w){ out = out.replace(new RegExp('\\b'+w+'\\b','gi'), function(m){ return '*'.repeat(m.length); }); });
   return out;
 }
 
-// ===== IMAGE =====
 function handleImageSelect(event) {
   var file = event.target.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) return showToast('Image must be under 5MB','error');
+  if (file.size > 5*1024*1024) return showToast('Image must be under 5MB','error');
   selectedImageFile = file;
-  var preview = document.getElementById('img-preview');
-  var thumb = document.getElementById('img-preview-thumb');
-  var name = document.getElementById('img-preview-name');
   var reader = new FileReader();
-  reader.onload = function(e) { thumb.src = e.target.result; };
+  reader.onload = function(e) { document.getElementById('img-preview-thumb').src = e.target.result; };
   reader.readAsDataURL(file);
-  name.textContent = file.name;
-  preview.classList.remove('hidden');
+  document.getElementById('img-preview-name').textContent = file.name;
+  document.getElementById('img-preview').classList.remove('hidden');
 }
-
 function removeImagePreview() {
   selectedImageFile = null;
   document.getElementById('img-preview').classList.add('hidden');
   document.getElementById('img-input').value = '';
 }
 
-// ===== CHAT =====
 function listenChat() {
   if (unsubChat) unsubChat();
   var box = document.getElementById('chat-messages');
-  unsubChat = firebase.firestore()
-    .collection('classrooms').doc(currentClassroom.code)
+  unsubChat = firebase.firestore().collection('classrooms').doc(currentClassroom.code)
     .collection('chat').orderBy('createdAt','asc').limit(200)
     .onSnapshot(function(snap) {
       box.innerHTML = '';
-      if (snap.empty) {
-        box.innerHTML = '<div class="gc-chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>This is where you can talk to your class</p></div>';
-        return;
-      }
+      if (snap.empty) { box.innerHTML = '<div class="gc-chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>This is where you can talk to your class</p></div>'; return; }
       snap.forEach(function(doc) {
-        var d = doc.data();
-        var isMe = d.uid === currentUser.uid;
+        var d = doc.data(), isMe = d.uid === currentUser.uid;
         var el = document.createElement('div');
         el.className = 'gc-msg' + (isMe?' gc-msg-me':'');
-        var bubbleContent = '';
-        if (d.flagged) {
-          bubbleContent = '<div class="gc-msg-bubble msg-flagged">[Message flagged for review]</div><div class="msg-flagged-label">⚠ Sent to admin</div>';
-        } else if (d.imageUrl) {
-          bubbleContent = '<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>';
-        } else {
-          bubbleContent = '<div class="gc-msg-bubble">'+filterBad(d.text||'')+'</div>';
-        }
+        var bubble = d.flagged ? '<div class="gc-msg-bubble msg-flagged">[Flagged for review]</div><div class="msg-flagged-label">⚠ Sent to admin</div>'
+          : d.imageUrl ? '<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>'
+          : '<div class="gc-msg-bubble">'+filterBad(d.text||'')+'</div>';
         el.innerHTML = (!isMe?'<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>':'') +
-          '<div class="gc-msg-body">' +
-          (!isMe?'<div class="gc-msg-name">'+d.name+'</div>':'') +
-          bubbleContent + '</div>';
+          '<div class="gc-msg-body">' + (!isMe?'<div class="gc-msg-name">'+d.name+'</div>':'') + bubble + '</div>';
         box.appendChild(el);
       });
       box.scrollTop = box.scrollHeight;
@@ -546,96 +508,55 @@ function listenChat() {
 
 document.getElementById('chat-send').addEventListener('click', sendMsg);
 document.getElementById('chat-input').addEventListener('keydown', function(e){ if(e.key==='Enter') sendMsg(); });
-
 function sendMsg() {
   if (!currentClassroom) return;
-
-  // Check timeout
-  if (timeoutEndTime > Date.now()) {
-    var left = Math.ceil((timeoutEndTime - Date.now()) / 1000);
-    return showToast('You are timed out for ' + left + 's','error');
-  }
-
-  // Check slow mode
+  if (timeoutEndTime > Date.now()) return showToast('You are timed out for '+Math.ceil((timeoutEndTime-Date.now())/1000)+'s','error');
   if (slowModeSecs > 0) {
-    var elapsed = (Date.now() - lastMsgTime) / 1000;
+    var elapsed = (Date.now()-lastMsgTime)/1000;
     if (elapsed < slowModeSecs) {
-      var wait = Math.ceil(slowModeSecs - elapsed);
-      showToast('Slow mode — wait ' + wait + 's','error');
+      var wait = Math.ceil(slowModeSecs-elapsed);
+      showToast('Slow mode — wait '+wait+'s','error');
       var scd = document.getElementById('slowmode-countdown');
       var scv = document.getElementById('slow-countdown');
-      scd.classList.remove('hidden');
-      scv.textContent = wait;
+      scd.classList.remove('hidden'); scv.textContent = wait;
       clearInterval(slowmodeInterval);
-      slowmodeInterval = setInterval(function() {
-        wait--;
-        scv.textContent = wait;
-        if (wait <= 0) { clearInterval(slowmodeInterval); scd.classList.add('hidden'); }
-      }, 1000);
+      slowmodeInterval = setInterval(function(){ wait--; scv.textContent=wait; if(wait<=0){clearInterval(slowmodeInterval);scd.classList.add('hidden');} },1000);
       return;
     }
   }
-
-  if (selectedImageFile) {
-    sendImage();
-    return;
-  }
-
+  if (selectedImageFile) { sendImage(); return; }
   var input = document.getElementById('chat-input');
   var text = input.value.trim();
   if (!text) return;
-  input.value = '';
-  lastMsgTime = Date.now();
-
+  input.value = ''; lastMsgTime = Date.now();
   var isFlagged = containsFlaggedWord(text);
-
-  var msgData = {
-    uid: currentUser.uid,
-    name: currentUser.displayName||'Student',
-    photoURL: currentUser.photoURL||null,
-    text: text,
-    flagged: isFlagged,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-
-  firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add(msgData);
-
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add({
+    uid:currentUser.uid, name:currentUser.displayName||'Student',
+    photoURL:currentUser.photoURL||null, text:text, flagged:isFlagged,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
   if (isFlagged) {
-    // Report to admin reports collection
     firebase.firestore().collection('reports').add({
-      classroomCode: currentClassroom.code,
-      classroomName: currentClassroom.name,
-      teacherId: currentClassroom.teacherId,
-      senderUid: currentUser.uid,
-      senderName: currentUser.displayName,
-      text: text,
-      type: 'flagged_message',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      reviewed: false
+      classroomCode:currentClassroom.code, classroomName:currentClassroom.name,
+      teacherId:currentClassroom.teacherId, senderUid:currentUser.uid,
+      senderName:currentUser.displayName, text:text, type:'flagged_message',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(), reviewed:false
     });
   }
 }
-
 function sendImage() {
-  if (!selectedImageFile || !currentClassroom) return;
-  var storageRef = firebase.storage().ref('chat-images/' + currentClassroom.code + '/' + Date.now() + '_' + selectedImageFile.name);
-  storageRef.put(selectedImageFile).then(function(snap) {
-    return snap.ref.getDownloadURL();
-  }).then(function(url) {
+  if (!selectedImageFile||!currentClassroom) return;
+  var ref = firebase.storage().ref('chat-images/'+currentClassroom.code+'/'+Date.now()+'_'+selectedImageFile.name);
+  ref.put(selectedImageFile).then(function(snap){ return snap.ref.getDownloadURL(); }).then(function(url){
     firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add({
-      uid: currentUser.uid,
-      name: currentUser.displayName||'Student',
-      photoURL: currentUser.photoURL||null,
-      imageUrl: url,
-      flagged: false,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      uid:currentUser.uid, name:currentUser.displayName||'Student',
+      photoURL:currentUser.photoURL||null, imageUrl:url, flagged:false,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    removeImagePreview();
-    lastMsgTime = Date.now();
+    removeImagePreview(); lastMsgTime = Date.now();
   }).catch(function(e){ showToast(e.message,'error'); });
 }
 
-// ===== PEOPLE =====
 function listenPeople() {
   if (unsubPeople) unsubPeople();
   unsubPeople = firebase.firestore().collection('classrooms').doc(currentClassroom.code).onSnapshot(function(snap) {
@@ -651,25 +572,25 @@ function listenPeople() {
   });
 }
 
-// ===== LEADERBOARD =====
 function loadLeaderboard() {
   firebase.firestore().collection('users').get().then(function(snap) {
     lbData = [];
     snap.forEach(function(doc) {
       var d = doc.data();
-      if (d.role === 'student' || !d.role) lbData.push({ id:doc.id, ...d });
+      if (d.role === 'admin') return;
+      lbData.push({ id:doc.id, name:d.name||'Unknown', photoURL:d.photoURL||null, role:d.role||'student',
+        totalPoints:d.totalPoints||0, totalAnswered:d.totalAnswered||0,
+        mathPoints:d.mathPoints||0, bestStreak:d.bestStreak||0 });
     });
     renderLB(lbSort);
   });
 }
-
 function switchLB(sort, btn) {
   lbSort = sort;
   document.querySelectorAll('.lb-sort-btn').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   renderLB(sort);
 }
-
 function renderLB(sort) {
   var sorted = lbData.slice().sort(function(a,b){ return (b[sort]||0)-(a[sort]||0); });
   var list = document.getElementById('lb-list'); list.innerHTML = '';
@@ -677,133 +598,70 @@ function renderLB(sort) {
   sorted.forEach(function(u,i) {
     var isMe = u.id === currentUser.uid;
     var medals = ['🥇','🥈','🥉'];
-    var rank = i < 3 ? medals[i] : '#'+(i+1);
+    var rank = i<3?medals[i]:'#'+(i+1);
     var val = u[sort]||0;
-    var label = sort==='totalPoints'?'pts':sort==='totalAnswered'?'answers':'streak';
-    var row = document.createElement('div');
-    row.className = 'gc-person-row' + (isMe?' lb-me':'');
-    row.style.cssText = 'background:'+(isMe?'rgba(26,115,232,0.05)':'')+'padding:10px 8px;border-radius:8px;';
-    row.innerHTML = '<span style="font-size:20px;width:32px;text-align:center;flex-shrink:0;">'+rank+'</span>' +
-      (u.photoURL?'<img class="gc-person-avatar-img" src="'+u.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(u.name||'?')[0].toUpperCase()+'</div>') +
-      '<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:600;">'+(u.name||'Student')+(isMe?' <span style="color:#1a73e8;font-size:11px;">(You)</span>':'')+'</span>' +
-      '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:#1a73e8;">'+val+' <span style="font-size:12px;color:#8899bb;">'+label+'</span></span>';
+    var labels = {totalPoints:'pts',totalAnswered:'answers',mathPoints:'math pts',bestStreak:'streak'};
+    var row = document.createElement('div'); row.className = 'gc-person-row';
+    row.style.cssText = 'padding:10px 8px;border-radius:8px;'+(isMe?'background:rgba(26,115,232,0.06);':'');
+    row.innerHTML = '<span style="font-size:20px;width:32px;text-align:center;flex-shrink:0;">'+rank+'</span>'+
+      (u.photoURL?'<img class="gc-person-avatar-img" src="'+u.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(u.name||'?')[0].toUpperCase()+'</div>')+
+      '<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:600;">'+u.name+(isMe?' <span style="color:#1a73e8;font-size:11px;">(You)</span>':'')+'</span>'+
+      '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:#1a73e8;">'+val.toLocaleString()+' <span style="font-size:11px;color:#8899bb;">'+labels[sort]+'</span></span>';
     list.appendChild(row);
   });
 }
 
-// ===== TOURNAMENT =====
 function openTournament() {
   if (!currentClassroom) return;
-
-  var lobby = document.getElementById('tournament-lobby');
-  lobby.classList.remove('hidden');
+  document.getElementById('tournament-lobby').classList.remove('hidden');
   document.getElementById('lobby-code').textContent = currentClassroom.code;
-
   var lobbyRef = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby');
-
-  // Reset lobby first so stale data doesn't block new players
-  var playerData = {};
-  playerData['players.'+currentUser.uid] = {
-    uid: currentUser.uid,
-    name: currentUser.displayName||'Student',
-    photoURL: currentUser.photoURL||null,
-    points: 0
-  };
-  lobbyRef.set(playerData, { merge: true });
-
+  var playerData = {}; playerData['players.'+currentUser.uid] = { uid:currentUser.uid, name:currentUser.displayName||'Student', photoURL:currentUser.photoURL||null, points:0 };
+  lobbyRef.set(playerData, {merge:true});
   if (unsubTournament) unsubTournament();
   unsubTournament = lobbyRef.onSnapshot(function(snap) {
     if (!snap.exists) return;
-    var data = snap.data();
-    var players = Object.values(data.players||{});
-
-    // Update lobby UI
-    var grid = document.getElementById('lobby-players-grid');
-    grid.innerHTML = '';
+    var data = snap.data(), players = Object.values(data.players||{});
+    var grid = document.getElementById('lobby-players-grid'); grid.innerHTML = '';
     players.forEach(function(p) {
-      var chip = document.createElement('div');
-      chip.className = 't-lobby-player-chip';
-      chip.innerHTML = (p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="chip-letter">'+(p.name||'P')[0]+'</div>') + '<span>'+(p.name||'Player')+'</span>';
+      var chip = document.createElement('div'); chip.className = 't-lobby-player-chip';
+      chip.innerHTML = (p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="chip-letter">'+(p.name||'P')[0]+'</div>')+'<span>'+(p.name||'Player')+'</span>';
       grid.appendChild(chip);
     });
-
-    var countEl = document.getElementById('lobby-count');
-    countEl.textContent = players.length + ' player' + (players.length!==1?'s':'') + ' joined';
-
+    document.getElementById('lobby-count').textContent = players.length+' player'+(players.length!==1?'s':'')+' joined';
     var hint = document.getElementById('lobby-start-hint');
-    if (players.length >= 2) {
-      hint.textContent = '✓ Ready to start!';
-      hint.style.color = '#30d158';
-    } else {
-      hint.textContent = 'Need at least 2 players to start';
-      hint.style.color = '';
-    }
-
-    // Auto start when 2+ players
-    if (players.length >= 2 && data.status !== 'active') {
-      lobbyRef.update({ status: 'active', startedAt: firebase.firestore.FieldValue.serverTimestamp() });
-    }
-
-    // Transition to active tournament
-    if (data.status === 'active' && data.startedAt && !tournamentTimerInterval) {
-      lobby.classList.add('hidden');
+    if (players.length>=2) { hint.textContent='✓ Ready to start!'; hint.style.color='#30d158'; }
+    else { hint.textContent='Need at least 2 players to start'; hint.style.color=''; }
+    if (players.length>=2 && data.status!=='active') lobbyRef.update({status:'active',startedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    if (data.status==='active' && data.startedAt && !tournamentTimerInterval) {
+      document.getElementById('tournament-lobby').classList.add('hidden');
       document.getElementById('tournament-modal').classList.remove('hidden');
       var startTime = data.startedAt.toDate().getTime();
-      var DURATION = 600000;
       tournamentTimerInterval = setInterval(function() {
-        var left = DURATION - (Date.now() - startTime);
-        if (left <= 0) {
-          clearInterval(tournamentTimerInterval); tournamentTimerInterval = null;
-          document.getElementById('tournament-modal').classList.add('hidden');
-          showToast('Tournament over!','success'); return;
-        }
-        var m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
-        document.getElementById('tournament-timer').textContent = m+':'+(s<10?'0':'')+s;
-      }, 500);
-
-      // Live scores
-      var scoreList = document.getElementById('tournament-player-list');
-      scoreList.innerHTML = '';
-      players.sort(function(a,b){ return (b.points||0)-(a.points||0); }).forEach(function(p) {
-        var row = document.createElement('div');
-        row.className = 'gc-person-row';
-        row.id = 'tscore-'+p.uid;
-        row.innerHTML = (p.photoURL?'<img class="gc-person-avatar-img" src="'+p.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(p.name||'P')[0]+'</div>') + '<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-weight:600;">'+(p.name||'Player')+'</span><span style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:#f9ab00;">'+(p.points||0)+' pts</span>';
+        var left = 600000-(Date.now()-startTime);
+        if (left<=0) { clearInterval(tournamentTimerInterval); tournamentTimerInterval=null; document.getElementById('tournament-modal').classList.add('hidden'); showToast('Tournament over!','success'); return; }
+        var m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+        document.getElementById('tournament-timer').textContent=m+':'+(s<10?'0':'')+s;
+      },500);
+      var scoreList = document.getElementById('tournament-player-list'); scoreList.innerHTML='';
+      players.sort(function(a,b){return (b.points||0)-(a.points||0);}).forEach(function(p){
+        var row=document.createElement('div'); row.className='gc-person-row'; row.id='tscore-'+p.uid;
+        row.innerHTML=(p.photoURL?'<img class="gc-person-avatar-img" src="'+p.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(p.name||'P')[0]+'</div>')+'<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-weight:600;">'+(p.name||'Player')+'</span><span style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:#f9ab00;">'+(p.points||0)+' pts</span>';
         scoreList.appendChild(row);
       });
     }
   });
 }
 
-document.getElementById('lobby-leave-btn').addEventListener('click', function() {
-  leaveTournament();
-  document.getElementById('tournament-lobby').classList.add('hidden');
-});
-
-document.getElementById('tournament-leave').addEventListener('click', function() {
-  leaveTournament();
-  document.getElementById('tournament-modal').classList.add('hidden');
-});
-
+document.getElementById('lobby-leave-btn').addEventListener('click', function(){ leaveTournament(); document.getElementById('tournament-lobby').classList.add('hidden'); });
+document.getElementById('tournament-leave').addEventListener('click', function(){ leaveTournament(); document.getElementById('tournament-modal').classList.add('hidden'); });
 function leaveTournament() {
-  if (currentClassroom) {
-    firebase.firestore().collection('classrooms').doc(currentClassroom.code)
-      .collection('tournament').doc('lobby')
-      .update({ ['players.'+currentUser.uid]: firebase.firestore.FieldValue.delete() });
-  }
-  if (unsubTournament){ unsubTournament(); unsubTournament=null; }
-  if (tournamentTimerInterval){ clearInterval(tournamentTimerInterval); tournamentTimerInterval=null; }
+  if (currentClassroom) firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby').update({['players.'+currentUser.uid]:firebase.firestore.FieldValue.delete()});
+  if (unsubTournament){unsubTournament();unsubTournament=null;}
+  if (tournamentTimerInterval){clearInterval(tournamentTimerInterval);tournamentTimerInterval=null;}
 }
 
-function showToast(msg, type) {
-  type = type||'';
-  var c = document.getElementById('toast-container');
-  if (!c) return;
-  var t = document.createElement('div');
-  t.className = 'toast '+type; t.textContent = msg;
-  c.appendChild(t);
-  setTimeout(function(){ t.remove(); }, 3200);
-}
+function showToast(msg,type){ type=type||''; var c=document.getElementById('toast-container'); if(!c)return; var t=document.createElement('div'); t.className='toast '+type; t.textContent=msg; c.appendChild(t); setTimeout(function(){t.remove();},3200); }
   </script>
 </body>
 </html>
