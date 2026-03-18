@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>V:L — Vision: Learning</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
 </head>
 <body>
 
@@ -30,14 +34,13 @@
       Sign Up
     </a>
     <div class="menu-divider"></div>
+    <a href="leaderboard.html" class="menu-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      Leaderboard
+    </a>
     <div class="menu-item locked">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
       Games
-      <svg class="lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    </div>
-    <div class="menu-item locked">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-      Leaderboard
       <svg class="lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
     <div class="menu-item locked">
@@ -47,7 +50,7 @@
     </div>
   </nav>
 
-  <!-- HERO BANNER — full width like FreeRice -->
+  <!-- HERO BANNER -->
   <div class="hero-banner">
     <div class="hero-content">
       <h1 class="main-tagline">
@@ -55,7 +58,39 @@
         <span>Be Competitive.</span>
       </h1>
       <p class="hero-sub">Every correct answer builds your rank with V:L</p>
-      <a href="login.html" class="hero-btn">Login to Play</a>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <a href="login.html" class="hero-btn">Login to Play</a>
+        <a href="leaderboard.html" class="hero-btn" style="background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.3);color:var(--vl-cyan);box-shadow:none;">
+          🏆 Leaderboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE LEADERBOARD PREVIEW -->
+  <div style="background:var(--vl-darker);border-top:2px solid rgba(0,229,255,0.08);padding:48px clamp(18px,5vw,72px);">
+    <div style="max-width:860px;margin:0 auto;">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,4vw,42px);letter-spacing:0.06em;color:var(--vl-white);line-height:1;">
+            Top Players <span style="color:var(--vl-cyan);">Global</span>
+          </div>
+          <div style="font-size:12px;color:var(--vl-gray);margin-top:4px;">Live — updates every time someone plays</div>
+        </div>
+        <a href="leaderboard.html" style="display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--vl-cyan);text-decoration:none;border:1px solid rgba(0,229,255,0.25);border-radius:7px;padding:8px 16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,229,255,0.08)'" onmouseout="this.style.background=''">
+          Full Leaderboard →
+        </a>
+      </div>
+
+      <!-- Tabs -->
+      <div id="lb-tabs" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;"></div>
+
+      <!-- List -->
+      <div id="lb-preview" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="color:var(--vl-gray);font-size:13px;padding:20px;text-align:center;">Loading...</div>
+      </div>
+
     </div>
   </div>
 
@@ -64,16 +99,20 @@
     <div class="lower-inner">
       <h2 class="lower-title">Meet <span>Visual: Learning</span></h2>
       <p class="lower-desc">
-        Visual: Learning is a competitive vocabulary game powered by AI. Answer questions correctly to earn points, build your multiplier, and climb the ranks — all the way from <strong>D</strong> to <strong style="color:var(--vl-purple)">Visual Learner</strong>. Join your classroom, compete with classmates, and let your teacher monitor progress live with V:Viewer.
+        Visual: Learning is a competitive vocabulary and math game powered by AI. Answer questions correctly to earn points, build your multiplier, and climb the ranks — all the way from <strong>F</strong> to <strong style="color:var(--vl-purple)">Visual Learner</strong>. Join your classroom, compete with classmates, and let your teacher monitor progress live with V:Viewer.
       </p>
       <div class="lower-features">
         <div class="lower-feat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
-          AI-Powered Questions
+          Typing + Description Modes
+        </div>
+        <div class="lower-feat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Math Challenge
         </div>
         <div class="lower-feat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          Rank System
+          16 Rank Tiers
         </div>
         <div class="lower-feat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -83,23 +122,147 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           Classroom Integration
         </div>
+        <div class="lower-feat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="14 9 9 4 4 9"/><path d="M20 20h-7a4 4 0 0 1-4-4V4"/></svg>
+          Live Tournaments
+        </div>
       </div>
 
       <div class="lower-footer">
         <p class="main-copyright">
-          © 2025 UU Production. All rights reserved. Vision: Learning is a product of UU Production in association with Anthropic API. Unauthorized reproduction is prohibited.
+          © 2026 UU Production. All rights reserved. Vision: Learning is a product of UU Production in association with Anthropic API. Unauthorized reproduction is prohibited.
         </p>
         <a href="https://www.tiktok.com/t/ZTh3q6py3/" target="_blank" class="tiktok-link">
           <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
           TikTok
         </a>
       </div>
-
     </div>
   </div>
 
   <div id="toast-container"></div>
   <script src="app.js"></script>
-  <script>bindMenu();</script>
+  <script>
+    bindMenu();
+
+    // AUTO REDIRECT IF LOGGED IN
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) return;
+      firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
+        if (!doc.exists) return;
+        var role = doc.data().role;
+        if (role === 'admin')        window.location.href = 'admin-home.html';
+        else if (role === 'teacher') window.location.href = 'teacher-home.html';
+        else                         window.location.href = 'student-home.html';
+      });
+    });
+
+    // ===== LEADERBOARD PREVIEW =====
+    var LB_TABS = [
+      { key:'totalPoints',   label:'📖 Vocab Points',   unit:'pts' },
+      { key:'totalAnswered', label:'✏️ Answered',        unit:'answered' },
+      { key:'mathPoints',    label:'➕ Math Points',     unit:'math pts' },
+      { key:'mathAnswered',  label:'🧮 Math Answered',   unit:'answered' }
+    ];
+    var currentSort = 'totalPoints';
+    var allPlayers  = [];
+
+    // Build tab buttons
+    var tabsEl = document.getElementById('lb-tabs');
+    LB_TABS.forEach(function(tab, i) {
+      var btn = document.createElement('button');
+      btn.textContent = tab.label;
+      btn.setAttribute('data-key', tab.key);
+      btn.style.cssText = 'padding:6px 14px;border-radius:16px;font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all 0.15s;';
+      if (i === 0) {
+        btn.style.background = 'rgba(10,132,255,0.15)';
+        btn.style.borderColor = 'var(--vl-blue)';
+        btn.style.color = 'var(--vl-blue)';
+      } else {
+        btn.style.background = 'rgba(255,255,255,0.04)';
+        btn.style.borderColor = 'rgba(255,255,255,0.1)';
+        btn.style.color = 'var(--vl-gray)';
+      }
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#lb-tabs button').forEach(function(b) {
+          b.style.background = 'rgba(255,255,255,0.04)';
+          b.style.borderColor = 'rgba(255,255,255,0.1)';
+          b.style.color = 'var(--vl-gray)';
+        });
+        btn.style.background = 'rgba(10,132,255,0.15)';
+        btn.style.borderColor = 'var(--vl-blue)';
+        btn.style.color = 'var(--vl-blue)';
+        currentSort = tab.key;
+        renderPreview();
+      });
+      tabsEl.appendChild(btn);
+    });
+
+    // Load data from Firestore once
+    firebase.firestore().collection('users').get().then(function(snap) {
+      allPlayers = [];
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        if (d.role === 'admin') return; // exclude admins
+        allPlayers.push({
+          id: doc.id,
+          name: d.name || 'Unknown',
+          photoURL: d.photoURL || null,
+          role: d.role || 'student',
+          totalPoints:   d.totalPoints   || 0,
+          totalAnswered: d.totalAnswered || 0,
+          mathPoints:    d.mathPoints    || 0,
+          mathAnswered:  d.mathAnswered  || 0
+        });
+      });
+      renderPreview();
+    }).catch(function() {
+      document.getElementById('lb-preview').innerHTML =
+        '<div style="color:var(--vl-gray);font-size:13px;padding:20px;text-align:center;">Could not load leaderboard</div>';
+    });
+
+    function renderPreview() {
+      var tab = LB_TABS.find(function(t){ return t.key === currentSort; }) || LB_TABS[0];
+      var sorted = allPlayers.slice().sort(function(a,b){ return (b[currentSort]||0)-(a[currentSort]||0); }).slice(0,5);
+      var preview = document.getElementById('lb-preview');
+      preview.innerHTML = '';
+
+      if (!sorted.length) {
+        preview.innerHTML = '<div style="color:var(--vl-gray);font-size:13px;padding:20px;text-align:center;">No players yet — be the first!</div>';
+        return;
+      }
+
+      var medals = ['🥇','🥈','🥉'];
+      var rankColors = ['#ffd700','#c0c0c0','#cd7f32','var(--vl-gray)','var(--vl-gray)'];
+
+      sorted.forEach(function(u, i) {
+        var val = u[currentSort] || 0;
+        var rankDisplay = i < 3 ? medals[i] : '#' + (i + 1);
+        var roleLabel   = u.role === 'teacher' ? 'Representative' : 'Student';
+        var borderColor = i === 0 ? 'rgba(255,215,0,0.3)' : 'var(--vl-border)';
+        var bgColor     = i === 0 ? 'rgba(255,215,0,0.04)' : 'var(--vl-surface)';
+
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:12px;background:'+bgColor+';border:1px solid '+borderColor+';border-radius:10px;padding:12px 16px;';
+
+        row.innerHTML =
+          '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;width:36px;text-align:center;color:'+rankColors[i]+';">'+rankDisplay+'</div>'+
+          (u.photoURL
+            ? '<img src="'+u.photoURL+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt=""/>'
+            : '<div style="width:36px;height:36px;border-radius:50%;background:var(--vl-blue);display:flex;align-items:center;justify-content:center;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;">'+(u.name||'?')[0].toUpperCase()+'</div>'
+          )+
+          '<div style="flex:1;min-width:0;">'+
+            '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--vl-white);">'+u.name+'</div>'+
+            '<div style="font-size:11px;color:var(--vl-gray);">'+roleLabel+'</div>'+
+          '</div>'+
+          '<div style="text-align:right;flex-shrink:0;">'+
+            '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:var(--vl-cyan);line-height:1;">'+val.toLocaleString()+'</div>'+
+            '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--vl-gray);">'+tab.unit+'</div>'+
+          '</div>';
+
+        preview.appendChild(row);
+      });
+    }
+  </script>
 </body>
 </html>
