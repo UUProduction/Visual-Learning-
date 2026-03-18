@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game — V:L</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <style>
+    body{background:#050a14;color:#fff;margin:0;min-height:100vh;display:flex;flex-direction:column;}
+    body::after{display:none;}
+
+    .play-topbar{background:rgba(0,55,175,0.97);border-bottom:2px solid var(--vl-cyan);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+    .play-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.1em;color:#fff;}
+    .play-brand span{color:var(--vl-cyan);}
+    .play-score{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--vl-gold);}
+    .play-streak{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--vl-gray);}
+
+    .play-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:20px;}
+
+    /* WAITING SCREEN */
+    .waiting-screen{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
+    .waiting-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,64px);letter-spacing:0.08em;color:var(--vl-white);}
+    .waiting-sub{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:0.1em;color:var(--vl-gray);}
+    .waiting-code{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,80px);color:var(--vl-gold);letter-spacing:0.2em;text-shadow:0 0 24px rgba(255,215,0,0.3);}
+    .waiting-spinner{width:40px;height:40px;border:3px solid rgba(10,132,255,0.2);border-top-color:var(--vl-blue);border-radius:50%;animation:spin 0.9s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* QUESTION SCREEN */
+    .question-card{width:100%;max-width:660px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:24px;text-align:center;}
+    .question-text{font-family:'Barlow',sans-serif;font-size:clamp(18px,4vw,26px);font-weight:600;color:var(--vl-white);line-height:1.4;margin-bottom:8px;}
+    .question-timer{font-family:'Bebas Neue',sans-serif;font-size:52px;text-align:center;line-height:1;transition:color 0.3s;}
+    .question-progress{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--vl-gray);letter-spacing:0.1em;}
+
+    .answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:660px;}
+    .answer-btn{border:none;border-radius:14px;padding:20px 16px;display:flex;align-items:center;gap:12px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.05em;color:#fff;cursor:pointer;transition:transform 0.1s,opacity 0.2s,box-shadow 0.2s;text-align:left;min-height:72px;}
+    .answer-btn:hover:not(:disabled){transform:scale(1.03);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+    .answer-btn:active:not(:disabled){transform:scale(0.97);}
+    .answer-btn:disabled{cursor:not-allowed;}
+    .answer-btn.selected{transform:scale(1.05);box-shadow:0 0 0 3px #fff;}
+    .answer-btn.correct-reveal{box-shadow:0 0 24px rgba(48,209,88,0.6);}
+    .answer-btn.wrong-reveal{opacity:0.3;}
+    .answer-icon{width:36px;height:36px;border-radius:8px;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+
+    /* TYPE ANSWER */
+    .type-wrap{width:100%;max-width:500px;display:flex;gap:10px;}
+    .type-inp{flex:1;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);border-radius:10px;padding:14px 16px;color:#fff;font-family:'Barlow',sans-serif;font-size:18px;outline:none;transition:border-color 0.2s;}
+    .type-inp:focus{border-color:var(--vl-blue);}
+    .type-inp::placeholder{color:rgba(255,255,255,0.3);}
+    .type-submit{padding:14px 22px;background:var(--vl-blue);border:none;border-radius:10px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;}
+    .type-submit:hover{background:#2a94ff;}
+
+    /* FEEDBACK */
+    .feedback-banner{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,60px);text-align:center;letter-spacing:0.06em;animation:pop-in 0.35s cubic-bezier(.17,.67,.3,1.5);}
+    @keyframes pop-in{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+    .pts-earned{font-family:'Barlow Condensed',sans-serif;font-size:18px;letter-spacing:0.1em;text-align:center;}
+
+    /* PODIUM */
+    .end-screen{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
+    .end-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,10vw,80px);color:var(--vl-gold);letter-spacing:0.08em;animation:vl-pulse 2s infinite;}
+    @keyframes vl-pulse{0%,100%{text-shadow:0 0 40px rgba(255,215,0,0.5);}50%{text-shadow:0 0 80px rgba(255,215,0,0.9);}}
+    .end-rank{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--vl-white);}
+    .end-score{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--vl-cyan);}
+    .end-back{display:inline-flex;align-items:center;gap:6px;padding:12px 28px;background:var(--vl-blue);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;margin-top:8px;}
+
+    @media(max-width:500px){.answers-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+  <div class="play-topbar">
+    <div class="play-brand">V<span>:</span>L</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+      <div class="play-score" id="score-display">0 pts</div>
+      <div class="play-streak" id="streak-display"></div>
+    </div>
+  </div>
+
+  <div class="play-content" id="play-content">
+    <div class="waiting-screen">
+      <div class="waiting-spinner"></div>
+      <div class="waiting-title">Loading...</div>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+<script>
+var me = null;
+var classroomCode = null;
+var unsubGame = null;
+var score = 0;
+var streak = 0;
+var answered = false;
+var selectedAnswer = null;
+var lastQIndex = -1;
+var gamePhase = 'waiting';
+
+var ANSWER_COLORS = ['#e53935','#1e88e5','#f9a825','#43a047'];
+var ANSWER_ICONS = ['▲','◆','●','✕'];
+
+// Get classroom code from URL
+var params = new URLSearchParams(location.search);
+classroomCode = params.get('code');
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) return window.location.href = 'login.html';
+  me = user;
+  if (!classroomCode) { detectActiveGame(); return; }
+  joinAndListen();
+});
+
+function detectActiveGame() {
+  // Find which classroom has an active game for this user
+  firebase.firestore().collection('users').doc(me.uid).get().then(function(doc) {
+    if (!doc.exists) return showWaiting('No active game found');
+    var codes = doc.data().classroomCodes || [];
+    var found = false;
+    var checked = 0;
+    if (!codes.length) return showWaiting('No classrooms joined');
+    codes.forEach(function(code) {
+      firebase.firestore().collection('classrooms').doc(code).collection('gamehost').doc('session').get().then(function(snap) {
+        checked++;
+        if (!found && snap.exists && snap.data().status !== 'ended') {
+          found = true;
+          classroomCode = code;
+          joinAndListen();
+        } else if (checked === codes.length && !found) {
+          showWaiting('No active game in your classrooms');
+        }
+      });
+    });
+  });
+}
+
+function joinAndListen() {
+  // Register as player
+  var playerData = {};
+  playerData['players.'+me.uid] = {
+    uid: me.uid,
+    name: me.displayName||'Student',
+    photoURL: me.photoURL||null,
+    score: 0,
+    streak: 0,
+    answeredCurrent: false,
+    lastAnswer: ''
+  };
+  firebase.firestore().collection('classrooms').doc(classroomCode)
+    .collection('gamehost').doc('session').set(playerData, {merge:true});
+
+  if (unsubGame) unsubGame();
+  unsubGame = firebase.firestore().collection('classrooms').doc(classroomCode)
+    .collection('gamehost').doc('session').onSnapshot(function(snap) {
+      if (!snap.exists) return showWaiting('Game ended');
+      var data = snap.data();
+      if (data.status === 'lobby') showLobby(data);
+      else if (data.status === 'question') handleQuestion(data);
+      else if (data.status === 'reveal') handleReveal(data);
+      else if (data.status === 'ended') showEnd(data);
+    });
+}
+
+function showWaiting(msg) {
+  document.getElementById('play-content').innerHTML = `
+    <div class="waiting-screen">
+      <div class="waiting-spinner"></div>
+      <div class="waiting-title">${msg||'Waiting...'}</div>
+    </div>
+  `;
+}
+
+function showLobby(data) {
+  gamePhase = 'lobby';
+  score = 0; streak = 0;
+  document.getElementById('score-display').textContent = '0 pts';
+  document.getElementById('streak-display').textContent = '';
+  document.getElementById('play-content').innerHTML = `
+    <div class="waiting-screen">
+      <div class="waiting-sub">You're in! Waiting for the teacher to start...</div>
+      <div class="waiting-code">${classroomCode}</div>
+      <div class="waiting-title">${data.teacherName||'Teacher'}'s Game</div>
+      <div class="waiting-spinner"></div>
+    </div>
+  `;
+}
+
+function handleQuestion(data) {
+  var qIndex = data.currentQuestion;
+  if (qIndex === lastQIndex) return; // already showing this question
+  lastQIndex = qIndex;
+  answered = false;
+  selectedAnswer = null;
+  gamePhase = 'question';
+
+  var q = data.questionData;
+  if (!q) return;
+
+  var content = document.getElementById('play-content');
+  var answersHtml = '';
+
+  if (q.type==='mc'||q.type==='tf') {
+    answersHtml = '<div class="answers-grid">';
+    (q.answers||[]).forEach(function(ans, i) {
+      if (!ans) return;
+      answersHtml += `<button class="answer-btn" id="ans-btn-${i}" style="background:linear-gradient(135deg,${ANSWER_COLORS[i]},${ANSWER_COLORS[i]}cc);" onclick="submitAnswer(${i},'${ans.replace(/'/g,"\\'")}')">
+        <div class="answer-icon">${ANSWER_ICONS[i]||'?'}</div>
+        ${ans}
+      </button>`;
+    });
+    answersHtml += '</div>';
+  } else {
+    answersHtml = `
+      <div class="type-wrap">
+        <input class="type-inp" id="type-inp" placeholder="Type your answer..." autocomplete="off" autocorrect="off"/>
+        <button class="type-submit" onclick="submitTypeAnswer()">Submit</button>
+      </div>
+    `;
+  }
+
+  content.innerHTML = `
+    <div class="question-progress">Q${qIndex+1} · ${q.points} pts · Speed bonus active</div>
+    <div class="question-timer" id="play-timer">${q.time}</div>
+    <div class="question-card"><div class="question-text">${q.question}</div></div>
+    ${answersHtml}
+  `;
+
+  // Client-side countdown (display only)
+  var t = q.time;
+  var ti = setInterval(function() {
+    t--;
+    var el = document.getElementById('play-timer');
+    if (el) {
+      el.textContent = t;
+      el.style.color = t<=5?'var(--vl-red)':t<=10?'var(--vl-gold)':'var(--vl-white)';
+    }
+    if (t<=0) clearInterval(ti);
+  },1000);
+
+  if (q.type==='type') {
+    setTimeout(function(){ var inp=document.getElementById('type-inp'); if(inp) inp.focus(); },100);
+    document.getElementById('type-inp').addEventListener('keydown', function(e){ if(e.key==='Enter') submitTypeAnswer(); });
+  }
+}
+
+function submitAnswer(index, text) {
+  if (answered) return;
+  answered = true;
+  selectedAnswer = index;
+  document.querySelectorAll('.answer-btn').forEach(function(b){ b.disabled=true; });
+  document.getElementById('ans-btn-'+index).classList.add('selected');
+  recordAnswer(text, index);
+}
+
+function submitTypeAnswer() {
+  if (answered) return;
+  var inp = document.getElementById('type-inp');
+  if (!inp || !inp.value.trim()) return;
+  answered = true;
+  inp.disabled = true;
+  document.querySelector('.type-submit').disabled = true;
+  recordAnswer(inp.value.trim(), -1);
+}
+
+function recordAnswer(text, index) {
+  var now = Date.now();
+  var upd = {};
+  upd['players.'+me.uid+'.answeredCurrent'] = true;
+  upd['players.'+me.uid+'.lastAnswer'] = text;
+  upd['players.'+me.uid+'.lastAnswerIndex'] = index;
+  upd['players.'+me.uid+'.answeredAt'] = now;
+  firebase.firestore().collection('classrooms').doc(classroomCode)
+    .collection('gamehost').doc('session').update(upd);
+
+  document.getElementById('play-content').innerHTML += `
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--vl-green);letter-spacing:0.1em;text-align:center;">✓ Answer submitted — waiting for others...</div>
+  `;
+}
+
+function handleReveal(data) {
+  if (gamePhase === 'reveal') return;
+  gamePhase = 'reveal';
+  var q = data.questionData;
+  var myData = (data.players||{})[me.uid] || {};
+  var isCorrect = false;
+  var ptsEarned = 0;
+
+  if (q.type==='mc'||q.type==='tf') {
+    isCorrect = myData.lastAnswerIndex === q.correct;
+  } else {
+    isCorrect = (myData.lastAnswer||'').toLowerCase().trim() === (q.answer||'').toLowerCase().trim();
+  }
+
+  if (isCorrect) {
+    var timeBonus = myData.answeredAt ?
+      Math.max(0, Math.floor((q.time*1000 - (myData.answeredAt - (data.questionStartedAt?.toMillis?.()||0))) / (q.time*1000) * q.points * 0.5))
+      : 0;
+    streak++;
+    var streakBonus = streak >= 3 ? Math.floor(q.points * 0.25) : 0;
+    ptsEarned = Math.floor(q.points * 0.5) + timeBonus + streakBonus;
+    score += ptsEarned;
+  } else {
+    streak = 0;
+  }
+
+  // Save score to Firestore
+  var upd = {};
+  upd['players.'+me.uid+'.score'] = score;
+  upd['players.'+me.uid+'.streak'] = streak;
+  firebase.firestore().collection('classrooms').doc(classroomCode)
+    .collection('gamehost').doc('session').update(upd);
+
+  document.getElementById('score-display').textContent = score.toLocaleString()+' pts';
+  document.getElementById('streak-display').textContent = streak>=2?'🔥 '+streak+' streak':'';
+
+  var content = document.getElementById('play-content');
+  if (isCorrect) {
+    content.innerHTML = `
+      <div class="feedback-banner" style="color:var(--vl-green);">✓ CORRECT!</div>
+      <div class="pts-earned" style="color:var(--vl-gold);">+${ptsEarned} pts${streak>=3?' (streak bonus!)':''}</div>
+      ${showAnswerReveal(q)}
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--vl-gray);">Waiting for next question...</div>
+    `;
+  } else {
+    content.innerHTML = `
+      <div class="feedback-banner" style="color:var(--vl-red);">✗ WRONG</div>
+      <div class="pts-earned" style="color:var(--vl-gray);">+0 pts</div>
+      ${showAnswerReveal(q)}
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--vl-gray);">Waiting for next question...</div>
+    `;
+  }
+}
+
+function showAnswerReveal(q) {
+  if (q.type==='type') {
+    return `<div style="background:rgba(48,209,88,0.1);border:1px solid var(--vl-green);border-radius:10px;padding:16px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--vl-green);">Answer: ${q.answer}</div>`;
+  }
+  var html = '<div class="answers-grid" style="pointer-events:none;">';
+  (q.answers||[]).forEach(function(ans, i) {
+    if (!ans) return;
+    var isCorrect = i===q.correct;
+    html += `<div class="answer-btn ${isCorrect?'correct-reveal':'wrong-reveal'}" style="background:linear-gradient(135deg,${ANSWER_COLORS[i]},${ANSWER_COLORS[i]}cc);">
+      <div class="answer-icon">${isCorrect?'✓':ANSWER_ICONS[i]}</div>${ans}
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function showEnd(data) {
+  gamePhase = 'ended';
+  var sorted = Object.values(data.players||{}).sort(function(a,b){return (b.score||0)-(a.score||0);});
+  var myRank = sorted.findIndex(function(p){return p.uid===me.uid;})+1;
+  var medals = {1:'🥇',2:'🥈',3:'🥉'};
+  document.getElementById('play-content').innerHTML = `
+    <div class="end-screen">
+      <div class="end-title">Game Over!</div>
+      <div class="end-rank">${medals[myRank]||'#'+myRank} Place out of ${sorted.length}</div>
+      <div class="end-score">${score.toLocaleString()} pts</div>
+      <a href="student-home.html" class="end-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Home
+      </a>
+    </div>
+  `;
+}
+
+function showToast(msg,type){type=type||'';var c=document.getElementById('toast-container');if(!c)return;var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;c.appendChild(t);setTimeout(function(){t.remove();},3200);}
+</script>
+<div id="toast-container"></div>
+</body>
+</html>
