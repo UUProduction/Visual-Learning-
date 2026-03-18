@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visual Watcher — V:L</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <style>
+    body { background:#000; color:#fff; margin:0; padding:0; height:100vh; overflow:hidden; }
+    body::after { display:none; }
+
+    .vw-topbar {
+      position:fixed; top:0; left:0; right:0; height:48px;
+      background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px; z-index:100;
+    }
+    .vw-brand {
+      font-family:'Bebas Neue',sans-serif; font-size:20px;
+      letter-spacing:0.1em; color:#fff; display:flex; align-items:center; gap:8px;
+    }
+    .vw-brand-dot {
+      width:8px; height:8px; border-radius:50%;
+      background:#ea4335; animation:pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(234,67,53,0.4);}50%{opacity:0.8;box-shadow:0 0 0 6px rgba(234,67,53,0);}}
+    .vw-back {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+      border-radius:6px; padding:6px 12px; color:#fff;
+      font-family:'Barlow Condensed',sans-serif; font-size:13px;
+      font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+      cursor:pointer; text-decoration:none; transition:background 0.2s;
+    }
+    .vw-back:hover { background:rgba(255,255,255,0.2); }
+    .vw-back svg { width:14px; height:14px; stroke:#fff; }
+
+    .vw-video-wrap {
+      position:fixed; inset:0; top:48px;
+      display:flex; align-items:center; justify-content:center;
+      background:#000;
+    }
+    .vw-iframe {
+      width:100%; height:100%;
+      border:none; display:block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="vw-topbar">
+    <div class="vw-brand">
+      <div class="vw-brand-dot"></div>
+      Visual Watcher
+    </div>
+    <a id="back-btn" href="student-home.html" class="vw-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+  </div>
+
+  <div class="vw-video-wrap">
+    <iframe
+      class="vw-iframe"
+      src="https://www.youtube.com/embed/Mst8iZjIpFE?autoplay=1&rel=0&modestbranding=1"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <script>
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) return window.location.href = 'login.html';
+      firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
+        var backBtn = document.getElementById('back-btn');
+        if (doc.exists) {
+          var role = doc.data().role;
+          if (role === 'admin')        backBtn.href = 'admin-home.html';
+          else if (role === 'teacher') backBtn.href = 'teacher-home.html';
+          else                         backBtn.href = 'student-home.html';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
