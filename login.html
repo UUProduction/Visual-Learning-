@@ -18,19 +18,15 @@
         <div class="login-title" id="login-title">Vision: Learning</div>
       </div>
       <div class="login-body">
-
         <button class="login-oauth-btn" id="google-btn">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
           Sign in with Google
         </button>
-
         <button class="login-oauth-btn" id="clever-btn">
           <img src="https://support.highlandschools.org/wp-content/uploads/2020/11/clever1.png" alt="Clever"/>
           Sign in with Clever
         </button>
-
         <div class="login-divider"><span>or</span></div>
-
         <div class="login-field">
           <label>Email</label>
           <input type="email" id="login-email" placeholder="you@school.edu"/>
@@ -39,33 +35,25 @@
           <label>Password</label>
           <input type="password" id="login-password" placeholder="••••••••"/>
         </div>
-
         <button class="login-submit" id="login-btn">Sign In</button>
-
         <div class="login-rep-link">No account? <a href="signup.html">Sign up here</a></div>
-        <div class="login-rep-link">Representative? <a href="login.html?role=teacher">Sign in here</a></div>
-
       </div>
     </div>
   </div>
-
   <div id="toast-container"></div>
   <script src="app.js"></script>
   <script>
-
     function redirectByRole(role) {
-      if (role === 'admin') window.location.href = 'admin-home.html';
-      else if (role === 'teacher') window.location.href = 'teacher-home.html';
-      else window.location.href = 'student-home.html';
+      if (role === 'admin')   { window.location.href = 'admin-home.html';   return; }
+      if (role === 'teacher') { window.location.href = 'teacher-home.html'; return; }
+      window.location.href = 'student-home.html';
     }
 
-    // Auto-login — check saved session and redirect by role
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) return;
       firebase.firestore().collection('users').doc(user.uid).get().then(function(doc) {
         if (!doc.exists) return;
         var data = doc.data();
-        // Check if banned
         if (data.banned) {
           firebase.auth().signOut();
           showToast('Your account has been banned', 'error');
@@ -74,13 +62,6 @@
         redirectByRole(data.role);
       });
     });
-
-    var params = new URLSearchParams(location.search);
-    var isTeacher = params.get('role') === 'teacher';
-    if (isTeacher) {
-      document.getElementById('login-title').textContent = 'Representative Login';
-      document.getElementById('login-btn').textContent = 'Sign In as Representative';
-    }
 
     document.getElementById('google-btn').addEventListener('click', function() {
       var provider = new firebase.auth.GoogleAuthProvider();
@@ -91,51 +72,50 @@
             var data = doc.data();
             if (data.banned) {
               firebase.auth().signOut();
-              return showToast('Your account has been banned','error');
+              return showToast('Your account has been banned', 'error');
             }
             redirectByRole(data.role);
           } else {
-            // New user via Google on login — default student
             firebase.firestore().collection('users').doc(result.user.uid).set({
               name: result.user.displayName || '',
               email: result.user.email || '',
               photoURL: result.user.photoURL || null,
-              role: isTeacher ? 'teacher' : 'student',
+              role: 'student',
               totalPoints: 0,
               totalAnswered: 0,
+              bestStreak: 0,
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(function() {
-              redirectByRole(isTeacher ? 'teacher' : 'student');
+              redirectByRole('student');
             });
           }
         });
-      }).catch(function(e){ showToast(e.message,'error'); });
+      }).catch(function(e) { showToast(e.message, 'error'); });
     });
 
     document.getElementById('clever-btn').addEventListener('click', function() {
-      showToast('Clever SSO coming soon','error');
+      showToast('Clever SSO coming soon', 'error');
     });
 
     document.getElementById('login-btn').addEventListener('click', function() {
       var email = document.getElementById('login-email').value.trim();
       var pass  = document.getElementById('login-password').value;
-      if (!email || !pass) return showToast('Fill in all fields','error');
+      if (!email || !pass) return showToast('Fill in all fields', 'error');
       firebase.auth().signInWithEmailAndPassword(email, pass).then(function(result) {
         firebase.firestore().collection('users').doc(result.user.uid).get().then(function(doc) {
           if (doc.exists) {
             var data = doc.data();
             if (data.banned) {
               firebase.auth().signOut();
-              return showToast('Your account has been banned','error');
+              return showToast('Your account has been banned', 'error');
             }
             redirectByRole(data.role);
           } else {
-            redirectByRole(isTeacher ? 'teacher' : 'student');
+            redirectByRole('student');
           }
         });
-      }).catch(function() { showToast('Invalid credentials','error'); });
+      }).catch(function() { showToast('Invalid credentials', 'error'); });
     });
-
   </script>
 </body>
 </html>
