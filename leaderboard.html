@@ -10,171 +10,47 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="firebase.js"></script>
   <style>
-    .lb-page { min-height:100vh; display:flex; flex-direction:column; }
-
-    .lb-topbar {
-      background:rgba(0,55,175,0.97);
-      border-bottom:2px solid var(--vl-cyan);
-      padding:14px 24px;
-      display:flex; align-items:center; justify-content:space-between;
-      position:sticky; top:0; z-index:10;
-      backdrop-filter:blur(10px);
-    }
-    .lb-topbar-brand {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:24px; letter-spacing:0.1em; color:#fff;
-    }
-    .lb-topbar-brand span { color:var(--vl-cyan); }
-    .lb-topbar-back {
-      display:inline-flex; align-items:center; gap:6px;
-      background:rgba(255,255,255,0.12);
-      border:1px solid rgba(255,255,255,0.2);
-      border-radius:6px; padding:7px 14px; color:#fff;
-      font-family:'Barlow Condensed',sans-serif; font-size:13px;
-      font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
-      cursor:pointer; text-decoration:none; transition:background 0.2s;
-    }
-    .lb-topbar-back:hover { background:rgba(255,255,255,0.22); }
-    .lb-topbar-back svg { width:14px; height:14px; stroke:#fff; }
-
-    .lb-content {
-      flex:1; max-width:860px;
-      margin:0 auto; width:100%; padding:28px 20px;
-    }
-
-    .lb-header {
-      display:flex; align-items:center; justify-content:space-between;
-      flex-wrap:wrap; gap:12px; margin-bottom:24px;
-    }
-    .lb-title {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(36px,6vw,56px);
-      letter-spacing:0.06em; color:var(--vl-white); line-height:1;
-    }
-    .lb-title span { color:var(--vl-cyan); }
-    .lb-sub { font-size:13px; color:var(--vl-gray); margin-top:4px; }
-
-    .lb-live-pill {
-      display:flex; align-items:center; gap:6px;
-      background:rgba(48,209,88,0.08);
-      border:1px solid rgba(48,209,88,0.2);
-      border-radius:20px; padding:5px 12px;
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:12px; font-weight:600; letter-spacing:0.08em;
-      color:var(--vl-green);
-    }
-    .lb-live-dot {
-      width:7px; height:7px; border-radius:50%;
-      background:var(--vl-green);
-      animation:pulse-dot 2s infinite;
-    }
-    @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
-
-    .lb-tabs {
-      display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;
-    }
-    .lb-tab-btn {
-      padding:8px 20px;
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:20px; color:var(--vl-gray);
-      font-family:'Barlow Condensed',sans-serif; font-size:14px;
-      font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
-      cursor:pointer; transition:all 0.15s;
-    }
-    .lb-tab-btn:hover {
-      background:rgba(10,132,255,0.1);
-      color:var(--vl-white);
-    }
-    .lb-tab-btn.active {
-      background:rgba(10,132,255,0.18);
-      border-color:var(--vl-blue);
-      color:var(--vl-blue);
-    }
-
-    .lb-list { display:flex; flex-direction:column; gap:8px; }
-
-    .lb-row {
-      display:flex; align-items:center; gap:14px;
-      background:var(--vl-surface);
-      border:1px solid var(--vl-border);
-      border-radius:12px; padding:14px 18px;
-      transition:border-color 0.2s, transform 0.15s;
-    }
-    .lb-row:hover { border-color:rgba(10,132,255,0.25); transform:translateX(3px); }
-    .lb-row.top-1 { border-color:rgba(255,215,0,0.4); background:rgba(255,215,0,0.04); }
-    .lb-row.top-2 { border-color:rgba(192,192,192,0.35); }
-    .lb-row.top-3 { border-color:rgba(205,127,50,0.35); }
-    .lb-row.is-me { border-color:rgba(0,229,255,0.35); background:rgba(0,229,255,0.04); }
-
-    .lb-rank-num {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:28px; line-height:1;
-      width:42px; text-align:center; flex-shrink:0;
-    }
-    .lb-avatar {
-      width:44px; height:44px; border-radius:50%;
-      object-fit:cover; flex-shrink:0;
-    }
-    .lb-avatar-letter {
-      width:44px; height:44px; border-radius:50%;
-      background:var(--vl-blue);
-      display:flex; align-items:center; justify-content:center;
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:18px; font-weight:700; color:#fff; flex-shrink:0;
-    }
-    .lb-info { flex:1; min-width:0; }
-    .lb-name {
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:17px; font-weight:700; letter-spacing:0.04em;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      color:var(--vl-white);
-    }
-    .lb-you-tag {
-      font-size:11px; color:var(--vl-cyan);
-      margin-left:6px; font-weight:400; letter-spacing:0.08em;
-    }
-    .lb-role {
-      font-size:11px; color:var(--vl-gray); margin-top:1px;
-    }
-    .lb-score-wrap { text-align:right; flex-shrink:0; }
-    .lb-score-val {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:30px; color:var(--vl-cyan); line-height:1;
-    }
-    .lb-score-label {
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:10px; letter-spacing:0.15em;
-      text-transform:uppercase; color:var(--vl-gray);
-    }
-
-    .lb-spinner {
-      width:32px; height:32px;
-      border:3px solid rgba(0,229,255,0.2);
-      border-top-color:var(--vl-cyan);
-      border-radius:50%;
-      animation:lbspin 0.8s linear infinite;
-    }
-    @keyframes lbspin { to{transform:rotate(360deg);} }
-
-    .lb-empty {
-      text-align:center; color:var(--vl-gray);
-      font-size:14px; padding:40px;
-    }
-
-    .lb-you-row {
-      background:rgba(0,229,255,0.04);
-      border:1px solid rgba(0,229,255,0.2);
-      border-radius:12px; padding:14px 18px;
-      display:flex; align-items:center; gap:14px;
-      margin-top:16px;
-    }
-    .lb-your-rank-label {
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:11px; font-weight:700; letter-spacing:0.15em;
-      text-transform:uppercase; color:var(--vl-cyan);
-      margin-bottom:12px;
-    }
+    .lb-page{min-height:100vh;display:flex;flex-direction:column;}
+    .lb-topbar{background:rgba(0,40,140,0.97);border-bottom:2px solid var(--vl-cyan);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);}
+    .lb-topbar-brand{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.1em;color:#fff;}
+    .lb-topbar-brand span{color:var(--vl-cyan);}
+    .lb-topbar-back{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:7px 14px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .lb-topbar-back:hover{background:rgba(255,255,255,0.22);}
+    .lb-topbar-back svg{width:14px;height:14px;stroke:#fff;}
+    .lb-content{flex:1;max-width:860px;margin:0 auto;width:100%;padding:28px 20px;}
+    .lb-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;}
+    .lb-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);letter-spacing:0.06em;color:var(--vl-white);line-height:1;}
+    .lb-title span{color:var(--vl-cyan);}
+    .lb-sub{font-size:13px;color:var(--vl-gray);margin-top:4px;}
+    .lb-live-pill{display:flex;align-items:center;gap:6px;background:rgba(48,209,88,0.08);border:1px solid rgba(48,209,88,0.2);border-radius:20px;padding:5px 12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.08em;color:var(--vl-green);}
+    .lb-live-dot{width:7px;height:7px;border-radius:50%;background:var(--vl-green);animation:pulse-dot 2s infinite;}
+    @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.35;}}
+    .lb-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+    .lb-tab-btn{padding:8px 20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--vl-gray);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+    .lb-tab-btn:hover{background:rgba(10,132,255,0.1);color:var(--vl-white);}
+    .lb-tab-btn.active{background:rgba(10,132,255,0.18);border-color:var(--vl-blue);color:var(--vl-blue);}
+    .lb-list{display:flex;flex-direction:column;gap:8px;}
+    .lb-row{display:flex;align-items:center;gap:14px;background:var(--vl-surface);border:1px solid var(--vl-border);border-radius:12px;padding:14px 18px;transition:border-color 0.2s,transform 0.15s;}
+    .lb-row:hover{border-color:rgba(10,132,255,0.25);transform:translateX(3px);}
+    .lb-row.top-1{border-color:rgba(255,215,0,0.4);background:rgba(255,215,0,0.04);}
+    .lb-row.top-2{border-color:rgba(192,192,192,0.35);}
+    .lb-row.top-3{border-color:rgba(205,127,50,0.35);}
+    .lb-row.is-me{border-color:rgba(0,229,255,0.35);background:rgba(0,229,255,0.04);}
+    .lb-rank-num{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;width:42px;text-align:center;flex-shrink:0;}
+    .lb-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+    .lb-avatar-letter{width:44px;height:44px;border-radius:50%;background:var(--vl-blue);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+    .lb-info{flex:1;min-width:0;}
+    .lb-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--vl-white);}
+    .lb-you-tag{font-size:11px;color:var(--vl-cyan);margin-left:6px;font-weight:400;}
+    .lb-role{font-size:11px;color:var(--vl-gray);margin-top:1px;}
+    .lb-score-wrap{text-align:right;flex-shrink:0;}
+    .lb-score-val{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--vl-cyan);line-height:1;}
+    .lb-score-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--vl-gray);}
+    .lb-spinner{width:32px;height:32px;border:3px solid rgba(0,229,255,0.2);border-top-color:var(--vl-cyan);border-radius:50%;animation:lbspin 0.8s linear infinite;}
+    @keyframes lbspin{to{transform:rotate(360deg);}}
+    .lb-empty{text-align:center;color:var(--vl-gray);font-size:14px;padding:40px;}
+    .lb-your-pos{background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.2);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-top:16px;}
+    .lb-your-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--vl-cyan);margin-bottom:12px;}
   </style>
 </head>
 <body>
@@ -189,15 +65,13 @@
   </div>
 
   <div class="lb-content">
-
     <div class="lb-header">
       <div>
         <div class="lb-title">Global <span>Leaderboard</span></div>
         <div class="lb-sub">All players — admins excluded — updated live</div>
       </div>
       <div class="lb-live-pill">
-        <div class="lb-live-dot"></div>
-        Live
+        <div class="lb-live-dot"></div>Live
       </div>
     </div>
 
@@ -210,12 +84,10 @@
 
     <div class="lb-list hidden" id="lb-list"></div>
 
-    <!-- Your rank section (only shows if logged in) -->
     <div id="your-rank-section" class="hidden" style="margin-top:24px;">
-      <div class="lb-your-rank-label">Your Position</div>
-      <div class="lb-you-row" id="your-rank-row"></div>
+      <div class="lb-your-label">Your Position</div>
+      <div class="lb-your-pos" id="your-rank-row"></div>
     </div>
-
   </div>
 </div>
 
@@ -235,7 +107,7 @@ var currentUser = null;
 var tabsEl = document.getElementById('lb-tabs');
 TABS.forEach(function(tab, i) {
   var btn = document.createElement('button');
-  btn.className = 'lb-tab-btn' + (i === 0 ? ' active' : '');
+  btn.className = 'lb-tab-btn' + (i===0?' active':'');
   btn.textContent = tab.label;
   btn.addEventListener('click', function() {
     document.querySelectorAll('.lb-tab-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -246,7 +118,7 @@ TABS.forEach(function(tab, i) {
   tabsEl.appendChild(btn);
 });
 
-// Auth check (optional — leaderboard works without login too)
+// Try auth first, then load regardless
 firebase.auth().onAuthStateChanged(function(user) {
   currentUser = user;
   loadData();
@@ -257,31 +129,35 @@ function loadData() {
     allPlayers = [];
     snap.forEach(function(doc) {
       var d = doc.data();
-      if (d.role === 'admin') return; // exclude admins
+      if (d.role === 'admin') return;
       allPlayers.push({
         id:            doc.id,
-        name:          d.name          || 'Unknown',
+        name:          d.name || d.displayName || 'Unknown',
         photoURL:      d.photoURL      || null,
         role:          d.role          || 'student',
         totalPoints:   d.totalPoints   || 0,
         totalAnswered: d.totalAnswered || 0,
         mathPoints:    d.mathPoints    || 0,
-        mathAnswered:  d.mathAnswered  || 0
+        mathAnswered:  d.mathAnswered  || 0,
+        bestStreak:    d.bestStreak    || 0
       });
     });
     document.getElementById('lb-loading').style.display = 'none';
     document.getElementById('lb-list').classList.remove('hidden');
     renderList();
-  }).catch(function(e) {
+  }).catch(function(err) {
+    console.error('[LB] load error:', err);
     document.getElementById('lb-loading').innerHTML =
-      '<div style="color:var(--vl-red);font-size:13px;">Could not load leaderboard. Check your connection.</div>';
+      '<div style="color:var(--vl-red,#ff3b30);font-size:13px;text-align:center;">' +
+      'Could not load leaderboard.<br/>Error: ' + err.message + '<br/><br/>' +
+      'Make sure Firestore rules allow reads for authenticated users.</div>';
   });
 }
 
 function renderList() {
-  var tab = TABS.find(function(t){ return t.key === currentSort; }) || TABS[0];
-  var sorted = allPlayers.slice().sort(function(a, b) {
-    return (b[currentSort] || 0) - (a[currentSort] || 0);
+  var tab = TABS.find(function(t){ return t.key===currentSort; }) || TABS[0];
+  var sorted = allPlayers.slice().sort(function(a,b){
+    return (b[currentSort]||0) - (a[currentSort]||0);
   });
 
   var list = document.getElementById('lb-list');
@@ -294,7 +170,6 @@ function renderList() {
 
   var medals = ['🥇','🥈','🥉'];
   var rankColors = ['#ffd700','#c0c0c0','#cd7f32'];
-
   var myRank = -1;
 
   sorted.forEach(function(u, i) {
@@ -302,54 +177,54 @@ function renderList() {
     if (isMe) myRank = i;
 
     var val = u[currentSort] || 0;
-    var rankDisplay = i < 3 ? medals[i] : '#' + (i + 1);
+    var rankDisplay = i < 3 ? medals[i] : '#'+(i+1);
     var rankColor   = i < 3 ? rankColors[i] : (i < 10 ? 'var(--vl-cyan)' : 'var(--vl-gray)');
-    var roleLabel   = u.role === 'teacher' ? 'Representative' : 'Student';
+    var roleLabel   = u.role==='teacher' ? 'Representative' : 'Student';
 
     var row = document.createElement('div');
     row.className = 'lb-row' +
-      (i === 0 ? ' top-1' : i === 1 ? ' top-2' : i === 2 ? ' top-3' : '') +
-      (isMe ? ' is-me' : '');
+      (i===0?' top-1':i===1?' top-2':i===2?' top-3':'') +
+      (isMe?' is-me':'');
 
     row.innerHTML =
-      '<div class="lb-rank-num" style="color:' + rankColor + ';">' + rankDisplay + '</div>' +
+      '<div class="lb-rank-num" style="color:'+rankColor+';">'+rankDisplay+'</div>'+
       (u.photoURL
-        ? '<img class="lb-avatar" src="' + u.photoURL + '" alt=""/>'
-        : '<div class="lb-avatar-letter">' + (u.name || '?')[0].toUpperCase() + '</div>'
-      ) +
-      '<div class="lb-info">' +
-        '<div class="lb-name">' + u.name + (isMe ? '<span class="lb-you-tag">(You)</span>' : '') + '</div>' +
-        '<div class="lb-role">' + roleLabel + '</div>' +
-      '</div>' +
-      '<div class="lb-score-wrap">' +
-        '<div class="lb-score-val">' + val.toLocaleString() + '</div>' +
-        '<div class="lb-score-label">' + tab.unit + '</div>' +
+        ? '<img class="lb-avatar" src="'+u.photoURL+'" alt=""/>'
+        : '<div class="lb-avatar-letter">'+(u.name||'?')[0].toUpperCase()+'</div>'
+      )+
+      '<div class="lb-info">'+
+        '<div class="lb-name">'+u.name+(isMe?'<span class="lb-you-tag">(You)</span>':'')+'</div>'+
+        '<div class="lb-role">'+roleLabel+'</div>'+
+      '</div>'+
+      '<div class="lb-score-wrap">'+
+        '<div class="lb-score-val">'+val.toLocaleString()+'</div>'+
+        '<div class="lb-score-label">'+tab.unit+'</div>'+
       '</div>';
 
     list.appendChild(row);
   });
 
-  // Show your rank at the bottom if you're logged in and not in top visible
+  // Your position at bottom
   var yourSection = document.getElementById('your-rank-section');
-  var yourRow = document.getElementById('your-rank-row');
+  var yourRow     = document.getElementById('your-rank-row');
   if (currentUser && myRank >= 0) {
     var me = sorted[myRank];
     var val = me[currentSort] || 0;
-    var rankDisplay = myRank < 3 ? medals[myRank] : '#' + (myRank + 1);
+    var rankDisplay = myRank < 3 ? medals[myRank] : '#'+(myRank+1);
     yourSection.classList.remove('hidden');
     yourRow.innerHTML =
-      '<div class="lb-rank-num" style="color:var(--vl-cyan);">' + rankDisplay + '</div>' +
+      '<div class="lb-rank-num" style="color:var(--vl-cyan);">'+rankDisplay+'</div>'+
       (me.photoURL
-        ? '<img class="lb-avatar" src="' + me.photoURL + '" alt=""/>'
-        : '<div class="lb-avatar-letter">' + (me.name || '?')[0].toUpperCase() + '</div>'
-      ) +
-      '<div class="lb-info">' +
-        '<div class="lb-name">' + me.name + '<span class="lb-you-tag">(You)</span></div>' +
-        '<div class="lb-role">' + (me.role === 'teacher' ? 'Representative' : 'Student') + '</div>' +
-      '</div>' +
-      '<div class="lb-score-wrap">' +
-        '<div class="lb-score-val">' + val.toLocaleString() + '</div>' +
-        '<div class="lb-score-label">' + tab.unit + '</div>' +
+        ? '<img class="lb-avatar" src="'+me.photoURL+'" alt=""/>'
+        : '<div class="lb-avatar-letter">'+(me.name||'?')[0].toUpperCase()+'</div>'
+      )+
+      '<div class="lb-info">'+
+        '<div class="lb-name">'+me.name+'<span class="lb-you-tag">(You)</span></div>'+
+        '<div class="lb-role">'+(me.role==='teacher'?'Representative':'Student')+'</div>'+
+      '</div>'+
+      '<div class="lb-score-wrap">'+
+        '<div class="lb-score-val">'+val.toLocaleString()+'</div>'+
+        '<div class="lb-score-label">'+tab.unit+'</div>'+
       '</div>';
   } else {
     yourSection.classList.add('hidden');
