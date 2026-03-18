@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math Challenge — V:L</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
+  <style>
+    body { background:#fff; color:#111; }
+    body::after { display:none; }
+
+    #game-wrap {
+      display:flex; flex-direction:column;
+      align-items:center; min-height:100vh;
+      background:#fff; padding-bottom:30px;
+    }
+
+    .game-topbar {
+      width:100%; background:#0f9d58;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 20px; border-bottom:2px solid #0a7a40;
+    }
+    .game-topbar-brand { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.1em; color:#fff; }
+    .game-topbar-brand span { color:#a8ffcc; }
+    .topbar-back {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.18); border:none; border-radius:6px;
+      padding:7px 14px; color:#fff; font-family:'Barlow Condensed',sans-serif;
+      font-size:13px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+      cursor:pointer; text-decoration:none; transition:background 0.2s;
+    }
+    .topbar-back:hover { background:rgba(255,255,255,0.28); }
+    .topbar-back svg { width:14px; height:14px; stroke:#fff; }
+
+    .game-hud {
+      display:flex; align-items:center; justify-content:space-between;
+      width:100%; max-width:700px; padding:16px 20px 8px;
+    }
+    .hud-points { display:flex; flex-direction:column; }
+    .hud-pts-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#666; }
+    .hud-pts-val { font-family:'Bebas Neue',sans-serif; font-size:42px; line-height:1; color:#111; }
+    .hud-streak { text-align:center; }
+    .hud-streak-val { font-family:'Bebas Neue',sans-serif; font-size:42px; line-height:1; color:#0f9d58; }
+    .hud-streak-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#666; }
+    .hud-level { text-align:right; }
+    .hud-level-val { font-family:'Bebas Neue',sans-serif; font-size:42px; line-height:1; color:#f29900; }
+    .hud-level-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#666; }
+
+    .math-card {
+      width:calc(100% - 40px); max-width:620px;
+      background:#f8fff9; border:2px solid #c3e6cc;
+      border-radius:16px; padding:32px 24px;
+      text-align:center; box-shadow:0 4px 24px rgba(15,157,88,0.08);
+    }
+
+    .math-category {
+      font-family:'Barlow Condensed',sans-serif; font-size:12px;
+      letter-spacing:0.22em; text-transform:uppercase; color:#888;
+      margin-bottom:8px;
+    }
+
+    .math-question {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(48px,10vw,80px);
+      color:#111; letter-spacing:0.04em; margin-bottom:28px;
+      line-height:1;
+    }
+
+    .math-timer-bar {
+      width:100%; height:6px; background:#e0e0e0;
+      border-radius:3px; margin-bottom:24px; overflow:hidden;
+    }
+    .math-timer-fill {
+      height:100%; background:#0f9d58; border-radius:3px;
+      transition:width 0.1s linear; width:100%;
+    }
+
+    .math-choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+    .math-choice-btn {
+      padding:16px 12px; background:#fff;
+      border:2px solid #c3e6cc; border-radius:10px; color:#111;
+      font-family:'Bebas Neue',sans-serif; font-size:28px;
+      cursor:pointer; transition:background 0.15s, border-color 0.15s, transform 0.1s;
+      box-shadow:0 2px 6px rgba(0,0,0,0.04);
+    }
+    .math-choice-btn:hover:not(:disabled) { background:#e6f9ee; border-color:#0f9d58; transform:scale(1.02); }
+    .math-choice-btn.correct { background:#e6f9ee; border-color:#0f9d58; color:#0a7a30; }
+    .math-choice-btn.wrong   { background:#fef0ef; border-color:#ff3b30; color:#c0120a; }
+    .math-choice-btn:disabled { cursor:not-allowed; }
+
+    .math-difficulty {
+      display:flex; gap:8px; justify-content:center; margin-bottom:16px;
+    }
+    .diff-btn {
+      padding:6px 16px; background:rgba(15,157,88,0.08);
+      border:1px solid rgba(15,157,88,0.2); border-radius:20px;
+      color:#0f9d58; font-family:'Barlow Condensed',sans-serif;
+      font-size:13px; font-weight:600; letter-spacing:0.1em;
+      text-transform:uppercase; cursor:pointer; transition:background 0.15s;
+    }
+    .diff-btn.active { background:#0f9d58; color:#fff; }
+    .diff-btn:hover { background:rgba(15,157,88,0.15); }
+
+    .math-feedback {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:14px; font-weight:600; letter-spacing:0.08em;
+      min-height:20px; margin-top:12px; text-align:center;
+    }
+    .math-feedback.correct { color:#0f9d58; }
+    .math-feedback.wrong   { color:#ff3b30; }
+
+    .keyboard-wrap {
+      position:fixed; bottom:16px; left:16px;
+      width:200px; opacity:0.55; transition:opacity 0.2s; z-index:10;
+    }
+    .keyboard-wrap:hover { opacity:1; }
+    .keyboard-wrap img { width:100%; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+    .keyboard-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#888; text-align:center; margin-top:4px; }
+
+    #toast-container { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:9000; display:flex; flex-direction:column; gap:6px; align-items:center; pointer-events:none; }
+    .toast { background:#323232; border-radius:8px; padding:9px 20px; font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:0.08em; color:#fff; white-space:nowrap; animation:toast-in 0.25s ease, toast-out 0.25s ease 2.75s forwards; }
+    .toast.error { background:#b31412; }
+    .toast.success { background:#137333; }
+    @keyframes toast-in  { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes toast-out { to{opacity:0;transform:translateY(-7px);} }
+    @keyframes screen-shake { 0%{transform:translate(0,0);} 20%{transform:translate(-7px,3px);} 40%{transform:translate(7px,-3px);} 60%{transform:translate(-3px,7px);} 80%{transform:translate(3px,-2px);} 100%{transform:translate(0,0);} }
+    .shake { animation:screen-shake 0.12s ease; }
+  </style>
+</head>
+<body>
+
+<div id="game-wrap">
+
+  <div class="game-topbar">
+    <div class="game-topbar-brand">V<span>:</span>L <span style="font-size:16px;color:rgba(255,255,255,0.8);">MATH</span></div>
+    <a href="student-home.html" class="topbar-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+  </div>
+
+  <!-- Difficulty selector -->
+  <div style="padding:16px 20px 0;width:100%;max-width:700px;">
+    <div class="math-difficulty">
+      <button class="diff-btn active" data-diff="easy" onclick="setDifficulty('easy',this)">Easy</button>
+      <button class="diff-btn" data-diff="medium" onclick="setDifficulty('medium',this)">Medium</button>
+      <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard',this)">Hard</button>
+    </div>
+  </div>
+
+  <div class="game-hud">
+    <div class="hud-points">
+      <div class="hud-pts-label">Points</div>
+      <div class="hud-pts-val" id="hud-pts">0</div>
+    </div>
+    <div class="hud-streak">
+      <div class="hud-streak-val" id="hud-streak">0</div>
+      <div class="hud-streak-label">Streak</div>
+    </div>
+    <div class="hud-level">
+      <div class="hud-level-val" id="hud-level">1</div>
+      <div class="hud-level-label">Level</div>
+    </div>
+  </div>
+
+  <div class="math-card">
+    <div class="math-category" id="math-category">Addition</div>
+    <div class="math-question" id="math-question">?</div>
+    <div class="math-timer-bar">
+      <div class="math-timer-fill" id="timer-fill"></div>
+    </div>
+    <div class="math-choices" id="math-choices"></div>
+    <div class="math-feedback" id="math-feedback"></div>
+  </div>
+
+</div>
+
+<div class="keyboard-wrap">
+  <img src="https://miro.medium.com/v2/1*qYGBCM3HT4Kjxsm4UGTN1A.png" alt="Keyboard"/>
+  <div class="keyboard-label">Use 1–4 to answer</div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+var state = { points:0, streak:0, level:1, correct:0, timerMs:0 };
+var difficulty = 'easy';
+var timerInterval = null;
+var TIME_LIMIT = 15000;
+
+var CATEGORIES = {
+  easy:   ['Addition','Subtraction'],
+  medium: ['Addition','Subtraction','Multiplication'],
+  hard:   ['Multiplication','Division','Mixed']
+};
+
+function setDifficulty(diff, btn) {
+  difficulty = diff;
+  document.querySelectorAll('.diff-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  state = { points:0, streak:0, level:1, correct:0 };
+  updateHUD();
+  nextQuestion();
+}
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateQuestion() {
+  var cats = CATEGORIES[difficulty];
+  var cat = cats[randInt(0, cats.length - 1)];
+  var a, b, answer, question;
+
+  if (difficulty === 'easy') {
+    a = randInt(1, 20); b = randInt(1, 20);
+    if (cat === 'Addition') { answer = a + b; question = a + ' + ' + b + ' = ?'; }
+    else { if (a < b) { var t=a; a=b; b=t; } answer = a - b; question = a + ' − ' + b + ' = ?'; }
+  } else if (difficulty === 'medium') {
+    if (cat === 'Multiplication') {
+      a = randInt(2, 12); b = randInt(2, 12);
+      answer = a * b; question = a + ' × ' + b + ' = ?';
+    } else if (cat === 'Addition') {
+      a = randInt(10, 99); b = randInt(10, 99);
+      answer = a + b; question = a + ' + ' + b + ' = ?';
+    } else {
+      a = randInt(10, 99); b = randInt(1, 20);
+      if (a < b) { var t=a; a=b; b=t; }
+      answer = a - b; question = a + ' − ' + b + ' = ?';
+    }
+  } else {
+    if (cat === 'Multiplication') {
+      a = randInt(6, 20); b = randInt(6, 20);
+      answer = a * b; question = a + ' × ' + b + ' = ?';
+    } else if (cat === 'Division') {
+      b = randInt(2, 12); answer = randInt(2, 12); a = b * answer;
+      question = a + ' ÷ ' + b + ' = ?';
+    } else {
+      a = randInt(50, 200); b = randInt(50, 200);
+      answer = a + b; question = a + ' + ' + b + ' = ?';
+      cat = 'Addition';
+    }
+  }
+
+  // Generate wrong answers
+  var choices = [answer];
+  while (choices.length < 4) {
+    var offset = randInt(1, Math.max(5, Math.floor(answer * 0.3)));
+    var wrong = answer + (Math.random() > 0.5 ? offset : -offset);
+    if (wrong !== answer && wrong > 0 && choices.indexOf(wrong) === -1) {
+      choices.push(wrong);
+    }
+  }
+  // Shuffle
+  choices.sort(function() { return Math.random() - 0.5; });
+
+  return { question: question, answer: answer, choices: choices, category: cat };
+}
+
+var currentQ = null;
+
+function nextQuestion() {
+  clearTimerBar();
+  document.getElementById('math-feedback').textContent = '';
+  document.getElementById('math-feedback').className = 'math-feedback';
+
+  currentQ = generateQuestion();
+  document.getElementById('math-category').textContent = currentQ.category;
+  document.getElementById('math-question').textContent = currentQ.question;
+
+  var choicesEl = document.getElementById('math-choices');
+  choicesEl.innerHTML = '';
+  currentQ.choices.forEach(function(choice, i) {
+    var btn = document.createElement('button');
+    btn.className = 'math-choice-btn';
+    btn.setAttribute('data-choice', choice);
+    btn.textContent = choice;
+    btn.addEventListener('click', function() { handleAnswer(choice, btn); });
+    choicesEl.appendChild(btn);
+  });
+
+  startTimerBar();
+}
+
+function startTimerBar() {
+  var fill = document.getElementById('timer-fill');
+  var start = Date.now();
+  fill.style.width = '100%';
+  fill.style.background = '#0f9d58';
+  timerInterval = setInterval(function() {
+    var elapsed = Date.now() - start;
+    var pct = Math.max(0, 100 - (elapsed / TIME_LIMIT * 100));
+    fill.style.width = pct + '%';
+    if (pct < 30) fill.style.background = '#ff3b30';
+    else if (pct < 60) fill.style.background = '#f29900';
+    if (pct <= 0) {
+      clearInterval(timerInterval);
+      timeOut();
+    }
+  }, 100);
+}
+
+function clearTimerBar() {
+  clearInterval(timerInterval);
+  document.getElementById('timer-fill').style.width = '100%';
+  document.getElementById('timer-fill').style.background = '#0f9d58';
+}
+
+function timeOut() {
+  document.querySelectorAll('.math-choice-btn').forEach(function(b) {
+    b.disabled = true;
+    if (parseInt(b.getAttribute('data-choice')) === currentQ.answer) b.classList.add('correct');
+  });
+  state.streak = 0;
+  document.getElementById('math-feedback').textContent = 'Time\'s up! Answer was ' + currentQ.answer;
+  document.getElementById('math-feedback').className = 'math-feedback wrong';
+  updateHUD();
+  setTimeout(nextQuestion, 2000);
+}
+
+function handleAnswer(chosen, btn) {
+  clearTimerBar();
+  var isCorrect = chosen === currentQ.answer;
+
+  document.querySelectorAll('.math-choice-btn').forEach(function(b) {
+    b.disabled = true;
+    if (parseInt(b.getAttribute('data-choice')) === currentQ.answer) b.classList.add('correct');
+  });
+
+  if (!isCorrect) {
+    btn.classList.add('wrong');
+    state.streak = 0;
+    document.getElementById('math-feedback').textContent = 'Wrong! Answer was ' + currentQ.answer;
+    document.getElementById('math-feedback').className = 'math-feedback wrong';
+  } else {
+    btn.classList.add('correct');
+    var bonus = state.streak >= 3 ? 2 : 1;
+    state.points += bonus;
+    state.streak++;
+    state.correct++;
+    if (state.correct % 5 === 0) state.level++;
+    document.getElementById('math-feedback').textContent = state.streak >= 3 ? '🔥 ' + state.streak + ' streak! +' + bonus : 'Correct! +' + bonus;
+    document.getElementById('math-feedback').className = 'math-feedback correct';
+    document.body.classList.add('shake');
+    setTimeout(function(){ document.body.classList.remove('shake'); }, 150);
+  }
+
+  updateHUD();
+  setTimeout(nextQuestion, 1600);
+}
+
+function updateHUD() {
+  document.getElementById('hud-pts').textContent = state.points;
+  document.getElementById('hud-streak').textContent = state.streak;
+  document.getElementById('hud-level').textContent = state.level;
+}
+
+// Keyboard 1-4
+document.addEventListener('keydown', function(e) {
+  var keys = {'1':0,'2':1,'3':2,'4':3};
+  if (keys[e.key] !== undefined) {
+    var btns = document.querySelectorAll('.math-choice-btn:not(:disabled)');
+    if (btns[keys[e.key]]) btns[keys[e.key]].click();
+  }
+});
+
+function showToast(msg, type) {
+  type = type || '';
+  var c = document.getElementById('toast-container');
+  if (!c) return;
+  var t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3200);
+}
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) return window.location.href = 'login.html';
+  nextQuestion();
+});
+</script>
+</body>
+</html>
