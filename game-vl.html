@@ -96,10 +96,19 @@
     .hud-val.gold { color:#f29900; }
     .hud-val.blue { color:#0a84ff; }
 
-    /* MODE SWITCHER */
-    .mode-switcher {
-      display:flex; gap:8px; margin:8px 0 14px;
+    /* BOOST BANNER */
+    .boost-banner {
+      width:calc(100% - 40px); max-width:700px;
+      background:linear-gradient(90deg,rgba(255,215,0,0.15),rgba(255,159,10,0.1));
+      border:1px solid rgba(255,215,0,0.35); border-radius:8px;
+      padding:7px 14px; text-align:center;
+      font-family:'Barlow Condensed',sans-serif; font-size:13px;
+      font-weight:700; letter-spacing:0.1em; color:#f29900;
+      margin:4px 0 8px;
     }
+
+    /* MODE SWITCHER */
+    .mode-switcher { display:flex; gap:8px; margin:8px 0 14px; }
     .mode-btn {
       flex:1; max-width:160px; padding:8px 16px;
       border-radius:20px; font-family:'Barlow Condensed',sans-serif;
@@ -112,8 +121,8 @@
 
     /* RANK BADGE */
     .rank-badge { display:flex; flex-direction:column; align-items:center; gap:1px; }
-    .rank-letter { font-family:'Bebas Neue',sans-serif; font-size:50px; line-height:1; transition:color 0.4s,text-shadow 0.4s; }
-    .rank-name { font-family:'Barlow Condensed',sans-serif; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#888; }
+    .rank-letter { font-family:'Bebas Neue',sans-serif; font-size:46px; line-height:1; transition:color 0.4s,text-shadow 0.4s; }
+    .rank-name { font-family:'Barlow Condensed',sans-serif; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#888; text-align:center; max-width:100px; }
 
     /* CARD */
     .q-card {
@@ -122,18 +131,14 @@
       border-radius:16px; padding:28px 24px;
       text-align:center; box-shadow:0 4px 24px rgba(10,132,255,0.08);
     }
-
     .q-word-display {
       font-family:'Bebas Neue',sans-serif;
       font-size:clamp(38px,7vw,64px);
-      color:#0a84ff; letter-spacing:0.06em;
-      margin-bottom:6px; line-height:1;
+      color:#0a84ff; letter-spacing:0.06em; margin-bottom:6px; line-height:1;
     }
-
     .q-pos {
       font-family:'Barlow Condensed',sans-serif; font-size:12px;
-      letter-spacing:0.18em; text-transform:uppercase;
-      color:#888; margin-bottom:16px;
+      letter-spacing:0.18em; text-transform:uppercase; color:#888; margin-bottom:16px;
     }
 
     /* TYPING MODE */
@@ -143,10 +148,7 @@
       text-align:left; background:#fff; border:1px solid #e0e8ff;
       border-radius:10px; padding:14px 16px;
     }
-    .typing-sentence .word-highlight {
-      background:#0a84ff; color:#fff;
-      border-radius:4px; padding:1px 4px;
-    }
+    .typing-sentence .word-highlight { background:#0a84ff; color:#fff; border-radius:4px; padding:1px 4px; }
     .typing-sentence .word-correct { color:#0a7a30; font-weight:700; }
     .typing-sentence .word-wrong { color:#c0120a; text-decoration:line-through; }
 
@@ -159,7 +161,6 @@
     .type-input:focus { border-color:#0a84ff; box-shadow:0 0 0 3px rgba(10,132,255,0.12); }
     .type-input.correct-flash { border-color:#30d158; background:#e6f9ee; }
     .type-input.wrong-flash  { border-color:#ff3b30; background:#fef0ef; }
-
     .type-submit {
       padding:12px 20px; background:#0a84ff; border:none;
       border-radius:10px; color:#fff; font-family:'Barlow Condensed',sans-serif;
@@ -167,7 +168,6 @@
       cursor:pointer; transition:background 0.2s; white-space:nowrap;
     }
     .type-submit:hover { background:#2a94ff; }
-
     .type-feedback {
       margin-top:10px; font-family:'Barlow Condensed',sans-serif;
       font-size:13px; font-weight:600; letter-spacing:0.08em;
@@ -176,14 +176,8 @@
     .type-feedback.correct { color:#0a7a30; }
     .type-feedback.wrong   { color:#c0120a; }
 
-    .word-progress {
-      display:flex; gap:5px; flex-wrap:wrap; justify-content:center;
-      margin-bottom:16px;
-    }
-    .word-pip {
-      width:28px; height:6px; border-radius:3px; background:#e0e8ff;
-      transition:background 0.3s;
-    }
+    .word-progress { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-bottom:16px; }
+    .word-pip { width:28px; height:6px; border-radius:3px; background:#e0e8ff; transition:background 0.3s; }
     .word-pip.done-correct { background:#30d158; }
     .word-pip.done-wrong   { background:#ff3b30; }
     .word-pip.current      { background:#0a84ff; }
@@ -292,7 +286,6 @@
 
 <!-- GAME -->
 <div id="game-wrap">
-
   <div class="game-topbar">
     <div class="game-topbar-brand">V<span>:</span>L</div>
     <a id="back-btn" href="student-home.html" class="topbar-back">
@@ -301,15 +294,14 @@
     </a>
   </div>
 
-  <!-- HUD -->
   <div class="game-hud">
     <div class="hud-col">
       <div class="hud-label">Points</div>
       <div class="hud-val blue" id="hud-pts">0</div>
     </div>
     <div class="rank-badge">
-      <div class="rank-letter" id="rank-letter" style="color:#888;">D</div>
-      <div class="rank-name" id="rank-name">Beginner</div>
+      <div class="rank-letter" id="rank-letter" style="color:#555;">F</div>
+      <div class="rank-name" id="rank-name">Unranked</div>
     </div>
     <div class="hud-col">
       <div class="hud-label">Multiplier</div>
@@ -317,24 +309,20 @@
     </div>
   </div>
 
-  <!-- MODE SWITCHER -->
+  <!-- BOOST BANNER -->
+  <div class="boost-banner" id="boost-banner" style="display:none;"></div>
+
   <div class="mode-switcher">
-    <button class="mode-btn active" id="btn-typing" onclick="setMode('typing')">
-      ⌨️ Typing
-    </button>
-    <button class="mode-btn" id="btn-desc" onclick="setMode('description')">
-      📖 Description
-    </button>
+    <button class="mode-btn active" id="btn-typing" onclick="setMode('typing')">⌨️ Typing</button>
+    <button class="mode-btn" id="btn-desc" onclick="setMode('description')">📖 Description</button>
   </div>
 
-  <!-- CARD -->
   <div class="q-card" id="q-card">
     <div class="q-spinner"></div>
   </div>
-
 </div>
 
-<!-- KEYBOARD HINT (typing mode only) -->
+<!-- KEYBOARD HINT -->
 <div class="keyboard-wrap" id="keyboard-hint" style="display:none;">
   <img src="https://miro.medium.com/v2/1*qYGBCM3HT4Kjxsm4UGTN1A.png" alt="Keyboard"/>
   <div class="keyboard-label">Type + Enter</div>
@@ -342,15 +330,15 @@
 
 <!-- RANK POPUP -->
 <div class="rank-popup" id="rank-popup">
-  <div class="popup-rank-id" id="popup-rank-id">D</div>
+  <div class="popup-rank-id" id="popup-rank-id">F</div>
   <div class="popup-bonuses" id="popup-bonuses"></div>
   <div class="popup-mult-line">MULTIPLIER <strong id="popup-mult">x1.00</strong></div>
 </div>
 
-<!-- VL ACHIEVED -->
+<!-- RANK UP SCREEN -->
 <div class="vl-achieved" id="vl-achieved">
-  <div class="vl-achieved-title">VISUAL LEARNER</div>
-  <div class="vl-achieved-sub">Rank Achieved</div>
+  <div class="vl-achieved-title" id="vl-achieved-title">VISUAL LEARNER</div>
+  <div class="vl-achieved-sub" id="vl-achieved-sub">Rank Achieved</div>
   <button class="vl-continue-btn" onclick="document.getElementById('vl-achieved').classList.remove('show')">Continue</button>
 </div>
 
@@ -358,38 +346,50 @@
 <script src="app.js"></script>
 <script>
 
-// ===== WORD BANK (fallback if API fails) =====
+// ===== WORD BANK =====
 var FALLBACK_WORDS = [
-  { word:'abundant', pos:'adjective', definition:'existing or available in large quantities', sentence:'The garden was abundant with colorful flowers after the rain.' },
-  { word:'benevolent', pos:'adjective', definition:'well meaning and kindly', sentence:'The benevolent teacher always helped students after class.' },
-  { word:'cautious', pos:'adjective', definition:'careful to avoid danger or mistakes', sentence:'She was cautious when crossing the busy street.' },
-  { word:'diligent', pos:'adjective', definition:'showing steady and careful effort', sentence:'The diligent student studied every night before exams.' },
-  { word:'eloquent', pos:'adjective', definition:'fluent and persuasive in speaking', sentence:'His eloquent speech moved everyone in the audience.' },
-  { word:'fragile', pos:'adjective', definition:'easily broken or damaged', sentence:'Please handle the fragile glass vase with care.' },
-  { word:'grateful', pos:'adjective', definition:'feeling thankful for kindness received', sentence:'She was grateful for her friend\'s help during the move.' },
-  { word:'humble', pos:'adjective', definition:'not proud or arrogant', sentence:'Despite his success, he remained humble and kind.' },
-  { word:'immense', pos:'adjective', definition:'extremely large or great', sentence:'The immense mountain towered over the small village.' },
-  { word:'joyful', pos:'adjective', definition:'feeling great happiness', sentence:'The children were joyful on the last day of school.' },
-  { word:'keen', pos:'adjective', definition:'having a strong interest or enthusiasm', sentence:'She had a keen interest in learning new languages.' },
-  { word:'luminous', pos:'adjective', definition:'full of or shedding light; bright', sentence:'The luminous stars lit up the night sky.' },
-  { word:'mysterious', pos:'adjective', definition:'difficult or impossible to understand', sentence:'The mysterious noise woke everyone in the house.' },
-  { word:'noble', pos:'adjective', definition:'having or showing fine qualities', sentence:'The noble knight protected the villagers from danger.' },
-  { word:'observant', pos:'adjective', definition:'quick to notice things', sentence:'The observant detective spotted the hidden clue.' },
-  { word:'patient', pos:'adjective', definition:'able to wait without becoming upset', sentence:'A good teacher must be patient with all students.' },
-  { word:'radiant', pos:'adjective', definition:'sending out light; glowing brightly', sentence:'Her radiant smile lit up the entire room.' },
-  { word:'sincere', pos:'adjective', definition:'genuinely meaning what you say', sentence:'He gave a sincere apology for arriving late.' },
-  { word:'tremendous', pos:'adjective', definition:'very great in amount or level', sentence:'The team made a tremendous effort to win the game.' },
-  { word:'unique', pos:'adjective', definition:'being the only one of its kind', sentence:'Each snowflake has a unique and beautiful pattern.' },
-  { word:'vibrant', pos:'adjective', definition:'full of energy and enthusiasm', sentence:'The vibrant city was alive with music and laughter.' },
-  { word:'wise', pos:'adjective', definition:'having experience and good judgment', sentence:'The wise elder shared stories from his long life.' },
-  { word:'zealous', pos:'adjective', definition:'showing great energy for a cause', sentence:'The zealous volunteer worked all weekend for the charity.' },
-  { word:'ancient', pos:'adjective', definition:'belonging to the very distant past', sentence:'The ancient ruins told the story of a lost civilization.' },
-  { word:'bold', pos:'adjective', definition:'willing to take risks and be daring', sentence:'The bold explorer ventured into the dark jungle alone.' },
-  { word:'curious', pos:'adjective', definition:'eager to know or learn something', sentence:'The curious cat sniffed at every corner of the room.' },
-  { word:'dazzling', pos:'adjective', definition:'extremely impressive or beautiful', sentence:'The dazzling fireworks lit up the entire sky.' },
-  { word:'elegant', pos:'adjective', definition:'graceful and stylish in appearance', sentence:'She wore an elegant dress to the school dance.' },
-  { word:'fierce', pos:'adjective', definition:'very strong or violent in force', sentence:'The fierce storm knocked down several trees.' },
-  { word:'genuine', pos:'adjective', definition:'truly what it is claimed to be', sentence:'Her genuine laughter made everyone around her smile.' }
+  { word:'abundant',   pos:'adjective', definition:'existing or available in large quantities',    sentence:'The garden was abundant with colorful flowers after the rain.' },
+  { word:'benevolent', pos:'adjective', definition:'well meaning and kindly',                       sentence:'The benevolent teacher always helped students after class.' },
+  { word:'cautious',   pos:'adjective', definition:'careful to avoid danger or mistakes',           sentence:'She was cautious when crossing the busy street.' },
+  { word:'diligent',   pos:'adjective', definition:'showing steady and careful effort',             sentence:'The diligent student studied every night before exams.' },
+  { word:'eloquent',   pos:'adjective', definition:'fluent and persuasive in speaking',             sentence:'His eloquent speech moved everyone in the audience.' },
+  { word:'fragile',    pos:'adjective', definition:'easily broken or damaged',                      sentence:'Please handle the fragile glass vase with care.' },
+  { word:'grateful',   pos:'adjective', definition:'feeling thankful for kindness received',        sentence:'She was grateful for her friend\'s help during the move.' },
+  { word:'humble',     pos:'adjective', definition:'not proud or arrogant',                         sentence:'Despite his success, he remained humble and kind.' },
+  { word:'immense',    pos:'adjective', definition:'extremely large or great',                      sentence:'The immense mountain towered over the small village.' },
+  { word:'joyful',     pos:'adjective', definition:'feeling great happiness',                       sentence:'The children were joyful on the last day of school.' },
+  { word:'keen',       pos:'adjective', definition:'having a strong interest or enthusiasm',        sentence:'She had a keen interest in learning new languages.' },
+  { word:'luminous',   pos:'adjective', definition:'full of or shedding light; bright',             sentence:'The luminous stars lit up the night sky.' },
+  { word:'mysterious', pos:'adjective', definition:'difficult or impossible to understand',         sentence:'The mysterious noise woke everyone in the house.' },
+  { word:'noble',      pos:'adjective', definition:'having or showing fine qualities',              sentence:'The noble knight protected the villagers from danger.' },
+  { word:'observant',  pos:'adjective', definition:'quick to notice things',                        sentence:'The observant detective spotted the hidden clue.' },
+  { word:'patient',    pos:'adjective', definition:'able to wait without becoming upset',           sentence:'A good teacher must be patient with all students.' },
+  { word:'radiant',    pos:'adjective', definition:'sending out light; glowing brightly',           sentence:'Her radiant smile lit up the entire room.' },
+  { word:'sincere',    pos:'adjective', definition:'genuinely meaning what you say',                sentence:'He gave a sincere apology for arriving late.' },
+  { word:'tremendous', pos:'adjective', definition:'very great in amount or level',                 sentence:'The team made a tremendous effort to win the game.' },
+  { word:'unique',     pos:'adjective', definition:'being the only one of its kind',                sentence:'Each snowflake has a unique and beautiful pattern.' },
+  { word:'vibrant',    pos:'adjective', definition:'full of energy and enthusiasm',                 sentence:'The vibrant city was alive with music and laughter.' },
+  { word:'wise',       pos:'adjective', definition:'having experience and good judgment',           sentence:'The wise elder shared stories from his long life.' },
+  { word:'zealous',    pos:'adjective', definition:'showing great energy for a cause',              sentence:'The zealous volunteer worked all weekend for the charity.' },
+  { word:'ancient',    pos:'adjective', definition:'belonging to the very distant past',            sentence:'The ancient ruins told the story of a lost civilization.' },
+  { word:'bold',       pos:'adjective', definition:'willing to take risks and be daring',           sentence:'The bold explorer ventured into the dark jungle alone.' },
+  { word:'curious',    pos:'adjective', definition:'eager to know or learn something',              sentence:'The curious cat sniffed at every corner of the room.' },
+  { word:'dazzling',   pos:'adjective', definition:'extremely impressive or beautiful',             sentence:'The dazzling fireworks lit up the entire sky.' },
+  { word:'elegant',    pos:'adjective', definition:'graceful and stylish in appearance',            sentence:'She wore an elegant dress to the school dance.' },
+  { word:'fierce',     pos:'adjective', definition:'very strong or violent in force',               sentence:'The fierce storm knocked down several trees.' },
+  { word:'genuine',    pos:'adjective', definition:'truly what it is claimed to be',                sentence:'Her genuine laughter made everyone around her smile.' }
+];
+
+// ===== ESSAY SENTENCES (unlocked every 5 perfect sentences) =====
+var ESSAY_SENTENCES = [
+  'The relationship between environmental conservation and economic development has long been a subject of significant debate among policymakers worldwide.',
+  'Throughout history the most transformative technological innovations have consistently emerged from the intersection of creative thinking and rigorous scientific methodology.',
+  'The complexity of human emotions and the way they influence decision making processes has fascinated psychologists philosophers and neuroscientists across many generations.',
+  'Understanding the fundamental principles of mathematics and logical reasoning provides an essential foundation for success in virtually every academic discipline and professional career.',
+  'The rapid advancement of artificial intelligence and machine learning technologies is reshaping industries transforming economies and raising profound questions about the future of human work.',
+  'Environmental scientists have long argued that the preservation of biodiversity is not merely an ethical obligation but an absolute necessity for the long term survival of human civilization.',
+  'The development of critical thinking skills in young students requires educators to create learning environments that encourage questioning exploration and the thoughtful analysis of complex ideas.',
+  'Modern communication technologies have fundamentally altered the way human beings form relationships share information and participate in democratic processes around the world.',
 ];
 
 // ===== FACTS =====
@@ -409,32 +409,49 @@ setInterval(function() {
   }, 400);
 }, 3500);
 
-// ===== RANKS =====
+// ===== NEW RANK SYSTEM =====
 var RANKS = [
-  { id:'D',  label:'D',              minPts:0,   minMult:0,   color:'#888888' },
-  { id:'C',  label:'C',              minPts:50,  minMult:1.0, color:'#30d158' },
-  { id:'B',  label:'B',              minPts:100, minMult:1.5, color:'#0a84ff' },
-  { id:'A',  label:'A',              minPts:175, minMult:2.0, color:'#ff9f0a' },
-  { id:'S',  label:'S',              minPts:250, minMult:2.5, color:'#ff3b30' },
-  { id:'SS', label:'SS',             minPts:350, minMult:3.0, color:'#ff375f' },
-  { id:'SSS',label:'SSS',            minPts:450, minMult:4.0, color:'#ffd700' },
-  { id:'VL', label:'VISUAL LEARNER', minPts:450, minMult:4.5, color:'#bf5af2' }
+  { id:'F',              label:'F',              minPts:0,        color:'#555555', name:'Unranked' },
+  { id:'D-',             label:'D-',             minPts:250,      color:'#888888', name:'Beginner' },
+  { id:'D+',             label:'D+',             minPts:500,      color:'#aaaaaa', name:'Novice' },
+  { id:'C-',             label:'C-',             minPts:1100,     color:'#30d158', name:'Learner' },
+  { id:'C',              label:'C',              minPts:1850,     color:'#25a244', name:'Student' },
+  { id:'C+',             label:'C+',             minPts:2350,     color:'#1a7a32', name:'Achiever' },
+  { id:'B-',             label:'B-',             minPts:3000,     color:'#0a84ff', name:'Scholar' },
+  { id:'B',              label:'B',              minPts:3500,     color:'#0066cc', name:'Intellectual' },
+  { id:'B+',             label:'B+',             minPts:4750,     color:'#0050a0', name:'Advanced' },
+  { id:'A-',             label:'A-',             minPts:6000,     color:'#ff9f0a', name:'Expert' },
+  { id:'A',              label:'A',              minPts:7000,     color:'#e8890a', name:'Master' },
+  { id:'A+',             label:'A+',             minPts:15000,    color:'#ff6b00', name:'Elite' },
+  { id:'S',              label:'S',              minPts:35000,    color:'#ff3b30', name:'Legend' },
+  { id:'S+',             label:'S+',             minPts:60000,    color:'#ff0050', name:'Mythic' },
+  { id:'VOCAB MASTER',   label:'VM',             minPts:184000,   color:'#ffd700', name:'Vocab Master' },
+  { id:'VISUAL LEARNER', label:'VL',             minPts:4000000,  color:'#bf5af2', name:'Visual Learner' }
 ];
 
-var state = { points:0, mult:1.0, streak:0, qStart:0 };
+// ===== STATE =====
+var state = {
+  points: 0,
+  mult: 1.0,
+  streak: 0,
+  perfectSentences: 0,
+  boostMult: 1.0,
+  sentenceLevel: 0,
+  qStart: 0
+};
 var currentMode = 'typing';
 var currentWordData = null;
 var typingWords = [];
 var typingIndex = 0;
 var typingResults = [];
-var vlAchieved = false;
+var shownRankUps = {};
 var popupTimer = null;
 
-// ===== UTILS =====
-function getRank(pts, mult) {
+// ===== RANK UTILS =====
+function getRank(pts) {
   var r = RANKS[0];
   for (var i = 0; i < RANKS.length; i++) {
-    if (pts >= RANKS[i].minPts && mult >= RANKS[i].minMult) r = RANKS[i];
+    if (pts >= RANKS[i].minPts) r = RANKS[i];
   }
   return r;
 }
@@ -446,18 +463,42 @@ function calcMult(streak, ms) {
   return Math.min(parseFloat(m.toFixed(2)), 9.99);
 }
 
+function getTotalMult() {
+  return parseFloat((state.mult * state.boostMult).toFixed(2));
+}
+
 function updateHUD() {
-  document.getElementById('hud-pts').textContent = state.points;
-  document.getElementById('hud-mult').textContent = 'x' + state.mult.toFixed(2);
-  var rank = getRank(state.points, state.mult);
+  document.getElementById('hud-pts').textContent = state.points.toLocaleString();
+  document.getElementById('hud-mult').textContent = 'x' + getTotalMult().toFixed(2);
+  var rank = getRank(state.points);
   var rl = document.getElementById('rank-letter');
   rl.textContent = rank.label;
   rl.style.color = rank.color;
-  rl.style.textShadow = '0 0 20px ' + rank.color + '66';
-  document.getElementById('rank-name').textContent = rank.id === 'VL' ? 'Visual Learner' : rank.id;
-  if (rank.id === 'VL' && !vlAchieved) {
-    vlAchieved = true;
-    setTimeout(function() { document.getElementById('vl-achieved').classList.add('show'); }, 600);
+  rl.style.textShadow = '0 0 20px ' + rank.color + '88';
+  document.getElementById('rank-name').textContent = rank.name;
+
+  // Boost banner
+  var banner = document.getElementById('boost-banner');
+  if (state.boostMult > 1) {
+    banner.style.display = '';
+    banner.textContent = '🔥 ' + state.perfectSentences + ' perfect sentences — ' + state.boostMult.toFixed(2) + 'x boost active!';
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Rank up celebration
+  if (!shownRankUps[rank.id]) {
+    shownRankUps[rank.id] = true;
+    if (rank.id !== 'F') {
+      var title = document.getElementById('vl-achieved-title');
+      var sub   = document.getElementById('vl-achieved-sub');
+      title.textContent = rank.name.toUpperCase();
+      title.style.color = rank.color;
+      title.style.animation = '';
+      title.style.textShadow = '0 0 60px ' + rank.color;
+      sub.textContent = 'New Rank: ' + rank.label;
+      document.getElementById('vl-achieved').classList.add('show');
+    }
   }
 }
 
@@ -478,22 +519,20 @@ function setMode(mode) {
   loadQuestion();
 }
 
-// ===== FETCH WORD FROM API =====
+// ===== FETCH WORD =====
 async function fetchWord() {
-  // Pick a random word from fallback as the target
   var target = FALLBACK_WORDS[Math.floor(Math.random() * FALLBACK_WORDS.length)];
   try {
     var res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + target.word);
-    if (!res.ok) throw new Error('API fail');
+    if (!res.ok) throw new Error('fail');
     var data = await res.json();
-    if (!Array.isArray(data) || !data[0]) throw new Error('Bad data');
+    if (!Array.isArray(data) || !data[0]) throw new Error('bad');
     var entry = data[0];
-    var meanings = entry.meanings || [];
-    var meaning = meanings[0];
-    if (!meaning) throw new Error('No meaning');
-    var def = (meaning.definitions && meaning.definitions[0]) ? meaning.definitions[0].definition : null;
-    var example = (meaning.definitions && meaning.definitions[0]) ? meaning.definitions[0].example : null;
-    if (!def) throw new Error('No def');
+    var meaning = entry.meanings && entry.meanings[0];
+    if (!meaning) throw new Error('no meaning');
+    var def = meaning.definitions && meaning.definitions[0] && meaning.definitions[0].definition;
+    var example = meaning.definitions && meaning.definitions[0] && meaning.definitions[0].example;
+    if (!def) throw new Error('no def');
     return {
       word: entry.word || target.word,
       pos: meaning.partOfSpeech || target.pos,
@@ -501,9 +540,16 @@ async function fetchWord() {
       sentence: example || target.sentence
     };
   } catch(e) {
-    // Fallback to preset
     return target;
   }
+}
+
+// ===== GET SENTENCE FOR LEVEL =====
+function getSentence(data) {
+  if (state.sentenceLevel >= 3) {
+    return ESSAY_SENTENCES[Math.floor(Math.random() * ESSAY_SENTENCES.length)];
+  }
+  return data.sentence;
 }
 
 // ===== LOAD QUESTION =====
@@ -520,27 +566,21 @@ async function loadQuestion() {
 
 // ===== TYPING MODE =====
 function buildTypingMode(data) {
-  if (!data.sentence) {
-    loadQuestion(); return;
-  }
-  typingWords = data.sentence.split(' ');
+  var sentence = getSentence(data);
+  if (!sentence) { loadQuestion(); return; }
+  typingWords = sentence.split(' ');
   typingIndex = 0;
   typingResults = [];
   state.qStart = Date.now();
-
   renderTypingUI(data);
 }
 
 function renderTypingUI(data) {
   var card = document.getElementById('q-card');
   card.innerHTML = '';
-
-  // Word + POS header
   var header = document.createElement('div');
-  header.innerHTML = '<div class="q-word-display">' + data.word + '</div><div class="q-pos">' + data.pos + '</div>';
+  header.innerHTML = '<div class="q-word-display">' + data.word + '</div><div class="q-pos">' + data.pos + (state.sentenceLevel >= 3 ? ' — Essay Level' : '') + '</div>';
   card.appendChild(header);
-
-  // Progress pips
   var pips = document.createElement('div');
   pips.className = 'word-progress'; pips.id = 'word-pips';
   typingWords.forEach(function(w, i) {
@@ -549,14 +589,10 @@ function renderTypingUI(data) {
     pips.appendChild(pip);
   });
   card.appendChild(pips);
-
-  // Sentence display
   var sentEl = document.createElement('div');
   sentEl.className = 'typing-sentence'; sentEl.id = 'typing-sentence';
   updateSentenceDisplay(sentEl);
   card.appendChild(sentEl);
-
-  // Input
   var inputWrap = document.createElement('div');
   inputWrap.className = 'type-input-wrap';
   var inp = document.createElement('input');
@@ -567,11 +603,9 @@ function renderTypingUI(data) {
   submitBtn.className = 'type-submit'; submitBtn.textContent = 'Enter';
   inputWrap.appendChild(inp); inputWrap.appendChild(submitBtn);
   card.appendChild(inputWrap);
-
   var feedback = document.createElement('div');
   feedback.className = 'type-feedback'; feedback.id = 'type-feedback';
   card.appendChild(feedback);
-
   submitBtn.addEventListener('click', submitTyping);
   inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitTyping(); });
   setTimeout(function() { inp.focus(); }, 100);
@@ -581,15 +615,9 @@ function updateSentenceDisplay(el) {
   if (!el) el = document.getElementById('typing-sentence');
   if (!el) return;
   el.innerHTML = typingWords.map(function(w, i) {
-    var clean = w.replace(/[^a-zA-Z']/g, '');
-    if (i < typingIndex) {
-      var r = typingResults[i];
-      return '<span class="word-' + (r ? 'correct' : 'wrong') + '">' + w + '</span>';
-    } else if (i === typingIndex) {
-      return '<span class="word-highlight">' + w + '</span>';
-    } else {
-      return '<span>' + w + '</span>';
-    }
+    if (i < typingIndex) return '<span class="word-' + (typingResults[i] ? 'correct' : 'wrong') + '">' + w + '</span>';
+    if (i === typingIndex) return '<span class="word-highlight">' + w + '</span>';
+    return '<span>' + w + '</span>';
   }).join(' ');
 }
 
@@ -601,62 +629,58 @@ function submitTyping() {
   var target = typingWords[typingIndex].replace(/[^a-zA-Z']/g, '').toLowerCase();
   var isCorrect = typed === target;
   typingResults[typingIndex] = isCorrect;
-
-  // Flash input
   inp.classList.add(isCorrect ? 'correct-flash' : 'wrong-flash');
-  setTimeout(function() { inp.classList.remove('correct-flash','wrong-flash'); }, 400);
+  setTimeout(function() { inp.classList.remove('correct-flash', 'wrong-flash'); }, 400);
   inp.value = '';
-
   if (isCorrect) {
     feedback.textContent = '✓ Correct!';
     feedback.className = 'type-feedback correct';
   } else {
-    feedback.textContent = '✗ Should be: "' + typingWords[typingIndex].replace(/[^a-zA-Z']/g,'') + '"';
+    feedback.textContent = '✗ Should be: "' + typingWords[typingIndex].replace(/[^a-zA-Z']/g, '') + '"';
     feedback.className = 'type-feedback wrong';
   }
-
-  // Update pip
   var pips = document.querySelectorAll('.word-pip');
   if (pips[typingIndex]) {
     pips[typingIndex].classList.remove('current');
     pips[typingIndex].classList.add(isCorrect ? 'done-correct' : 'done-wrong');
   }
-
   typingIndex++;
-
   if (typingIndex < typingWords.length) {
-    // Next word
     updateSentenceDisplay();
     if (pips[typingIndex]) pips[typingIndex].classList.add('current');
-    setTimeout(function() {
-      feedback.textContent = '';
-      feedback.className = 'type-feedback';
-    }, 800);
+    setTimeout(function() { feedback.textContent = ''; feedback.className = 'type-feedback'; }, 800);
   } else {
-    // Sentence complete
     var correctCount = typingResults.filter(Boolean).length;
     var total = typingWords.length;
     var ms = Date.now() - state.qStart;
     var allCorrect = correctCount === total;
+    var ptsEarned = Math.round(150 * getTotalMult());
 
     if (allCorrect) {
       state.streak++;
-      state.points += Math.ceil(total * 0.5);
+      state.points += ptsEarned;
+      state.perfectSentences++;
+      // Every 5 perfect sentences — 1.5x boost + longer sentences
+      if (state.perfectSentences % 5 === 0) {
+        state.boostMult = parseFloat((state.boostMult * 1.5).toFixed(2));
+        state.sentenceLevel = Math.floor(state.perfectSentences / 5);
+        showToast('🔥 ' + state.perfectSentences + ' perfect! 1.5x boost — sentences get harder!', 'success');
+      }
       state.mult = calcMult(state.streak, ms);
       document.body.classList.add('shake');
       setTimeout(function() { document.body.classList.remove('shake'); }, 150);
-      showRankPopup(['PERFECT SENTENCE', '+'+ Math.ceil(total*0.5) + ' pts']);
-      saveStats(true);
+      showRankPopup(['PERFECT SENTENCE', '+' + ptsEarned + ' pts']);
+      saveStats(true, ptsEarned);
     } else {
       state.streak = 0;
       state.mult = Math.max(1.0, parseFloat((state.mult - 0.2).toFixed(2)));
-      showRankPopup(['INCOMPLETE — ' + correctCount + '/' + total]);
-      if (correctCount > 0) saveStats(false);
+      var partial = correctCount > 0 ? Math.round((correctCount / total) * ptsEarned) : 0;
+      if (partial > 0) { state.points += partial; saveStats(false, partial); }
+      showRankPopup(['INCOMPLETE — ' + correctCount + '/' + total, partial > 0 ? '+' + partial + ' pts' : 'No points']);
     }
-
     updateHUD();
     saveTournamentScore();
-    feedback.textContent = allCorrect ? '🎉 Perfect! Loading next word...' : correctCount + '/' + total + ' correct — next word...';
+    feedback.textContent = allCorrect ? '🎉 Perfect! +' + ptsEarned + ' pts — next word...' : correctCount + '/' + total + ' correct — next word...';
     feedback.className = 'type-feedback ' + (allCorrect ? 'correct' : 'wrong');
     setTimeout(loadQuestion, 2200);
   }
@@ -664,30 +688,23 @@ function submitTyping() {
 
 // ===== DESCRIPTION MODE =====
 function buildDescriptionMode(data) {
-  // Build 3 wrong answers from fallback bank
-  var wrongs = shuffle(FALLBACK_WORDS.filter(function(w){ return w.word !== data.word; })).slice(0, 3).map(function(w){ return w.word; });
+  var wrongs = shuffle(FALLBACK_WORDS.filter(function(w) { return w.word !== data.word; })).slice(0, 3).map(function(w) { return w.word; });
   var choices = shuffle([data.word].concat(wrongs));
   state.qStart = Date.now();
-
   var card = document.getElementById('q-card');
   card.innerHTML = '';
-
   var header = document.createElement('div');
   header.innerHTML = '<div class="q-pos" style="margin-bottom:4px;">What word matches this description?</div>';
   card.appendChild(header);
-
   var descEl = document.createElement('div');
-  descEl.className = 'desc-text';
-  descEl.textContent = data.definition;
+  descEl.className = 'desc-text'; descEl.textContent = data.definition;
   card.appendChild(descEl);
-
   var choicesEl = document.createElement('div');
   choicesEl.className = 'q-choices';
   choices.forEach(function(choice, i) {
     var btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.setAttribute('data-choice', choice);
-    btn.innerHTML = '<span style="font-weight:700;color:#0a84ff;margin-right:8px;">' + (i+1) + '</span>' + choice;
+    btn.className = 'choice-btn'; btn.setAttribute('data-choice', choice);
+    btn.innerHTML = '<span style="font-weight:700;color:#0a84ff;margin-right:8px;">' + (i + 1) + '</span>' + choice;
     btn.addEventListener('click', function() { handleDescAnswer(choice, btn, data.word); });
     choicesEl.appendChild(btn);
   });
@@ -697,12 +714,11 @@ function buildDescriptionMode(data) {
 function handleDescAnswer(chosen, btn, correctWord) {
   var ms = Date.now() - state.qStart;
   var isCorrect = chosen === correctWord;
-
   document.querySelectorAll('.choice-btn').forEach(function(b) {
     b.disabled = true;
     if (b.getAttribute('data-choice') === correctWord) b.classList.add('correct');
   });
-
+  var ptsEarned = Math.round(150 * getTotalMult());
   if (!isCorrect) {
     btn.classList.add('wrong');
     state.streak = 0;
@@ -710,19 +726,17 @@ function handleDescAnswer(chosen, btn, correctWord) {
     showRankPopup(['INTERRUPTION']);
   } else {
     state.streak++;
-    state.points++;
+    state.points += ptsEarned;
     state.mult = calcMult(state.streak, ms);
-    var bonuses = [];
+    var bonuses = ['+' + ptsEarned + ' pts'];
     if (ms < 3000) bonuses.push('QUICK ANSWER');
     if (state.streak === 3) bonuses.push('TRIPLE STREAK');
     if (state.streak === 5) bonuses.push('QUINTUPLE STREAK');
-    if (!bonuses.length) bonuses.push('+1 pt');
     showRankPopup(bonuses);
     document.body.classList.add('shake');
     setTimeout(function() { document.body.classList.remove('shake'); }, 150);
-    saveStats(true);
+    saveStats(true, ptsEarned);
   }
-
   updateHUD();
   saveTournamentScore();
   setTimeout(loadQuestion, 1800);
@@ -740,16 +754,15 @@ document.addEventListener('keydown', function(e) {
 
 // ===== RANK POPUP =====
 function showRankPopup(lines) {
-  var rank = getRank(state.points, state.mult);
+  var rank = getRank(state.points);
   var popup = document.getElementById('rank-popup');
   document.getElementById('popup-rank-id').textContent = rank.label;
   document.getElementById('popup-rank-id').style.color = rank.color;
-  document.getElementById('popup-mult').textContent = 'x' + state.mult.toFixed(2);
+  document.getElementById('popup-mult').textContent = 'x' + getTotalMult().toFixed(2);
   var bonusEl = document.getElementById('popup-bonuses');
   bonusEl.innerHTML = '';
   lines.forEach(function(b) {
-    var el = document.createElement('div');
-    el.className = 'popup-bonus'; el.textContent = b;
+    var el = document.createElement('div'); el.className = 'popup-bonus'; el.textContent = b;
     bonusEl.appendChild(el);
   });
   popup.classList.add('show');
@@ -757,13 +770,13 @@ function showRankPopup(lines) {
   popupTimer = setTimeout(function() { popup.classList.remove('show'); }, 2400);
 }
 
-// ===== SAVE STATS =====
-function saveStats(correct) {
+// ===== SAVE STATS (global leaderboard) =====
+function saveStats(correct, pts) {
   var user = firebase.auth().currentUser;
   if (!user) return;
   var ref = firebase.firestore().collection('users').doc(user.uid);
   var upd = { totalAnswered: firebase.firestore.FieldValue.increment(1) };
-  if (correct) upd.totalPoints = firebase.firestore.FieldValue.increment(1);
+  if (correct && pts > 0) upd.totalPoints = firebase.firestore.FieldValue.increment(pts);
   ref.update(upd).catch(function(){});
   ref.get().then(function(doc) {
     if (doc.exists && (doc.data().bestStreak || 0) < state.streak) {
