@@ -142,14 +142,17 @@
       <div class="cls-panel hidden" id="panel-games">
         <div class="games-grid">
 
-          <div class="game-card">
+          <div class="game-card" onclick="window.location.href='game-host.html'">
             <div class="game-card-top purple-grad">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="36" height="36"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
             </div>
             <div class="game-card-body">
               <h3>Game Hosting</h3>
-              <p>Host a live game session for your entire class</p>
-              <div class="coming-soon-tag">Coming Soon</div>
+              <p>Host a live Kahoot-style game for your class — MC, T/F, and typed answers</p>
+              <button class="btn-primary" style="margin-top:12px;background:linear-gradient(135deg,#673ab7,#9c6fff);box-shadow:0 3px 12px rgba(103,58,183,0.35);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Host Game
+              </button>
             </div>
           </div>
 
@@ -288,8 +291,8 @@
 <div id="toast-container"></div>
 <script src="app.js"></script>
 <script>
-var me=null,room=null;
-var unsubChat=null,unsubPeople=null,unsubViewer=null,unsubT=null;
+var me=null, room=null;
+var unsubChat=null, unsubPeople=null, unsubViewer=null, unsubT=null;
 var tInterval=null;
 var BADS=['fuck','shit','bitch','ass','asf','puh','dih','bih','nig','ga','wtf','wth','nigga','nigger','piss','dick','cock','pussy','bastard','asshole'];
 var COLORS=['#0a84ff','#e52592','#0f9d58','#f29900','#673ab7','#03bcd4','#ff6d00'];
@@ -311,9 +314,9 @@ document.getElementById('create-confirm').onclick=function(){
   if(!name) return showToast('Enter a class name','error');
   var code=Math.random().toString(36).substring(2,8).toUpperCase();
   firebase.firestore().collection('classrooms').doc(code).set({
-    code:code,name:name,section:document.getElementById('cls-section-inp').value.trim(),
-    teacherId:me.uid,teacherName:me.displayName||'Teacher',
-    students:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    code:code, name:name, section:document.getElementById('cls-section-inp').value.trim(),
+    teacherId:me.uid, teacherName:me.displayName||'Teacher',
+    students:{}, createdAt:firebase.firestore.FieldValue.serverTimestamp()
   }).then(function(){
     document.getElementById('create-modal').classList.add('hidden');
     document.getElementById('cls-name-inp').value='';
@@ -332,7 +335,7 @@ function loadRooms(){
     if(snap.empty){noMsg.classList.remove('hidden');return;}
     noMsg.classList.add('hidden');
     snap.docs.forEach(function(doc,i){
-      var d=doc.data(),color=COLORS[i%COLORS.length];
+      var d=doc.data(), color=COLORS[i%COLORS.length];
       var sb=document.createElement('div'); sb.className='sidebar-room';
       sb.innerHTML='<div class="sidebar-room-dot" style="background:'+color+'"></div><div><div class="sidebar-room-name">'+d.name+'</div><div class="sidebar-room-code">'+d.code+'</div></div>';
       sb.onclick=function(){openRoom(d,color);}; sidebar.appendChild(sb);
@@ -380,7 +383,7 @@ function listenChat(){
     feed.innerHTML='';
     if(snap.empty){feed.innerHTML='<div class="chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="52" height="52"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>No messages yet</p></div>';return;}
     snap.forEach(function(doc){
-      var d=doc.data(),mine=d.uid===me.uid;
+      var d=doc.data(), mine=d.uid===me.uid;
       var el=document.createElement('div'); el.className='chat-msg'+(mine?' mine':'');
       var bubble=d.imageUrl?'<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>':(d.flagged?'<div class="msg-text msg-flagged">[Flagged]</div>':'<div class="msg-text">'+clean(d.text||'')+'</div>');
       el.innerHTML=(mine?'':'<img class="msg-avatar" src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>')+'<div class="msg-body">'+(mine?'':'<div class="msg-sender">'+d.name+'</div>')+bubble+'</div>';
@@ -393,11 +396,11 @@ function listenChat(){
 document.getElementById('chat-send-btn').onclick=sendMsg;
 document.getElementById('chat-input').onkeydown=function(e){if(e.key==='Enter')sendMsg();};
 function sendMsg(){
-  var inp=document.getElementById('chat-input'),t=inp.value.trim();
+  var inp=document.getElementById('chat-input'), t=inp.value.trim();
   if(!t||!room) return; inp.value='';
   firebase.firestore().collection('classrooms').doc(room.code).collection('chat').add({
-    uid:me.uid,name:me.displayName||'Teacher',photoURL:me.photoURL||null,
-    text:t,flagged:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    uid:me.uid, name:me.displayName||'Teacher', photoURL:me.photoURL||null,
+    text:t, flagged:false, createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
@@ -405,7 +408,7 @@ function listenPeople(){
   if(unsubPeople) unsubPeople();
   unsubPeople=firebase.firestore().collection('classrooms').doc(room.code).onSnapshot(function(snap){
     if(!snap.exists) return;
-    var d=snap.data(),students=Object.values(d.students||{});
+    var d=snap.data(), students=Object.values(d.students||{});
     document.getElementById('aside-count').textContent=students.length;
     document.getElementById('ppl-teachers').innerHTML='<div class="person-row">'+(me.photoURL?'<img class="person-avatar-img" src="'+me.photoURL+'" alt=""/>':'<div class="person-avatar" style="background:#0a84ff;">'+(me.displayName||'T')[0]+'</div>')+'<div class="person-info"><span class="person-name">'+(me.displayName||'Teacher')+'</span><span class="person-role">Representative</span></div></div>';
     var sEl=document.getElementById('ppl-students'); sEl.innerHTML='';
@@ -444,7 +447,7 @@ function openTournamentModal(){
   if(unsubT) unsubT();
   unsubT=ref.onSnapshot(function(snap){
     if(!snap.exists) return;
-    var data=snap.data(),players=Object.values(data.players||{});
+    var data=snap.data(), players=Object.values(data.players||{});
     var list=document.getElementById('t-players'); list.innerHTML='';
     players.forEach(function(p){
       var row=document.createElement('div'); row.className='t-player-row';
