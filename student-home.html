@@ -8,11 +8,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <script src="firebase.js"></script>
 </head>
 <body class="gc-body">
 
-  <!-- TOP APP BAR -->
   <header class="gc-topbar">
     <button class="gc-hamburger" id="hamburger-btn">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
@@ -22,13 +22,12 @@
       <span>Vision: Learning</span>
     </div>
     <div class="gc-topbar-right">
-      <div class="gc-avatar-btn" id="user-avatar-btn">
+      <div class="gc-avatar-btn">
         <img id="user-photo" src="assets/default-avatar.png" alt=""/>
       </div>
     </div>
   </header>
 
-  <!-- DRAWER -->
   <div class="gc-drawer-overlay hidden" id="drawer-overlay"></div>
   <nav class="gc-drawer" id="drawer">
     <div class="gc-drawer-header">
@@ -36,13 +35,9 @@
       <span>Vision: Learning</span>
     </div>
     <div class="gc-drawer-items">
-      <div class="gc-drawer-item active" id="drawer-home" onclick="showHomeView()">
+      <div class="gc-drawer-item active" onclick="showHomeView()">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         Home
-      </div>
-      <div class="gc-drawer-item" onclick="window.location.href='login.html'">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        Profile
       </div>
       <div class="gc-drawer-divider"></div>
       <div class="gc-drawer-item" id="drawer-logout">
@@ -52,10 +47,9 @@
     </div>
   </nav>
 
-  <!-- MAIN -->
-  <main class="gc-main" id="main-area">
+  <main class="gc-main">
 
-    <!-- HOME VIEW -->
+    <!-- HOME -->
     <div id="view-home">
       <div class="gc-page-header">
         <h1>My Classes</h1>
@@ -64,14 +58,12 @@
           Join Class
         </button>
       </div>
-
       <div class="gc-empty" id="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="80" height="80"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <h3>No classes yet</h3>
         <p>Join a class using the code your teacher gave you</p>
         <button class="gc-btn-filled" id="join-empty-btn">Join Class</button>
       </div>
-
       <div class="gc-class-grid" id="class-grid"></div>
     </div>
 
@@ -80,8 +72,8 @@
 
       <div class="gc-class-banner" id="class-banner">
         <div class="gc-class-banner-inner">
-          <h2 id="class-banner-name">Class Name</h2>
-          <p id="class-banner-section">Teacher Name</p>
+          <h2 id="class-banner-name">Class</h2>
+          <p id="class-banner-section">Teacher</p>
         </div>
         <button class="gc-banner-back" onclick="showHomeView()">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -92,6 +84,7 @@
         <button class="gc-tab active" data-tab="stream">Stream</button>
         <button class="gc-tab" data-tab="classwork">Classwork</button>
         <button class="gc-tab" data-tab="people">People</button>
+        <button class="gc-tab" data-tab="leaderboard">Leaderboard</button>
       </div>
 
       <!-- STREAM -->
@@ -101,10 +94,15 @@
             <div class="gc-info-card">
               <div class="gc-info-card-title">Class code</div>
               <div class="gc-info-card-code" id="stream-class-code">—</div>
-              <div class="gc-info-card-hint">Share with students</div>
+              <div class="gc-info-card-hint">Your classroom code</div>
             </div>
           </div>
           <div class="gc-stream-main">
+            <!-- Slow mode banner -->
+            <div class="slow-mode-banner hidden" id="slow-mode-banner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Slow mode is on — <span id="slow-mode-secs">0</span>s between messages
+            </div>
             <div class="gc-chat-box">
               <div class="gc-chat-messages" id="chat-messages">
                 <div class="gc-chat-empty">
@@ -112,9 +110,31 @@
                   <p>This is where you can talk to your class</p>
                 </div>
               </div>
+
+              <!-- Timed out banner -->
+              <div class="chat-slowmode-timer hidden" id="timeout-banner">
+                🚫 You are timed out — <span id="timeout-countdown">0</span>s remaining
+              </div>
+              <div class="chat-slowmode-timer hidden" id="slowmode-countdown">
+                ⏱ Wait <span id="slow-countdown">0</span>s before sending again
+              </div>
+
+              <!-- Image preview -->
+              <div class="chat-img-preview hidden" id="img-preview">
+                <img id="img-preview-thumb" src="" alt=""/>
+                <span class="chat-img-preview-name" id="img-preview-name"></span>
+                <button class="chat-img-preview-remove" onclick="removeImagePreview()">✕</button>
+              </div>
+
               <div class="gc-chat-input-wrap">
                 <img id="chat-user-photo" src="assets/default-avatar.png" alt=""/>
-                <input type="text" id="chat-input" placeholder="Share something with your class..."/>
+                <div class="chat-composer-inner">
+                  <input type="text" id="chat-input" placeholder="Share something with your class..." maxlength="4000"/>
+                  <label class="chat-img-btn" title="Send image">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <input type="file" id="img-input" accept="image/*" style="display:none;" onchange="handleImageSelect(event)"/>
+                  </label>
+                </div>
                 <button id="chat-send">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
@@ -135,7 +155,18 @@
             </div>
             <div class="gc-classwork-info">
               <div class="gc-classwork-title">Visual: Learning</div>
-              <div class="gc-classwork-sub">Solo vocabulary game · Build your rank from D to Visual Learner</div>
+              <div class="gc-classwork-sub">Solo vocab game · D to Visual Learner rank</div>
+            </div>
+            <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </div>
+
+          <div class="gc-classwork-item" onclick="window.location.href='game-math.html'">
+            <div class="gc-classwork-icon" style="background:#e6f4ea;">
+              <svg viewBox="0 0 24 24" fill="#0f9d58" width="20" height="20"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+            </div>
+            <div class="gc-classwork-info">
+              <div class="gc-classwork-title">Math Challenge</div>
+              <div class="gc-classwork-sub">Easy / Medium / Hard · Timer · Streak bonuses</div>
             </div>
             <svg class="gc-classwork-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </div>
@@ -146,9 +177,9 @@
             </div>
             <div class="gc-classwork-info">
               <div class="gc-classwork-title">Tournament</div>
-              <div class="gc-classwork-sub">Race classmates · 10 minute limit · Need 2+ students</div>
+              <div class="gc-classwork-sub">Race classmates · 10 minute limit · 2+ students</div>
             </div>
-            <button class="gc-btn-outlined" id="join-tournament-btn" onclick="event.stopPropagation();openTournament()">Join</button>
+            <button class="gc-btn-outlined" onclick="event.stopPropagation();openTournament()">Join</button>
           </div>
 
           <div class="gc-classwork-item gc-classwork-locked">
@@ -161,7 +192,6 @@
             </div>
             <span class="gc-locked-chip">Locked</span>
           </div>
-
         </div>
       </div>
 
@@ -169,26 +199,32 @@
       <div class="gc-tab-panel hidden" id="panel-people">
         <div class="gc-people-wrap">
           <div class="gc-people-section">
-            <div class="gc-people-section-header">
-              <h3>Teachers</h3>
-              <div class="gc-people-divider"></div>
-            </div>
+            <div class="gc-people-section-header"><h3>Teachers</h3><div class="gc-people-divider"></div></div>
             <div id="people-teachers"></div>
           </div>
           <div class="gc-people-section" style="margin-top:28px;">
-            <div class="gc-people-section-header">
-              <h3>Classmates</h3>
-              <div class="gc-people-divider"></div>
-            </div>
+            <div class="gc-people-section-header"><h3>Classmates</h3><div class="gc-people-divider"></div></div>
             <div id="people-students"></div>
           </div>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div class="gc-tab-panel hidden" id="panel-leaderboard">
+        <div style="max-width:660px;">
+          <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+            <button class="gc-btn-outlined lb-sort-btn active" data-sort="totalPoints" onclick="switchLB('totalPoints',this)">Most Points</button>
+            <button class="gc-btn-outlined lb-sort-btn" data-sort="totalAnswered" onclick="switchLB('totalAnswered',this)">Most Answered</button>
+            <button class="gc-btn-outlined lb-sort-btn" data-sort="bestStreak" onclick="switchLB('bestStreak',this)">Top Streaks</button>
+          </div>
+          <div id="lb-list"></div>
         </div>
       </div>
 
     </div>
   </main>
 
-  <!-- JOIN CLASS MODAL -->
+  <!-- JOIN MODAL -->
   <div class="gc-modal-overlay hidden" id="join-modal">
     <div class="gc-modal">
       <h2 class="gc-modal-title">Join a class</h2>
@@ -204,13 +240,30 @@
     </div>
   </div>
 
-  <!-- TOURNAMENT MODAL -->
+  <!-- TOURNAMENT LOBBY (Kahoot style) -->
+  <div class="t-lobby-overlay hidden" id="tournament-lobby">
+    <div class="t-lobby-header">
+      <div class="t-lobby-title">🏆 Tournament Lobby</div>
+      <div class="t-lobby-code" id="lobby-code">—</div>
+      <div class="t-lobby-sub">Waiting for players to join...</div>
+    </div>
+    <div class="t-lobby-players-wrap">
+      <div class="t-lobby-players-title" id="lobby-count">0 players joined</div>
+      <div class="t-lobby-players-grid" id="lobby-players-grid"></div>
+    </div>
+    <div class="t-lobby-actions">
+      <button class="gc-btn-text" id="lobby-leave-btn">Leave</button>
+    </div>
+    <div class="t-lobby-count" id="lobby-start-hint">Need at least 2 players to start</div>
+  </div>
+
+  <!-- TOURNAMENT ACTIVE MODAL -->
   <div class="gc-modal-overlay hidden" id="tournament-modal">
     <div class="gc-modal">
-      <h2 class="gc-modal-title">Tournament Lobby</h2>
-      <p class="gc-modal-sub" id="tournament-status-text">Waiting for players... (need 2+)</p>
-      <div id="tournament-player-list" style="display:flex;flex-direction:column;gap:8px;margin:16px 0;"></div>
-      <div class="gc-tournament-timer hidden" id="tournament-timer">10:00</div>
+      <h2 class="gc-modal-title">🏆 Tournament</h2>
+      <p class="gc-modal-sub" id="tournament-status-text">In progress!</p>
+      <div id="tournament-player-list" style="display:flex;flex-direction:column;gap:8px;margin:12px 0;"></div>
+      <div class="gc-tournament-timer" id="tournament-timer" style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:52px;color:#f9ab00;letter-spacing:0.1em;">10:00</div>
       <div class="gc-modal-actions">
         <button class="gc-btn-text" id="tournament-leave">Leave</button>
       </div>
@@ -226,7 +279,17 @@ var unsubChat = null;
 var unsubPeople = null;
 var unsubTournament = null;
 var tournamentTimerInterval = null;
-var BAD_WORDS = ['fuck','shit','bitch','ass','damn','crap','piss','dick','cock','pussy','bastard','asshole'];
+var selectedImageFile = null;
+var lastMsgTime = 0;
+var slowModeSecs = 0;
+var slowmodeInterval = null;
+var timeoutEndTime = 0;
+var timeoutInterval = null;
+var lbData = [];
+var lbSort = 'totalPoints';
+
+var BAD_WORDS = ['fuck','shit','bitch','ass','asf','puh','dih','bih','nig','ga','wtf','wth','nigga','nigger','piss','dick','cock','pussy','bastard','asshole'];
+var FLAGGED_WORDS = ['nigga','nigger','mf','bitch','asf','ass','nig','wtf','wth','dih','bih'];
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) return window.location.href = 'login.html';
@@ -252,12 +315,10 @@ document.getElementById('drawer-logout').addEventListener('click', function() {
   firebase.auth().signOut().then(function(){ window.location.href = 'main.html'; });
 });
 
-// JOIN MODAL
+// JOIN
 document.getElementById('join-fab').addEventListener('click', openJoinModal);
 document.getElementById('join-empty-btn').addEventListener('click', openJoinModal);
-document.getElementById('join-cancel').addEventListener('click', function() {
-  document.getElementById('join-modal').classList.add('hidden');
-});
+document.getElementById('join-cancel').addEventListener('click', function(){ document.getElementById('join-modal').classList.add('hidden'); });
 document.getElementById('join-confirm').addEventListener('click', joinClass);
 
 function openJoinModal() {
@@ -271,64 +332,53 @@ function joinClass() {
   firebase.firestore().collection('classrooms').doc(code).get().then(function(snap) {
     if (!snap.exists) return showToast('Classroom not found','error');
     var data = snap.data();
-    var studentData = {};
-    studentData['students.' + currentUser.uid + '.uid'] = currentUser.uid;
-    studentData['students.' + currentUser.uid + '.name'] = currentUser.displayName || 'Student';
-    studentData['students.' + currentUser.uid + '.photoURL'] = currentUser.photoURL || null;
-    studentData['students.' + currentUser.uid + '.online'] = true;
-    return firebase.firestore().collection('classrooms').doc(code).update(studentData).then(function() {
-      return firebase.firestore().collection('users').doc(currentUser.uid).set({
-        classroomCodes: firebase.firestore.FieldValue.arrayUnion(code)
-      }, { merge: true });
-    }).then(function() {
-      document.getElementById('join-modal').classList.add('hidden');
-      document.getElementById('join-code-input').value = '';
-      loadMyClasses();
-      showToast('Joined ' + data.name + '!', 'success');
-      openClassroom(data, '#1a73e8');
-    });
+    var upd = {};
+    upd['students.'+currentUser.uid+'.uid'] = currentUser.uid;
+    upd['students.'+currentUser.uid+'.name'] = currentUser.displayName||'Student';
+    upd['students.'+currentUser.uid+'.photoURL'] = currentUser.photoURL||null;
+    upd['students.'+currentUser.uid+'.online'] = true;
+    return firebase.firestore().collection('classrooms').doc(code).update(upd)
+      .then(function(){
+        return firebase.firestore().collection('users').doc(currentUser.uid).set({ classroomCodes: firebase.firestore.FieldValue.arrayUnion(code) },{merge:true});
+      }).then(function(){
+        document.getElementById('join-modal').classList.add('hidden');
+        document.getElementById('join-code-input').value = '';
+        loadMyClasses();
+        showToast('Joined '+data.name+'!','success');
+        openClassroom(data,'#1a73e8');
+      });
   }).catch(function(e){ showToast(e.message,'error'); });
 }
 
 function loadMyClasses() {
   firebase.firestore().collection('users').doc(currentUser.uid).get().then(function(doc) {
-    var codes = [];
-    if (doc.exists) {
-      codes = doc.data().classroomCodes || [];
-      if (doc.data().classroomCode) codes.push(doc.data().classroomCode);
-    }
+    var codes = doc.exists ? (doc.data().classroomCodes||[]) : [];
+    if (doc.exists && doc.data().classroomCode) codes.push(doc.data().classroomCode);
     codes = [...new Set(codes)];
     var grid = document.getElementById('class-grid');
     grid.innerHTML = '';
-    if (!codes.length) {
-      document.getElementById('empty-state').classList.remove('hidden');
-      return;
-    }
+    if (!codes.length) { document.getElementById('empty-state').classList.remove('hidden'); return; }
     document.getElementById('empty-state').classList.add('hidden');
     var COLORS = ['#1a73e8','#e52592','#0f9d58','#f29900','#673ab7','#03bcd4'];
-    codes.forEach(function(code, i) {
+    codes.forEach(function(code,i) {
       firebase.firestore().collection('classrooms').doc(code).get().then(function(c) {
         if (!c.exists) return;
-        var d = c.data();
-        var color = COLORS[i % COLORS.length];
+        var d = c.data(), color = COLORS[i%COLORS.length];
         var card = document.createElement('div');
         card.className = 'gc-class-card';
         card.innerHTML = `
-          <div class="gc-class-card-header" style="background:${color};">
+          <div class="gc-class-card-header" style="background:${color};" onclick="openClassroom(${JSON.stringify(d).replace(/"/g,'&quot;')},'${color}')">
             <div class="gc-class-card-title">${d.name}</div>
             <div class="gc-class-card-teacher">${d.teacherName}</div>
-            <div class="gc-class-card-avatar">
-              <img src="${currentUser.photoURL||'assets/default-avatar.png'}" alt=""/>
-            </div>
+            <div class="gc-class-card-avatar"><img src="${currentUser.photoURL||'assets/default-avatar.png'}" alt=""/></div>
           </div>
           <div class="gc-class-card-body"></div>
           <div class="gc-class-card-footer">
-            <button class="gc-icon-btn" title="Open folder">
+            <button class="gc-icon-btn">
               <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
             </button>
           </div>
         `;
-        card.querySelector('.gc-class-card-header').addEventListener('click', function(){ openClassroom(d, color); });
         grid.appendChild(card);
       });
     });
@@ -339,24 +389,25 @@ function showHomeView() {
   document.getElementById('view-home').classList.remove('hidden');
   document.getElementById('view-classroom').classList.add('hidden');
   closeDrawer();
-  if (unsubChat) { unsubChat(); unsubChat = null; }
-  if (unsubPeople) { unsubPeople(); unsubPeople = null; }
+  if (unsubChat){unsubChat();unsubChat=null;}
+  if (unsubPeople){unsubPeople();unsubPeople=null;}
 }
 
 function openClassroom(data, color) {
-  currentClassroom = data;
+  currentClassroom = typeof data === 'string' ? JSON.parse(data) : data;
   document.getElementById('view-home').classList.add('hidden');
   document.getElementById('view-classroom').classList.remove('hidden');
-  document.getElementById('class-banner-name').textContent = data.name;
-  document.getElementById('class-banner-section').textContent = data.teacherName;
-  document.getElementById('stream-class-code').textContent = data.code;
+  document.getElementById('class-banner-name').textContent = currentClassroom.name;
+  document.getElementById('class-banner-section').textContent = currentClassroom.teacherName;
+  document.getElementById('stream-class-code').textContent = currentClassroom.code;
   if (color) document.getElementById('class-banner').style.background = color;
   switchTab('stream');
   listenChat();
   listenPeople();
+  checkTimeout();
+  watchSlowMode();
 }
 
-// TABS
 document.querySelectorAll('.gc-tab').forEach(function(tab) {
   tab.addEventListener('click', function(){ switchTab(tab.getAttribute('data-tab')); });
 });
@@ -366,39 +417,127 @@ function switchTab(name) {
   document.querySelectorAll('.gc-tab-panel').forEach(function(p){ p.classList.add('hidden'); });
   document.querySelector('.gc-tab[data-tab="'+name+'"]').classList.add('active');
   document.getElementById('panel-'+name).classList.remove('hidden');
+  if (name === 'leaderboard') loadLeaderboard();
 }
 
-// CHAT
+// ===== SLOW MODE =====
+function watchSlowMode() {
+  if (!currentClassroom) return;
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code).onSnapshot(function(snap) {
+    if (!snap.exists) return;
+    var d = snap.data();
+    slowModeSecs = d.slowMode || 0;
+    var banner = document.getElementById('slow-mode-banner');
+    var secsEl = document.getElementById('slow-mode-secs');
+    if (slowModeSecs > 0) {
+      banner.classList.remove('hidden');
+      secsEl.textContent = slowModeSecs;
+    } else {
+      banner.classList.add('hidden');
+    }
+  });
+}
+
+// ===== TIMEOUT CHECK =====
+function checkTimeout() {
+  if (!currentClassroom) return;
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+    .collection('timeouts').doc(currentUser.uid).get().then(function(doc) {
+      if (!doc.exists) return;
+      var endsAt = doc.data().endsAt;
+      if (!endsAt) return;
+      var endMs = endsAt.toDate ? endsAt.toDate().getTime() : endsAt;
+      if (endMs > Date.now()) {
+        timeoutEndTime = endMs;
+        startTimeoutCountdown();
+      }
+    });
+}
+
+function startTimeoutCountdown() {
+  clearInterval(timeoutInterval);
+  var banner = document.getElementById('timeout-banner');
+  var countdown = document.getElementById('timeout-countdown');
+  banner.classList.remove('hidden');
+  timeoutInterval = setInterval(function() {
+    var left = Math.max(0, Math.ceil((timeoutEndTime - Date.now()) / 1000));
+    countdown.textContent = left;
+    if (left <= 0) {
+      clearInterval(timeoutInterval);
+      banner.classList.add('hidden');
+      timeoutEndTime = 0;
+    }
+  }, 500);
+}
+
+// ===== BAD WORD DETECTION =====
+function containsFlaggedWord(text) {
+  var lower = text.toLowerCase();
+  return FLAGGED_WORDS.some(function(w) {
+    return new RegExp('\\b'+w+'\\b','i').test(lower);
+  });
+}
+
 function filterBad(text) {
   var out = text;
-  BAD_WORDS.forEach(function(w){
+  BAD_WORDS.forEach(function(w) {
     out = out.replace(new RegExp('\\b'+w+'\\b','gi'), function(m){ return '*'.repeat(m.length); });
   });
   return out;
 }
 
+// ===== IMAGE =====
+function handleImageSelect(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) return showToast('Image must be under 5MB','error');
+  selectedImageFile = file;
+  var preview = document.getElementById('img-preview');
+  var thumb = document.getElementById('img-preview-thumb');
+  var name = document.getElementById('img-preview-name');
+  var reader = new FileReader();
+  reader.onload = function(e) { thumb.src = e.target.result; };
+  reader.readAsDataURL(file);
+  name.textContent = file.name;
+  preview.classList.remove('hidden');
+}
+
+function removeImagePreview() {
+  selectedImageFile = null;
+  document.getElementById('img-preview').classList.add('hidden');
+  document.getElementById('img-input').value = '';
+}
+
+// ===== CHAT =====
 function listenChat() {
   if (unsubChat) unsubChat();
   var box = document.getElementById('chat-messages');
   unsubChat = firebase.firestore()
     .collection('classrooms').doc(currentClassroom.code)
-    .collection('chat').orderBy('createdAt','asc').limit(100)
+    .collection('chat').orderBy('createdAt','asc').limit(200)
     .onSnapshot(function(snap) {
       box.innerHTML = '';
       if (snap.empty) {
         box.innerHTML = '<div class="gc-chat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>This is where you can talk to your class</p></div>';
         return;
       }
-      snap.forEach(function(doc){
+      snap.forEach(function(doc) {
         var d = doc.data();
         var isMe = d.uid === currentUser.uid;
         var el = document.createElement('div');
         el.className = 'gc-msg' + (isMe?' gc-msg-me':'');
+        var bubbleContent = '';
+        if (d.flagged) {
+          bubbleContent = '<div class="gc-msg-bubble msg-flagged">[Message flagged for review]</div><div class="msg-flagged-label">⚠ Sent to admin</div>';
+        } else if (d.imageUrl) {
+          bubbleContent = '<img class="msg-image" src="'+d.imageUrl+'" alt="image" onclick="window.open(this.src)"/>';
+        } else {
+          bubbleContent = '<div class="gc-msg-bubble">'+filterBad(d.text||'')+'</div>';
+        }
         el.innerHTML = (!isMe?'<img src="'+(d.photoURL||'assets/default-avatar.png')+'" alt=""/>':'') +
           '<div class="gc-msg-body">' +
           (!isMe?'<div class="gc-msg-name">'+d.name+'</div>':'') +
-          '<div class="gc-msg-bubble">'+filterBad(d.text)+'</div>' +
-          '</div>';
+          bubbleContent + '</div>';
         box.appendChild(el);
       });
       box.scrollTop = box.scrollHeight;
@@ -409,108 +548,262 @@ document.getElementById('chat-send').addEventListener('click', sendMsg);
 document.getElementById('chat-input').addEventListener('keydown', function(e){ if(e.key==='Enter') sendMsg(); });
 
 function sendMsg() {
+  if (!currentClassroom) return;
+
+  // Check timeout
+  if (timeoutEndTime > Date.now()) {
+    var left = Math.ceil((timeoutEndTime - Date.now()) / 1000);
+    return showToast('You are timed out for ' + left + 's','error');
+  }
+
+  // Check slow mode
+  if (slowModeSecs > 0) {
+    var elapsed = (Date.now() - lastMsgTime) / 1000;
+    if (elapsed < slowModeSecs) {
+      var wait = Math.ceil(slowModeSecs - elapsed);
+      showToast('Slow mode — wait ' + wait + 's','error');
+      var scd = document.getElementById('slowmode-countdown');
+      var scv = document.getElementById('slow-countdown');
+      scd.classList.remove('hidden');
+      scv.textContent = wait;
+      clearInterval(slowmodeInterval);
+      slowmodeInterval = setInterval(function() {
+        wait--;
+        scv.textContent = wait;
+        if (wait <= 0) { clearInterval(slowmodeInterval); scd.classList.add('hidden'); }
+      }, 1000);
+      return;
+    }
+  }
+
+  if (selectedImageFile) {
+    sendImage();
+    return;
+  }
+
   var input = document.getElementById('chat-input');
   var text = input.value.trim();
-  if (!text || !currentClassroom) return;
+  if (!text) return;
   input.value = '';
-  firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add({
+  lastMsgTime = Date.now();
+
+  var isFlagged = containsFlaggedWord(text);
+
+  var msgData = {
     uid: currentUser.uid,
-    name: currentUser.displayName || 'Student',
-    photoURL: currentUser.photoURL || null,
+    name: currentUser.displayName||'Student',
+    photoURL: currentUser.photoURL||null,
     text: text,
+    flagged: isFlagged,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+  };
+
+  firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add(msgData);
+
+  if (isFlagged) {
+    // Report to admin reports collection
+    firebase.firestore().collection('reports').add({
+      classroomCode: currentClassroom.code,
+      classroomName: currentClassroom.name,
+      teacherId: currentClassroom.teacherId,
+      senderUid: currentUser.uid,
+      senderName: currentUser.displayName,
+      text: text,
+      type: 'flagged_message',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      reviewed: false
+    });
+  }
 }
 
-// PEOPLE
+function sendImage() {
+  if (!selectedImageFile || !currentClassroom) return;
+  var storageRef = firebase.storage().ref('chat-images/' + currentClassroom.code + '/' + Date.now() + '_' + selectedImageFile.name);
+  storageRef.put(selectedImageFile).then(function(snap) {
+    return snap.ref.getDownloadURL();
+  }).then(function(url) {
+    firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('chat').add({
+      uid: currentUser.uid,
+      name: currentUser.displayName||'Student',
+      photoURL: currentUser.photoURL||null,
+      imageUrl: url,
+      flagged: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    removeImagePreview();
+    lastMsgTime = Date.now();
+  }).catch(function(e){ showToast(e.message,'error'); });
+}
+
+// ===== PEOPLE =====
 function listenPeople() {
   if (unsubPeople) unsubPeople();
   unsubPeople = firebase.firestore().collection('classrooms').doc(currentClassroom.code).onSnapshot(function(snap) {
     if (!snap.exists) return;
-    var d = snap.data();
-    var tEl = document.getElementById('people-teachers');
-    var sEl = document.getElementById('people-students');
-    tEl.innerHTML = '<div class="gc-person-row"><div class="gc-person-avatar" style="background:#1a73e8;">'+((d.teacherName||'T')[0].toUpperCase())+'</div><span>'+d.teacherName+'</span></div>';
-    sEl.innerHTML = '';
-    Object.values(d.students||{}).forEach(function(s){
-      var row = document.createElement('div');
-      row.className = 'gc-person-row';
-      var letter = (s.name||'S')[0].toUpperCase();
-      row.innerHTML = (s.photoURL?'<img class="gc-person-avatar-img" src="'+s.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+letter+'</div>') + '<span>'+(s.name||'Student')+'</span>';
+    var d = snap.data(), students = Object.values(d.students||{});
+    document.getElementById('people-teachers').innerHTML = '<div class="gc-person-row"><div class="gc-person-avatar" style="background:#1a73e8;">'+(d.teacherName||'T')[0].toUpperCase()+'</div><span>'+d.teacherName+'</span></div>';
+    var sEl = document.getElementById('people-students'); sEl.innerHTML = '';
+    students.forEach(function(s) {
+      var row = document.createElement('div'); row.className = 'gc-person-row';
+      row.innerHTML = (s.photoURL?'<img class="gc-person-avatar-img" src="'+s.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(s.name||'S')[0]+'</div>') + '<span>'+(s.name||'Student')+'</span>';
       sEl.appendChild(row);
     });
   });
 }
 
-// TOURNAMENT
+// ===== LEADERBOARD =====
+function loadLeaderboard() {
+  firebase.firestore().collection('users').get().then(function(snap) {
+    lbData = [];
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      if (d.role === 'student' || !d.role) lbData.push({ id:doc.id, ...d });
+    });
+    renderLB(lbSort);
+  });
+}
+
+function switchLB(sort, btn) {
+  lbSort = sort;
+  document.querySelectorAll('.lb-sort-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderLB(sort);
+}
+
+function renderLB(sort) {
+  var sorted = lbData.slice().sort(function(a,b){ return (b[sort]||0)-(a[sort]||0); });
+  var list = document.getElementById('lb-list'); list.innerHTML = '';
+  if (!sorted.length) { list.innerHTML = '<div style="color:#8899bb;font-size:13px;padding:20px;text-align:center;">No players yet</div>'; return; }
+  sorted.forEach(function(u,i) {
+    var isMe = u.id === currentUser.uid;
+    var medals = ['🥇','🥈','🥉'];
+    var rank = i < 3 ? medals[i] : '#'+(i+1);
+    var val = u[sort]||0;
+    var label = sort==='totalPoints'?'pts':sort==='totalAnswered'?'answers':'streak';
+    var row = document.createElement('div');
+    row.className = 'gc-person-row' + (isMe?' lb-me':'');
+    row.style.cssText = 'background:'+(isMe?'rgba(26,115,232,0.05)':'')+'padding:10px 8px;border-radius:8px;';
+    row.innerHTML = '<span style="font-size:20px;width:32px;text-align:center;flex-shrink:0;">'+rank+'</span>' +
+      (u.photoURL?'<img class="gc-person-avatar-img" src="'+u.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(u.name||'?')[0].toUpperCase()+'</div>') +
+      '<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:600;">'+(u.name||'Student')+(isMe?' <span style="color:#1a73e8;font-size:11px;">(You)</span>':'')+'</span>' +
+      '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:#1a73e8;">'+val+' <span style="font-size:12px;color:#8899bb;">'+label+'</span></span>';
+    list.appendChild(row);
+  });
+}
+
+// ===== TOURNAMENT =====
 function openTournament() {
   if (!currentClassroom) return;
-  document.getElementById('tournament-modal').classList.remove('hidden');
+
+  var lobby = document.getElementById('tournament-lobby');
+  lobby.classList.remove('hidden');
+  document.getElementById('lobby-code').textContent = currentClassroom.code;
+
   var lobbyRef = firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby');
-  var update = {};
-  update['players.' + currentUser.uid] = {
+
+  // Reset lobby first so stale data doesn't block new players
+  var playerData = {};
+  playerData['players.'+currentUser.uid] = {
     uid: currentUser.uid,
-    name: currentUser.displayName || 'Student',
-    photoURL: currentUser.photoURL || null,
+    name: currentUser.displayName||'Student',
+    photoURL: currentUser.photoURL||null,
     points: 0
   };
-  lobbyRef.set(update, { merge: true });
+  lobbyRef.set(playerData, { merge: true });
 
   if (unsubTournament) unsubTournament();
   unsubTournament = lobbyRef.onSnapshot(function(snap) {
     if (!snap.exists) return;
     var data = snap.data();
-    var players = Object.values(data.players || {});
-    var list = document.getElementById('tournament-player-list');
-    list.innerHTML = '';
+    var players = Object.values(data.players||{});
+
+    // Update lobby UI
+    var grid = document.getElementById('lobby-players-grid');
+    grid.innerHTML = '';
     players.forEach(function(p) {
-      var row = document.createElement('div');
-      row.className = 'gc-person-row';
-      row.innerHTML = (p.photoURL?'<img class="gc-person-avatar-img" src="'+p.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(p.name||'P')[0]+'</div>') + '<span>'+(p.name||'Player')+'</span><span style="margin-left:auto;font-weight:700;color:#1a73e8;">'+p.points+' pts</span>';
-      list.appendChild(row);
+      var chip = document.createElement('div');
+      chip.className = 't-lobby-player-chip';
+      chip.innerHTML = (p.photoURL?'<img src="'+p.photoURL+'" alt=""/>':'<div class="chip-letter">'+(p.name||'P')[0]+'</div>') + '<span>'+(p.name||'Player')+'</span>';
+      grid.appendChild(chip);
     });
-    var statusText = document.getElementById('tournament-status-text');
+
+    var countEl = document.getElementById('lobby-count');
+    countEl.textContent = players.length + ' player' + (players.length!==1?'s':'') + ' joined';
+
+    var hint = document.getElementById('lobby-start-hint');
+    if (players.length >= 2) {
+      hint.textContent = '✓ Ready to start!';
+      hint.style.color = '#30d158';
+    } else {
+      hint.textContent = 'Need at least 2 players to start';
+      hint.style.color = '';
+    }
+
+    // Auto start when 2+ players
     if (players.length >= 2 && data.status !== 'active') {
       lobbyRef.update({ status: 'active', startedAt: firebase.firestore.FieldValue.serverTimestamp() });
     }
+
+    // Transition to active tournament
     if (data.status === 'active' && data.startedAt && !tournamentTimerInterval) {
-      statusText.textContent = 'Tournament in progress!';
-      document.getElementById('tournament-timer').classList.remove('hidden');
+      lobby.classList.add('hidden');
+      document.getElementById('tournament-modal').classList.remove('hidden');
       var startTime = data.startedAt.toDate().getTime();
-      startTimer(startTime);
-    } else if (players.length < 2) {
-      statusText.textContent = 'Waiting for players... (need at least 2)';
+      var DURATION = 600000;
+      tournamentTimerInterval = setInterval(function() {
+        var left = DURATION - (Date.now() - startTime);
+        if (left <= 0) {
+          clearInterval(tournamentTimerInterval); tournamentTimerInterval = null;
+          document.getElementById('tournament-modal').classList.add('hidden');
+          showToast('Tournament over!','success'); return;
+        }
+        var m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
+        document.getElementById('tournament-timer').textContent = m+':'+(s<10?'0':'')+s;
+      }, 500);
+
+      // Live scores
+      var scoreList = document.getElementById('tournament-player-list');
+      scoreList.innerHTML = '';
+      players.sort(function(a,b){ return (b.points||0)-(a.points||0); }).forEach(function(p) {
+        var row = document.createElement('div');
+        row.className = 'gc-person-row';
+        row.id = 'tscore-'+p.uid;
+        row.innerHTML = (p.photoURL?'<img class="gc-person-avatar-img" src="'+p.photoURL+'" alt=""/>':'<div class="gc-person-avatar">'+(p.name||'P')[0]+'</div>') + '<span style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-weight:600;">'+(p.name||'Player')+'</span><span style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:#f9ab00;">'+(p.points||0)+' pts</span>';
+        scoreList.appendChild(row);
+      });
     }
   });
 }
 
-function startTimer(startTime) {
-  var DURATION = 10 * 60 * 1000;
-  tournamentTimerInterval = setInterval(function() {
-    var left = DURATION - (Date.now() - startTime);
-    if (left <= 0) {
-      clearInterval(tournamentTimerInterval);
-      tournamentTimerInterval = null;
-      document.getElementById('tournament-timer').textContent = '0:00';
-      document.getElementById('tournament-modal').classList.add('hidden');
-      showToast('Tournament over!', 'success');
-      return;
-    }
-    var m = Math.floor(left / 60000);
-    var s = Math.floor((left % 60000) / 1000);
-    document.getElementById('tournament-timer').textContent = m + ':' + (s<10?'0':'')+s;
-  }, 500);
-}
+document.getElementById('lobby-leave-btn').addEventListener('click', function() {
+  leaveTournament();
+  document.getElementById('tournament-lobby').classList.add('hidden');
+});
 
 document.getElementById('tournament-leave').addEventListener('click', function() {
-  if (currentClassroom) {
-    firebase.firestore().collection('classrooms').doc(currentClassroom.code).collection('tournament').doc('lobby')
-      .update({ ['players.' + currentUser.uid]: firebase.firestore.FieldValue.delete() });
-  }
-  if (unsubTournament) { unsubTournament(); unsubTournament = null; }
-  if (tournamentTimerInterval) { clearInterval(tournamentTimerInterval); tournamentTimerInterval = null; }
+  leaveTournament();
   document.getElementById('tournament-modal').classList.add('hidden');
 });
+
+function leaveTournament() {
+  if (currentClassroom) {
+    firebase.firestore().collection('classrooms').doc(currentClassroom.code)
+      .collection('tournament').doc('lobby')
+      .update({ ['players.'+currentUser.uid]: firebase.firestore.FieldValue.delete() });
+  }
+  if (unsubTournament){ unsubTournament(); unsubTournament=null; }
+  if (tournamentTimerInterval){ clearInterval(tournamentTimerInterval); tournamentTimerInterval=null; }
+}
+
+function showToast(msg, type) {
+  type = type||'';
+  var c = document.getElementById('toast-container');
+  if (!c) return;
+  var t = document.createElement('div');
+  t.className = 'toast '+type; t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3200);
+}
   </script>
 </body>
 </html>
