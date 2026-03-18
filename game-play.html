@@ -107,7 +107,6 @@ firebase.auth().onAuthStateChanged(function(user) {
   if (!roomCode) findGame(); else boot();
 });
 
-// ===== FIND ACTIVE GAME =====
 function findGame() {
   showWait('Finding your game...');
   firebase.firestore().collection('users').doc(me.uid).get().then(function(doc) {
@@ -132,56 +131,71 @@ function findGame() {
   });
 }
 
-// ===== BOOT — write player then listen =====
+// ===== BOOT WITH RETRY =====
 function boot() {
   sessionRef = firebase.firestore()
     .collection('classrooms').doc(roomCode)
     .collection('gamehost').doc('session');
-
   showWait('Joining game...');
+  tryRegister(5);
+}
 
-  // Use individual field updates with dot notation — safest way
-  var upd = {};
-  upd['players.' + me.uid + '.uid']             = me.uid;
-  upd['players.' + me.uid + '.name']            = me.displayName || 'Student';
-  upd['players.' + me.uid + '.photoURL']        = me.photoURL || null;
-  upd['players.' + me.uid + '.score']           = 0;
-  upd['players.' + me.uid + '.streak']          = 0;
-  upd['players.' + me.uid + '.answeredCurrent'] = false;
-  upd['players.' + me.uid + '.lastAnswer']      = '';
-  upd['players.' + me.uid + '.lastAnswerIndex'] = -1;
-  upd['players.' + me.uid + '.answeredAt']      = 0;
-  upd['players.' + me.uid + '.lastPts']         = 0;
-  upd['players.' + me.uid + '.lastCorrect']     = false;
-
-  sessionRef.update(upd)
-    .then(function() {
-      console.log('[PLAY] Registered as', me.displayName, me.uid);
-      startListening();
-    })
-    .catch(function(err) {
-      console.error('[PLAY] update failed:', err.code, err.message);
-      // If document doesn't exist yet, try set with merge
-      if (err.code === 'not-found') {
-        showWait('Game not found. Ask your teacher to start the game first.');
+function tryRegister(attemptsLeft) {
+  sessionRef.get().then(function(snap) {
+    if (!snap.exists) {
+      if (attemptsLeft > 0) {
+        console.log('[PLAY] Session not found, retrying... (' + attemptsLeft + ' left)');
+        setTimeout(function(){ tryRegister(attemptsLeft - 1); }, 1000);
       } else {
-        showWait('Error joining: ' + err.message);
+        showWait('Game not found. Ask your teacher to start the game first.');
       }
+      return;
+    }
+
+    // Session exists — write player data
+    var upd = {};
+    upd['players.' + me.uid + '.uid']             = me.uid;
+    upd['players.' + me.uid + '.name']            = me.displayName || 'Student';
+    upd['players.' + me.uid + '.photoURL']        = me.photoURL || null;
+    upd['players.' + me.uid + '.score']           = 0;
+    upd['players.' + me.uid + '.streak']          = 0;
+    upd['players.' + me.uid + '.answeredCurrent'] = false;
+    upd['players.' + me.uid + '.lastAnswer']      = '';
+    upd['players.' + me.uid + '.lastAnswerIndex'] = -1;
+    upd['players.' + me.uid + '.answeredAt']      = 0;
+    upd['players.' + me.uid + '.lastPts']         = 0;
+    upd['players.' + me.uid + '.lastCorrect']     = false;
+
+    sessionRef.update(upd).then(function() {
+      console.log('[PLAY] Registered:', me.displayName, me.uid);
+      startListening();
+    }).catch(function(err) {
+      console.error('[PLAY] Register failed:', err.code, err.message);
+      showWait('Could not join: ' + err.message);
     });
+
+  }).catch(function(err) {
+    console.error('[PLAY] Get session failed:', err);
+    showWait('Connection error: ' + err.message);
+  });
 }
 
 // ===== LISTEN =====
 function startListening() {
   if (unsubGame) unsubGame();
   unsubGame = sessionRef.onSnapshot(function(snap) {
-    if (!snap.exists) { showWait('Game ended'); return; }
-    var data = snap.data();
 
-    // Always sync my score from server
-    var me_data = (data.players || {})[me.uid];
-    if (me_data) {
-      myScore  = me_data.score  || 0;
-      myStreak = me_data.streak || 0;
+    // Doc deleted = game ended
+    if (!snap.exists) {
+      onEnd({ players: {} });
+      return;
+    }
+
+    var data = snap.data();
+    var meData = (data.players || {})[me.uid];
+    if (meData) {
+      myScore  = meData.score  || 0;
+      myStreak = meData.streak || 0;
       document.getElementById('score-el').textContent  = myScore.toLocaleString() + ' pts';
       document.getElementById('streak-el').textContent = myStreak >= 2 ? '🔥 ' + myStreak + ' streak' : '';
     }
@@ -190,6 +204,7 @@ function startListening() {
     else if (data.status === 'question') onQuestion(data);
     else if (data.status === 'reveal')   onReveal(data);
     else if (data.status === 'ended')    onEnd(data);
+
   }, function(err) {
     console.error('[PLAY] listen error:', err);
     showWait('Connection lost: ' + err.message);
@@ -206,7 +221,7 @@ function onLobby(data) {
       <div class="status-pill"><div class="status-dot"></div>Connected</div>
       <div class="wait-sub">You're in the lobby!</div>
       <div class="wait-code">${roomCode}</div>
-      <div class="wait-title">${data.teacherName || 'Teacher'}'s Game</div>
+      <div class="wait-title">${(data.teacherName||'Teacher').replace(/'/g,"&#39;")}'s Game</div>
       <div class="wait-sub">Waiting for the teacher to launch...</div>
       <div class="wait-spinner"></div>
     </div>
@@ -216,7 +231,6 @@ function onLobby(data) {
 // ===== QUESTION =====
 function onQuestion(data) {
   var idx = data.currentQuestion;
-  // Only re-render if new question
   if (idx === lastQIdx && phase === 'question') return;
   lastQIdx = idx;
   phase = 'question';
@@ -232,10 +246,10 @@ function onQuestion(data) {
     answersHtml = '<div class="answers-grid">';
     (q.answers || []).forEach(function(ans, i) {
       if (!ans) return;
-      var safeAns = ans.replace(/'/g, "\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      var safe = ans.replace(/'/g,"\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;');
       answersHtml += `<button class="ans-btn" id="abtn-${i}"
         style="background:linear-gradient(135deg,${COLORS[i]},${COLORS[i]}bb);"
-        onclick="pickMC(${i},'${safeAns}')">
+        onclick="pickMC(${i},'${safe}')">
         <div class="ans-icon">${ICONS[i]}</div>${ans}
       </button>`;
     });
@@ -256,12 +270,11 @@ function onQuestion(data) {
     ${answersHtml}
   `;
 
-  // Display countdown
   var t = q.time;
   clientTimer = setInterval(function() {
     t--;
     var el = document.getElementById('ptimer');
-    if (el) { el.textContent = t; el.style.color = t<=5?'#ff3b30':t<=10?'#f9a825':'#fff'; }
+    if (el) { el.textContent=t; el.style.color=t<=5?'#ff3b30':t<=10?'#f9a825':'#fff'; }
     if (t <= 0) killTimer();
   }, 1000);
 
@@ -302,11 +315,11 @@ function writeAnswer(text, idx) {
 
   sessionRef.update(upd).then(function(){
     console.log('[PLAY] Answer written:', text, idx);
-    // Show submitted note without killing the answer buttons
     var extra = document.createElement('div');
     extra.className = 'submitted-note';
     extra.textContent = '✓ Answer submitted — waiting for reveal...';
-    document.getElementById('play-content').appendChild(extra);
+    var content = document.getElementById('play-content');
+    if (content) content.appendChild(extra);
   }).catch(function(err){
     console.error('[PLAY] Answer write failed:', err);
   });
@@ -331,7 +344,6 @@ function onReveal(data) {
 
   var ptsEarned = myData.lastPts || 0;
 
-  // Answers reveal
   var revHtml = '';
   if (q.type==='mc'||q.type==='tf') {
     revHtml = '<div class="answers-grid" style="pointer-events:none;">';
@@ -353,7 +365,7 @@ function onReveal(data) {
       ${isCorrect?'✓ CORRECT!':'✗ WRONG'}
     </div>
     <div class="pts-label" style="color:${isCorrect?'#ffd700':'rgba(255,255,255,0.35)'};">
-      ${isCorrect?'+'+ptsEarned+' pts'+'(streak: '+myStreak+')':'No points'}
+      ${isCorrect?'+'+ptsEarned+' pts'+(myStreak>=3?' 🔥 streak bonus!':''):'No points'}
     </div>
     ${revHtml}
     <div class="wait-sub" style="margin-top:6px;">Waiting for next question...</div>
@@ -362,15 +374,19 @@ function onReveal(data) {
 
 // ===== END =====
 function onEnd(data) {
+  if (phase === 'ended') return;
   phase = 'ended';
   killTimer();
+  if (unsubGame) { unsubGame(); unsubGame = null; }
+
   var sorted = Object.values(data.players||{}).sort(function(a,b){return (b.score||0)-(a.score||0);});
   var myRank = sorted.findIndex(function(p){return p.uid===me.uid;})+1;
   var medals = {1:'🥇',2:'🥈',3:'🥉'};
+
   document.getElementById('play-content').innerHTML = `
     <div class="end-screen">
       <div class="end-title">Game Over!</div>
-      <div class="end-rank">${medals[myRank]||'#'+myRank} of ${sorted.length}</div>
+      <div class="end-rank">${medals[myRank]||'#'+myRank} of ${sorted.length||'?'}</div>
       <div class="end-score">${myScore.toLocaleString()} pts</div>
       <a href="student-home.html" class="end-back">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
@@ -380,7 +396,6 @@ function onEnd(data) {
   `;
 }
 
-// ===== UTILS =====
 function showWait(msg) {
   killTimer();
   document.getElementById('play-content').innerHTML = `
@@ -392,54 +407,7 @@ function showWait(msg) {
 }
 
 function killTimer() { clearInterval(clientTimer); clientTimer = null; }
-
 function showToast(msg,type){type=type||'';var c=document.getElementById('toast-container');if(!c)return;var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;c.appendChild(t);setTimeout(function(){t.remove();},3200);}
 </script>
 </body>
 </html>
-Now add a Players tab to game-host.html — find the topbar actions area and add this viewer panel. In game-host.html find renderLobby and replace just the actions.innerHTML line:
-actions.innerHTML = `
-  <button class="btn-ghost" id="players-btn" onclick="togglePlayersPanel()" style="position:relative;">
-    👥 Players <span id="players-badge" style="background:#0a84ff;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">0</span>
-  </button>
-  <button class="btn-primary" id="launch-btn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-    Launch
-  </button>
-  <div id="players-panel" style="display:none;position:absolute;top:52px;right:16px;background:#020c1e;border:1px solid var(--vl-border);border-radius:12px;padding:16px;min-width:260px;max-height:360px;overflow-y:auto;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--vl-gray);margin-bottom:10px;">Players in Game</div>
-    <div id="players-panel-list"></div>
-  </div>
-`;
-document.getElementById('launch-btn').onclick = launchGame;
-document.getElementById('topbar-actions').style.position = 'relative';
-Then add this function anywhere in game-host.html's script:
-function togglePlayersPanel() {
-  var panel = document.getElementById('players-panel');
-  if (!panel) return;
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-  renderPlayersPanel();
-}
-
-function renderPlayersPanel() {
-  var list = document.getElementById('players-panel-list');
-  var badge = document.getElementById('players-badge');
-  if (!list) return;
-  var pArr = Object.values(players);
-  if (badge) badge.textContent = pArr.length;
-  if (!pArr.length) { list.innerHTML='<div style="font-size:12px;color:var(--vl-gray);text-align:center;padding:12px;">No players yet</div>'; return; }
-  list.innerHTML = '';
-  pArr.forEach(function(p) {
-    var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
-    row.innerHTML =
-      (p.photoURL ? '<img src="'+p.photoURL+'" width="30" height="30" style="border-radius:50%;object-fit:cover;flex-shrink:0;" alt=""/>'
-        : '<div style="width:30px;height:30px;border-radius:50%;background:#0a84ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">'+(p.name||'?')[0]+'</div>') +
-      '<div style="flex:1;min-width:0;">' +
-        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(p.name||'Player')+'</div>' +
-        '<div style="font-size:10px;color:var(--vl-gray);">'+(p.answeredCurrent?'✓ Answered':'Waiting...')+'</div>' +
-      '</div>' +
-      '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:18px;color:#00e5ff;">'+(p.score||0)+'</div>';
-    list.appendChild(row);
-  });
-}
